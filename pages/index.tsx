@@ -1,4 +1,5 @@
 import Head from "next/head";
+import NFTCollectionContainer from "@Containers/NFTCollectionContainer/NFTCollectionContainer";
 
 export default function Home() {
   return (
@@ -10,9 +11,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className="text-blue-900 font-bold underline">
-          This is main page
-        </div>
+        <>
+          <NFTCollectionContainer />
+        </>
       </main>
     </>
   );

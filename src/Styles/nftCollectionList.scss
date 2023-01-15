@@ -1,0 +1,26 @@
+#nft-collection-list {
+  .nft-collection-item {
+    box-shadow: rgb(0 0 0 / 8%) 0px 4px 15px;
+    &:hover {
+      .nft-collection-img {
+        transition: all 0.2s ease-in-out;
+        transform: scale(1.2);
+      }
+      .nft-collection-item-bottom {
+        transition: all 0.2s ease-in-out;
+        opacity: 1;
+      }
+    }
+    .buy-now-btn {
+      &:hover {
+        flex: 1;
+        ~ .add-to-cart-btn {
+          display: none;
+        }
+        .buy-now-text {
+          display: inline;
+        }
+      }
+    }
+  }
+}
