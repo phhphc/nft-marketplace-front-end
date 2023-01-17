@@ -23,6 +23,7 @@
       "@Styles/*": ["src/Styles/*"],
       "@Services/*": ["src/Services/*"],
       "@Constants/*": ["src/Constants/*"],
+      "@Containers/*": ["src/Containers/*"],
       "@Src/*": ["src/*"]
     }
   },
