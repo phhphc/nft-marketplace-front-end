@@ -1,26 +1,39 @@
 #nft-collection-list {
-  .nft-collection-item {
-    box-shadow: rgb(0 0 0 / 8%) 0px 4px 15px;
-    &:hover {
-      .nft-collection-img {
-        transition: all 0.2s ease-in-out;
-        transform: scale(1.2);
-      }
-      .nft-collection-item-bottom {
-        transition: all 0.2s ease-in-out;
-        opacity: 1;
-      }
-    }
-    .buy-now-btn {
+  .nft-collection-grid-list {
+    .nft-collection-item {
+      box-shadow: rgb(0 0 0 / 8%) 0px 4px 15px;
       &:hover {
-        flex: 1;
-        ~ .add-to-cart-btn {
-          display: none;
+        .nft-collection-img {
+          transition: all 0.2s ease-in-out;
+          transform: scale(1.2);
         }
-        .buy-now-text {
-          display: inline;
+        .nft-collection-item-bottom {
+          transition: all 0.2s ease-in-out;
+          opacity: 1;
+        }
+      }
+      .buy-now-btn {
+        &:hover {
+          flex: 1;
+          ~ .add-to-cart-btn {
+            display: none;
+          }
+          .buy-now-text {
+            display: inline;
+          }
         }
       }
     }
+  }
+  .p-accordion-header-link {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    border-radius: 20px;
+  }
+  .p-accordion-content {
+    border: none;
+    padding-left: 0;
+    padding-right: 0;
   }
 }
