@@ -1,0 +1,13 @@
+#nft-detail {
+    .buy-now-btn {
+        &:hover {
+            flex: 1;
+            ~ .add-to-cart-btn {
+                display: none;
+            }
+            .buy-now-text {
+                display: inline;
+            }
+        }
+    }
+}

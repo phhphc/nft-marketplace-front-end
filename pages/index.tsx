@@ -1,5 +1,5 @@
 import Head from "next/head";
-import NFTCollectionContainer from "@Containers/NFTCollectionContainer/NFTCollectionContainer";
+import NFTDetailContainer from "@Containers/NFTDetailContainer/NFTDetailContainer";
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
       </Head>
       <main>
         <>
-          <NFTCollectionContainer />
+          <NFTDetailContainer />
         </>
       </main>
     </>
