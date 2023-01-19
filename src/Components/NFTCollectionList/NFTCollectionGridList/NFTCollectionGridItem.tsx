@@ -2,6 +2,7 @@ import { INFTCollectionItem } from "./NFTCollectionGridList";
 import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBoltLightning } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem;
@@ -13,7 +14,11 @@ const NFTCollectionGridItem = ({
   viewType,
 }: INFTCollectionGridItemProps) => {
   return (
-    <div key={item.id} className="relative nft-collection-item cursor-pointer">
+    <Link
+      href="/detail"
+      key={item.id}
+      className="relative nft-collection-item cursor-pointer"
+    >
       <div className="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none lg:h-80">
         <img
           src={item.imageSrc}
@@ -42,7 +47,7 @@ const NFTCollectionGridItem = ({
           </div>
         </div>
       )}
-    </div>
+    </Link>
   );
 };
 
