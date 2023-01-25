@@ -1,6 +1,7 @@
 import { INFTDetail } from "./NFTDetail";
 
 export const nftDetail: INFTDetail = {
+    chain: "Ethereum",
     imageSrc:
         "https://i.seadn.io/gae/rxhWr6EWSG-izM8ip8CRA6rEeuQOa9iD5j7ZFQtAYEOGEyaGx0nAyFDMhUf6GZiqT8Wqvll9tW3gOKK0-ALoAXR47PwRDegUTnRr?auto=format&w=512",
     author: "TRISTAN EATON",
