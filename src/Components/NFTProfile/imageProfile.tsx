@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 const ImageProfile = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -6,19 +6,6 @@ const ImageProfile = () => {
     setIsOpen(!isOpen);
   };
 
-  // const wrapperRef = useRef<any>(null);
-  // useEffect(() => {
-  //   document.addEventListener("click", handleClickOutside, false);
-  //   return () => {
-  //     document.removeEventListener("click", handleClickOutside, false);
-  //   };
-  // }, []);
-
-  // const handleClickOutside = (event: any) => {
-  //   if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-  //     setIsOpen(false);
-  //   }
-  // };
   return (
     <div id="nft-profile">
       <img
@@ -49,7 +36,6 @@ const ImageProfile = () => {
               ? "https://i.seadn.io/gae/FeqZQ2fAjaNqCrxpz2x9ZlNR9PXAP6Ok-lwnaX6ti-BomzyEKmnslCZorU1-aKWM_zq6Mop7RJHT_YqVEKBXh9PIOEciNlxnQYjl?auto=format&w=256"
               : ""
           }
-          // ref={wrapperRef}
         />
       </div>
     </div>
