@@ -4,6 +4,7 @@ import NFTCollectionGridList from "@Components/NFTCollectionList/NFTCollectionGr
 import { nftCollectionList } from "@Components/NFTCollectionList/mockData";
 import NFTCollectionListTopSection from "@Components/NFTCollectionList/NFTCollectionListTopSection";
 import NFTCollectionFilter from "@Components/NFTCollectionList/NFTCollectionFilter";
+import NFTCollectionTableList from "@Components/NFTCollectionList/NFTCollectionTableList/NFTCollectionTableList";
 
 const NFTCollectionList = () => {
   const [viewType, setViewType] = useState<COLLECTION_VIEW_TYPE>(
@@ -21,12 +22,21 @@ const NFTCollectionList = () => {
         viewType={viewType}
         handleChangeView={handleChangeView}
       />
-      <div className="grid mt-6 grid-cols-5 gap-4">
+      <div className="grid mt-6 grid-cols-4 gap-4">
         <NFTCollectionFilter />
-        <NFTCollectionGridList
-          viewType={viewType}
-          nftCollectionList={nftCollectionList}
-        />
+        <div className="col-start-2 col-end-12">
+          {viewType === COLLECTION_VIEW_TYPE.LIST ? (
+            <NFTCollectionTableList
+              viewType={viewType}
+              nftCollectionList={nftCollectionList}
+            />
+          ) : (
+            <NFTCollectionGridList
+              viewType={viewType}
+              nftCollectionList={nftCollectionList}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

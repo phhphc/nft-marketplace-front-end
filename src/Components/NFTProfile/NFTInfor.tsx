@@ -1,15 +1,5 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheckCircle,
-  faChevronUp,
-  faChevronDown,
-  faGlobe,
-  faChartSimple,
-  faShareNodes,
-  faStar,
-  faEllipsis,
-} from "@fortawesome/free-solid-svg-icons";
-import { Tooltip, Button } from "@material-tailwind/react";
+import "primeicons/primeicons.css";
+import { Tooltip } from "primereact/tooltip";
 import { useState } from "react";
 
 const NFTInfor = () => {
@@ -24,55 +14,51 @@ const NFTInfor = () => {
           <div className="nft-name font-semibold text-3xl">
             GEMMA BY TRISTAN EATON
           </div>
-          <Tooltip
-            className="bg-slate-800 w-56 text-center rounded-lg p-1"
-            content="This collection belongs to a verified account and has significant interest or sales."
-            placement="right"
-          >
-            <Button variant="gradient">
-              <FontAwesomeIcon
-                type="button"
-                className="text-sky-500 text-lg pl-2 pt-2"
-                icon={faCheckCircle}
-              />
-            </Button>
-          </Tooltip>
+          <Tooltip target=".verified-nft" position="right" />
+          <i
+            className="verified-nft pi pi-check-circle text-sky-600 text-lg pl-2 pt-3"
+            role="button"
+            data-pr-tooltip="This collection belongs to a verified account and has significant interest or sales."
+          />
         </div>
         <div className="detail-link">
           <div className="flex gap-10 pt-4 text-lg">
-            <Tooltip
-              className="bg-slate-800 text-center rounded-lg p-1"
-              content="View on Etherscan"
-              placement="top"
-            >
-              <FontAwesomeIcon icon={faChartSimple} role="button" />
-            </Tooltip>
+            <Tooltip target=".icon-etherscan" position="top" />
+            <i
+              className="icon-etherscan pi pi-chart-line"
+              data-pr-tooltip="View on Etherscan"
+              role="button"
+            />
 
-            <Tooltip
-              className="bg-slate-800 text-center rounded-lg p-1"
-              content="Website"
-              placement="top"
-            >
-              <FontAwesomeIcon icon={faGlobe} role="button" />
-            </Tooltip>
+            <Tooltip target=".icon-website" position="top" />
+            <i
+              role="button"
+              className="icon-website pi pi-globe"
+              data-pr-tooltip="Website"
+            />
 
-            <Tooltip
-              className="bg-slate-800 text-center rounded-lg p-1"
-              content="Share"
-              placement="top"
-            >
-              <FontAwesomeIcon icon={faShareNodes} role="button" />
-            </Tooltip>
+            <Tooltip target=".icon-facebook" position="top" />
+            <i
+              role="button"
+              className="icon-facebook pi pi-facebook"
+              data-pr-tooltip="Facebook"
+            />
 
-            <Tooltip
-              className="bg-slate-800 text-center rounded-lg p-1"
-              content="Add to watchlist"
-              placement="top"
-            >
-              <FontAwesomeIcon icon={faStar} role="button" />
-            </Tooltip>
+            <Tooltip target=".icon-share" position="top" />
+            <i
+              role="button"
+              className="icon-share pi pi-share-alt"
+              data-pr-tooltip="Share"
+            />
 
-            <FontAwesomeIcon icon={faEllipsis} role="button" />
+            <Tooltip target=".icon-watch-list" position="top" />
+            <i
+              role="button"
+              className="icon-watch-list pi pi-star"
+              data-pr-tooltip="Add to watchlist"
+            />
+
+            <i role="button" className="pi pi-ellipsis-h" />
           </div>
         </div>
       </div>
@@ -80,21 +66,6 @@ const NFTInfor = () => {
         By{" "}
         <span className="font-semibold">
           GEMMA-Factory{" "}
-          <span>
-            <Tooltip
-              className="bg-slate-800 w-56 text-center rounded-lg p-1"
-              content="This is a verified account."
-              placement="right"
-            >
-              <Button variant="gradient">
-                <FontAwesomeIcon
-                  type="button"
-                  className="text-sky-500 text-sm"
-                  icon={faCheckCircle}
-                />
-              </Button>
-            </Tooltip>
-          </span>
         </span>
       </div>
       <div className="flex detail-infor pt-3 text-lg">
@@ -135,7 +106,7 @@ const NFTInfor = () => {
         <button onClick={handleClickToRead} className="hover:opacity-80">
           {!isSeeMore ? "See More" : "See Less"}{" "}
           <span className="text-xs">
-            <FontAwesomeIcon icon={!isSeeMore ? faChevronDown : faChevronUp} />
+            <i className={!isSeeMore ? "pi pi-angle-down" : "pi pi-angle-up"}></i>
           </span>
         </button>
       </div>
