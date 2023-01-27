@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,6 +7,10 @@ import {
   faImage,
   faList,
 } from "@fortawesome/free-solid-svg-icons";
+import { Dropdown } from "primereact/dropdown";
+import { SORT_OPTIONS } from "@Constants/index";
+import { IDropDown } from "@Interfaces/index";
+import { InputText } from "primereact/inputtext";
 
 export interface INFTCollectionListTopSection {
   viewType: COLLECTION_VIEW_TYPE;
@@ -17,6 +21,17 @@ const NFTCollectionListTopSection = ({
   viewType,
   handleChangeView,
 }: INFTCollectionListTopSection) => {
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [currentSort, setCurrentSort] = useState<IDropDown>(SORT_OPTIONS[0]);
+
+  const handleClickSortDropdown = (sort: IDropDown) => {
+    setCurrentSort(sort);
+  };
+
+  const handleChangeSearchValue = (newSearchValue: string) => {
+    setSearchValue(newSearchValue);
+  };
+
   const iconList = [faList, faTh, faTable, faImage];
   const viewTypeList = [
     COLLECTION_VIEW_TYPE.LIST,
@@ -25,8 +40,22 @@ const NFTCollectionListTopSection = ({
     COLLECTION_VIEW_TYPE.ICON_VIEW,
   ];
   return (
-    <div className="flex">
-      <div className="ml-auto">
+    <div className="flex justify-between flex-wrap">
+      <InputText
+        className="flex-1 mr-12 mb-8"
+        value={searchValue}
+        onChange={(e) => handleChangeSearchValue(e.target.value)}
+        placeholder="Search"
+      />
+      <Dropdown
+        className="w-1/4 mr-12 mb-8"
+        value={currentSort}
+        options={SORT_OPTIONS}
+        onChange={(e) => handleClickSortDropdown(e.value)}
+        optionLabel="name"
+        placeholder="Sort"
+      />
+      <div className="flex items-center mb-8">
         {iconList.map((icon, index) => (
           <i
             key={index}
