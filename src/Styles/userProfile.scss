@@ -1,4 +1,4 @@
-#nft-profile {
+#user-profile {
   .cover-image {
     max-height: 24rem;
     width: 100vw;
@@ -9,7 +9,7 @@
     margin: -10rem 0 0 2rem;
     background-color: #fff;
     display: inline-block;
-    border-radius: 5%;
+    border-radius: 50%;
   }
   .avt-image {
     margin: auto;
@@ -17,7 +17,7 @@
     object-fit: cover;
     width: 92%;
     height: 92%;
-    border-radius: 5%;
+    border-radius: 50%;
     display: block;
   }
   .modal {

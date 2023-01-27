@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 4000",
+    "dev": "npm run open-browser && next dev -p 4000",
+    "open-browser": "start http://localhost:4000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

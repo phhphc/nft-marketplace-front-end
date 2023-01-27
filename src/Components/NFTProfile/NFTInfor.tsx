@@ -16,7 +16,7 @@ const NFTInfor = () => {
           </div>
           <Tooltip target=".verified-nft" position="right" />
           <i
-            className="verified-nft pi pi-check-circle text-sky-600 text-lg pl-2 pt-3"
+            className="verified-nft pi pi-verified text-sky-600 text-lg pl-2 pt-3"
             role="button"
             data-pr-tooltip="This collection belongs to a verified account and has significant interest or sales."
           />
