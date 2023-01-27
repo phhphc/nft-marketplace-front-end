@@ -1,4 +1,4 @@
-import { IOption } from "@Interfaces/index";
+import { IOption, IDropDown } from "@Interfaces/index";
 
 export enum COLLECTION_VIEW_TYPE {
   LARGE_GRID = "LARGE_GRID",
@@ -46,4 +46,21 @@ export const STATUS_OPTIONS: IOption[] = [
     name: STATUS_FILTER_NAME.ON_AUCTION,
     key: STATUS_FILTER_NAME.ON_AUCTION,
   },
+];
+
+export enum NFT_USER_PROFILE_TABS {
+  COLLECTED = "COLLECTED",
+  CREATED = "CREATED",
+  FAVORITED = "FAVORITED",
+}
+
+export const NFT_USER_PROFILE_TABS_LIST = [
+  NFT_USER_PROFILE_TABS.COLLECTED,
+  NFT_USER_PROFILE_TABS.CREATED,
+  NFT_USER_PROFILE_TABS.FAVORITED,
+];
+
+export const SORT_OPTIONS: IDropDown[] = [
+  { name: "Price low to high", code: "1" },
+  { name: "Price high to low", code: "2" },
 ];

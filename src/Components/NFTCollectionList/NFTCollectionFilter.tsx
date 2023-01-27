@@ -16,7 +16,7 @@ const NFTCollectionFilter = () => {
   const [statusOptions, setStatusOptions] = useState<IOption[]>([]);
   const [price, setPrice] = useState<[number, number]>([20, 80]);
   return (
-    <Accordion multiple>
+    <Accordion multiple className="hidden md:block">
       <AccordionTab header={COLLECTION_FILTER_TITLE.STATUS}>
         <CheckboxList
           options={STATUS_OPTIONS}
