@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: false,
+module.exports = () => {
+  const rewrites = () => {
+    return [
+      {
+        source: "/nfts",
+        destination: "http://localhost:9090/nfts",
+      },
+    ];
+  };
+  return {
+    rewrites,
+  };
 };
-
-module.exports = nextConfig;

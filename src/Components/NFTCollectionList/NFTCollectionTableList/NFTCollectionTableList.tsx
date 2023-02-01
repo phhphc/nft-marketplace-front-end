@@ -1,19 +1,11 @@
 import { DataTable } from "primereact/datatable";
-import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import { Column } from "primereact/column";
 import { useState } from "react";
 import { useRouter } from "next/router";
-
-export interface INFTCollectionItem {
-  id: string;
-  imageSrc: string;
-  name: string;
-  price: number;
-}
+import { INFTCollectionItem } from "@Interfaces/index";
 
 export interface INFTCollectionTableListProps {
   nftCollectionList: INFTCollectionItem[];
-  viewType: COLLECTION_VIEW_TYPE;
 }
 
 const NFTCollectionTableList = ({
@@ -22,24 +14,29 @@ const NFTCollectionTableList = ({
   const [selectedNFTs, setSelectedNFTs] = useState(null);
   const router = useRouter();
 
-  const imageBodyTemplate = (rowData: any) => {
+  const imageBodyTemplate = (rowData: INFTCollectionItem) => {
     return (
       <img
-        src={`${rowData.imageSrc}`}
-        alt={rowData.imageSrc}
+        src={
+          rowData.imageSrc ||
+          "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
+        }
+        alt="item image"
         className="product-image"
       />
     );
   };
 
-  const priceBodyTemplate = (rowData: any) => {
-    return rowData.price;
+  const priceBodyTemplate = (rowData: INFTCollectionItem): number => {
+    return rowData?.listing?.price || 0;
   };
 
-  const nameBodyTemplate = (rowData: any) => {
+  const nameBodyTemplate = (rowData: INFTCollectionItem) => {
     return (
       <div>
-        <a style={{cursor: "pointer"}} onClick={() => router.push("/detail")}>{rowData.name}</a>
+        <a style={{ cursor: "pointer" }} onClick={() => router.push("/detail")}>
+          {rowData.name || "Item name"}
+        </a>
       </div>
     );
   };

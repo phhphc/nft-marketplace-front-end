@@ -20,7 +20,11 @@ const NFTCollectionGridList = ({
       }`}
     >
       {nftCollectionList.map((item) => (
-        <NFTCollectionGridItem key={item.id} item={item} viewType={viewType} />
+        <NFTCollectionGridItem
+          key={item.token_id}
+          item={item}
+          viewType={viewType}
+        />
       ))}
     </div>
   );

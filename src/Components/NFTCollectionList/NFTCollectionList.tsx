@@ -30,10 +30,7 @@ const NFTCollectionList = ({ nftCollectionList }: INFTCollectionListProps) => {
         <NFTCollectionFilter />
         <div className="md:col-start-2 col-end-6 col-start-1">
           {viewType === COLLECTION_VIEW_TYPE.LIST ? (
-            <NFTCollectionTableList
-              viewType={viewType}
-              nftCollectionList={nftCollectionList}
-            />
+            <NFTCollectionTableList nftCollectionList={nftCollectionList} />
           ) : (
             <NFTCollectionGridList
               viewType={viewType}

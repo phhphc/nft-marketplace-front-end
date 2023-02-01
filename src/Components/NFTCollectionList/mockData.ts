@@ -1,88 +1,76 @@
-import { INFTCollectionItem } from "./NFTCollectionGridList/NFTCollectionGridList";
+import { INFTCollectionItem } from "@Interfaces/index";
 
 export const nftCollectionList: INFTCollectionItem[] = [
   {
-    id: "1",
+    token_id: "1",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "2",
+    token_id: "2",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "3",
+    token_id: "3",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "4",
+    token_id: "4",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "5",
+    token_id: "5",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "6",
+    token_id: "6",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "7",
+    token_id: "7",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "8",
+    token_id: "8",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "9",
+    token_id: "9",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "10",
+    token_id: "10",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "11",
+    token_id: "11",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
   {
-    id: "12",
+    token_id: "12",
     name: "Item 1",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    price: 0.09,
   },
 ];

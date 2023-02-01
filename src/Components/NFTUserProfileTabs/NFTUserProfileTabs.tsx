@@ -4,9 +4,15 @@ import {
   NFT_USER_PROFILE_TABS_LIST,
 } from "@Constants/index";
 import NFTCollectionList from "@Components/NFTCollectionList/NFTCollectionList";
-import { nftCollectionList } from "@Components/NFTCollectionList/mockData";
+import { INFTCollectionItem } from "@Interfaces/index";
 
-const NFTUserProfileTabs = () => {
+export interface INFTUserProfileTabsProps {
+  nftCollectionList: INFTCollectionItem[];
+}
+
+const NFTUserProfileTabs = ({
+  nftCollectionList,
+}: INFTUserProfileTabsProps) => {
   const [currentTab, setCurrentTab] = useState(NFT_USER_PROFILE_TABS.COLLECTED);
 
   const handleChangeTab = (tab: NFT_USER_PROFILE_TABS) => {
