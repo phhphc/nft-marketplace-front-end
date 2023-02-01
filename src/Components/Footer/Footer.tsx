@@ -1,5 +1,6 @@
 import logo from "@Assets/logo.png";
 import Image from "next/image";
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -19,7 +20,12 @@ const Footer = () => {
         </div>
         <div className="mr-16">
           <div className="font-bold">My Account</div>
-          <div className="pt-4">Profile</div>
+          <Link
+            href={`/user-profile/${process.env.NEXT_PUBLIC_USER_ID}`}
+            className="pt-4 block"
+          >
+            Profile
+          </Link>
           <div className="pt-4">My Collections</div>
         </div>
       </div>

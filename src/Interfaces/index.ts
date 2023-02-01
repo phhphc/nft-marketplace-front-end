@@ -9,8 +9,13 @@ export interface IDropDown {
 }
 
 export interface INFTCollectionItem {
-  id: string;
-  imageSrc: string;
-  name: string;
+  token_id: string;
+  owner?: string;
+  imageSrc?: string;
+  name?: string;
+  listing?: IListing;
+}
+
+export interface IListing {
   price: number;
 }

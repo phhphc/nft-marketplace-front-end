@@ -17,7 +17,7 @@ const Header = () => {
           <InputText placeholder="Search" className="w-96 h-10" />
         </span>
         <div id="navbar" className="w-56 flex items-center justify-around">
-          <Link href="/user-profile">
+          <Link href={`/user-profile/${process.env.NEXT_PUBLIC_USER_ID}`}>
             <Tooltip target="#avatar" position="bottom">
               Profile
             </Tooltip>
