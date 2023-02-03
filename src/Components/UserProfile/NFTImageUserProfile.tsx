@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const ImageUserProfile = () => {
+const NFTImageUserProfile = () => {
   const [isOpen, setIsOpen] = useState(false);
   const handleShowDialog = () => {
     setIsOpen(!isOpen);
@@ -41,4 +41,4 @@ const ImageUserProfile = () => {
     </div>
   );
 };
-export default ImageUserProfile;
+export default NFTImageUserProfile;
