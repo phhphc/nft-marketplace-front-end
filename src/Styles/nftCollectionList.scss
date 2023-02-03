@@ -2,6 +2,7 @@
   .nft-collection-grid-list {
     .nft-collection-item {
       box-shadow: rgb(0 0 0 / 8%) 0px 4px 15px;
+      height: fit-content;
       &:hover {
         .nft-collection-img {
           transition: all 0.2s ease-in-out;
