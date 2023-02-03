@@ -11,7 +11,7 @@ export interface INFTCollectionTableListProps {
 const NFTCollectionTableList = ({
   nftCollectionList,
 }: INFTCollectionTableListProps) => {
-  const [selectedNFTs, setSelectedNFTs] = useState(null);
+  const [selectedNFTs, setSelectedNFTs] = useState<INFTCollectionItem[]>([]);
   const router = useRouter();
 
   const imageBodyTemplate = (rowData: INFTCollectionItem) => {
@@ -42,35 +42,45 @@ const NFTCollectionTableList = ({
   };
 
   return (
-    <div className="nft-collection-table-list">
-      <div className="datatable-templating-demo ">
-        <div className="card">
-          <DataTable
-            value={nftCollectionList}
-            selection={selectedNFTs}
-            onSelectionChange={(e) => setSelectedNFTs(e.value)}
-            dataKey="id"
-            responsiveLayout="scroll"
-          >
-            <Column
-              selectionMode="multiple"
-              headerStyle={{ width: "3em" }}
-            ></Column>
-            <Column field="name" header="Name" body={nameBodyTemplate}></Column>
-            <Column header="Image" body={imageBodyTemplate}></Column>
-            <Column
-              field="price"
-              header="Current Price"
-              body={priceBodyTemplate}
-            ></Column>
-            <Column header="Best Offer"></Column>
-            <Column header="Last Sale"></Column>
-            <Column header="Owner"></Column>
-            <Column header="Time Listed"></Column>
-          </DataTable>
+    <>
+      {nftCollectionList?.length > 0 ? (
+        <div className="nft-collection-table-list">
+          <div className="datatable-templating-demo ">
+            <div className="card">
+              <DataTable
+                value={nftCollectionList}
+                selection={selectedNFTs}
+                onSelectionChange={(e) => setSelectedNFTs(e.value)}
+                dataKey="id"
+                responsiveLayout="scroll"
+              >
+                <Column
+                  selectionMode="multiple"
+                  headerStyle={{ width: "3em" }}
+                ></Column>
+                <Column
+                  field="name"
+                  header="Name"
+                  body={nameBodyTemplate}
+                ></Column>
+                <Column header="Image" body={imageBodyTemplate}></Column>
+                <Column
+                  field="price"
+                  header="Current Price"
+                  body={priceBodyTemplate}
+                ></Column>
+                <Column header="Best Offer"></Column>
+                <Column header="Last Sale"></Column>
+                <Column header="Owner"></Column>
+                <Column header="Time Listed"></Column>
+              </DataTable>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="text-center">There is no item to display</div>
+      )}
+    </>
   );
 };
 

@@ -1,9 +1,18 @@
 import "primeicons/primeicons.css";
 import { Tooltip } from "primereact/tooltip";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSignerAddressService } from "@Services/ApiService";
 
 const UserInfor = () => {
   const [isCopied, setIsCopied] = useState("Copy");
+  const [myAddress, setMyAddress] = useState<string>("");
+  useEffect(() => {
+    const fetchMyAddress = async () => {
+      const address = await getSignerAddressService();
+      setMyAddress(address);
+    };
+    fetchMyAddress();
+  }, []);
 
   const handleCopyToClipboard = (event: any) => {
     setIsCopied("Copied!");
@@ -47,7 +56,7 @@ const UserInfor = () => {
           className="chain-address pl-3 whitespace-nowrap w-40 overflow-hidden text-ellipsis"
           onClick={handleCopyToClipboard}
         >
-          {process.env.NEXT_PUBLIC_USER_ID}
+          {myAddress}
         </div>
         <div className="pl-4 text-gray-500">Joined June 2021</div>
       </div>

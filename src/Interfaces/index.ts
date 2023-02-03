@@ -10,12 +10,14 @@ export interface IDropDown {
 
 export interface INFTCollectionItem {
   token_id: string;
-  owner?: string;
+  owner: string;
   imageSrc?: string;
   name?: string;
   listing?: IListing;
 }
 
 export interface IListing {
+  listing_id: number;
   price: number;
+  owner: string;
 }

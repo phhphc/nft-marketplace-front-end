@@ -3,6 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBoltLightning } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { INFTCollectionItem } from "@Interfaces/index";
+import {
+  uploadNFTToMarketplaceService,
+  getSignerAddressService,
+  buyTokenService,
+} from "@Services/ApiService";
+import { useEffect, useState } from "react";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem;
@@ -13,13 +19,37 @@ const NFTCollectionGridItem = ({
   item,
   viewType,
 }: INFTCollectionGridItemProps) => {
+  const [myAddress, setMyAddress] = useState<string>("");
+  useEffect(() => {
+    const fetchMyAddress = async () => {
+      const address = await getSignerAddressService();
+      setMyAddress(address);
+    };
+    fetchMyAddress();
+  }, []);
+
+  const handleUploadNFTToMarketplace = async (tokenId: number) => {
+    await uploadNFTToMarketplaceService({
+      ownerAddress: myAddress,
+      tokenId,
+    });
+  };
+
+  const handleBuyToken = async (listingId: number, listingPrice: number) => {
+    await buyTokenService({
+      listingId,
+      listingPrice,
+    });
+  };
   return (
-    <Link
-      href={`detail/${item.token_id}`}
+    <div
       key={item.token_id}
       className="relative nft-collection-item cursor-pointer"
     >
-      <div className="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none lg:h-80">
+      <Link
+        href={`/detail/${item.token_id}`}
+        className="block min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none lg:h-80"
+      >
         <img
           src={
             item.imageSrc ||
@@ -28,7 +58,7 @@ const NFTCollectionGridItem = ({
           alt="NFT Item"
           className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
         />
-      </div>
+      </Link>
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
           <div className="p-4">
@@ -37,12 +67,20 @@ const NFTCollectionGridItem = ({
               {item?.listing?.price || 0} ETH
             </p>
           </div>
-          <div className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom">
+          <div
+            className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom"
+            onClick={() =>
+              handleBuyToken(
+                item.listing?.listing_id || 0,
+                item.listing?.price || 0
+              )
+            }
+          >
             <button className="bg-blue-500 py-2 px-4 buy-now-btn rounded-br-md">
               <i className="fa-1x">
                 <FontAwesomeIcon icon={faBoltLightning} />
               </i>
-              <span className="ml-4 hidden buy-now-text">Buy now</span>
+              <div className="ml-4 hidden buy-now-text">Buy now</div>
             </button>
             <button className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md">
               Add to cart
@@ -50,7 +88,7 @@ const NFTCollectionGridItem = ({
           </div>
         </div>
       )}
-    </Link>
+    </div>
   );
 };
 

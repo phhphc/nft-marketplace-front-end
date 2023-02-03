@@ -4,8 +4,18 @@ import logo2 from "@Assets/logo2.png";
 import { InputText } from "primereact/inputtext";
 import { Tooltip } from "primereact/tooltip";
 import Link from "next/link";
+import { getSignerAddressService } from "@Services/ApiService";
+import { useEffect, useState } from "react";
 
 const Header = () => {
+  const [myAddress, setMyAddress] = useState<string>("");
+  useEffect(() => {
+    const fetchMyAddress = async () => {
+      const address = await getSignerAddressService();
+      setMyAddress(address);
+    };
+    fetchMyAddress();
+  }, []);
   return (
     <div id="header" className="fixed top-0 right-0 left-0 h-24 z-10">
       <div className="flex h-full w-full bg-black shadow items-center justify-between px-10">
@@ -17,7 +27,7 @@ const Header = () => {
           <InputText placeholder="Search" className="w-96 h-10" />
         </span>
         <div id="navbar" className="w-56 flex items-center justify-around">
-          <Link href={`/user-profile/${process.env.NEXT_PUBLIC_USER_ID}`}>
+          <Link href={`/user-profile/${myAddress}`}>
             <Tooltip target="#avatar" position="bottom">
               Profile
             </Tooltip>
