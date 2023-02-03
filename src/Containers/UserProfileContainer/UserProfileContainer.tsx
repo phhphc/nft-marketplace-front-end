@@ -1,5 +1,5 @@
 import NFTUserProfileTabs from "@Components/NFTUserProfileTabs/NFTUserProfileTabs";
-import ImageUserProfile from "@Components/UserProfile/ImageUserProfile";
+import NFTImageUserProfile from "@Components/UserProfile/NFTImageUserProfile";
 import UserInfor from "@Components/UserProfile/UserInfor";
 import {
   getNFTCollectionListService,
@@ -24,7 +24,7 @@ const UserProfileContainer = () => {
 
   return (
     <div>
-      <ImageUserProfile></ImageUserProfile>
+      <NFTImageUserProfile></NFTImageUserProfile>
       <UserInfor></UserInfor>
       <NFTUserProfileTabs nftCollectionList={nftCollectionList} />
     </div>
