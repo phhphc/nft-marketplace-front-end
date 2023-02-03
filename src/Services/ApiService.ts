@@ -12,12 +12,12 @@ export interface IBuyTokenProps {
 }
 
 export const getNFTCollectionListService = async (
-  owner: string
+  owner?: string
 ): Promise<any> => {
   const params: { [k: string]: any } = {};
   if (owner) params.owner = owner;
   return axios
-    .get("/nfts", params)
+    .get("/nfts", { params })
     .then((response) => {
       return response.data.data || [];
     })
@@ -68,7 +68,7 @@ export const uploadNFTToMarketplaceService = async ({
   const erc721ContractWithSigner = erc721Contract.connect(signer);
   // const mkpContractWithSigner = mkpContract.connect(signer);
 
-  const listingPrice = ethers.utils.parseUnits("1", "ether");
+  const listingPrice = ethers.utils.parseUnits("1", "gwei");
   const listingData = ethers.utils.defaultAbiCoder.encode(
     ["int8", "uint256"],
     [0, listingPrice]
@@ -109,10 +109,7 @@ export const buyTokenService = async ({
   // const mkpContract = new ethers.Contract(toAddress, mkpAbi, provider);
 
   const mkpContractWithSigner = mkpContract.connect(signer);
-
-  const price = ethers.utils.parseUnits(`${listingPrice}`, "gwei");
-
   await mkpContractWithSigner["buy(uint256)"](listingId, {
-    value: price,
+    value: listingPrice,
   });
 };

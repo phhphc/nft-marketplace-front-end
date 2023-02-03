@@ -14,8 +14,8 @@ const UserProfileContainer = () => {
   >([]);
   useEffect(() => {
     const fetchData = async () => {
-      const address = await getSignerAddressService();
-      getNFTCollectionListService(address).then((data) => {
+      getNFTCollectionListService().then((res) => {
+        const data = res.filter((item: any) => !item.listing);
         setNftCollectionList(data);
       });
     };
