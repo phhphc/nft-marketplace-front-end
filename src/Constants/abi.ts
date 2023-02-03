@@ -1,0 +1,27 @@
+export const erc721Abi = [
+  "event Approval(address indexed,address indexed,uint256 indexed)",
+  "event ApprovalForAll(address indexed,address indexed,bool)",
+  "event Transfer(address indexed,address indexed,uint256 indexed)",
+  "function approve(address,uint256)",
+  "function balanceOf(address) view returns (uint256)",
+  "function getApproved(uint256) view returns (address)",
+  "function isApprovedForAll(address,address) view returns (bool)",
+  "function name() view returns (string)",
+  "function ownerOf(uint256) view returns (address)",
+  "function safeTransferFrom(address,address,uint256)",
+  "function safeTransferFrom(address,address,uint256,bytes)",
+  "function setApprovalForAll(address,bool)",
+  "function supportsInterface(bytes4) view returns (bool)",
+  "function symbol() view returns (string)",
+  "function tokenURI(uint256) view returns (string)",
+  "function transferFrom(address,address,uint256)",
+];
+export const mkpAbi = [
+  "event ListingCanceled(uint256,address indexed,uint256 indexed,address indexed,uint256)",
+  "event ListingSale(uint256,address indexed,uint256 indexed,address,address indexed,uint256)",
+  "event NewListing(uint256,address indexed,uint256 indexed,address indexed,uint256)",
+  "function buy(uint256) payable",
+  "function cancelListing(uint256)",
+  "function getListing(uint256) view returns (tuple(address,uint256,uint256,uint256,address))",
+  "function onERC721Received(address,address,uint256,bytes) returns (bytes4)",
+];

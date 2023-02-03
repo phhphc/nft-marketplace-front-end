@@ -1,8 +1,10 @@
 import NFTUserProfileTabs from "@Components/NFTUserProfileTabs/NFTUserProfileTabs";
-
 import ImageUserProfile from "@Components/UserProfile/ImageUserProfile";
 import UserInfor from "@Components/UserProfile/UserInfor";
-import { getNFTCollectionListService } from "@Services/ApiService";
+import {
+  getNFTCollectionListService,
+  getSignerAddressService,
+} from "@Services/ApiService";
 import { useState, useEffect } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
 
@@ -11,11 +13,15 @@ const UserProfileContainer = () => {
     INFTCollectionItem[]
   >([]);
   useEffect(() => {
-    getNFTCollectionListService().then((data) => {
-      console.log(data);
-      setNftCollectionList(data);
-    });
+    const fetchData = async () => {
+      const address = await getSignerAddressService();
+      getNFTCollectionListService(address).then((data) => {
+        setNftCollectionList(data);
+      });
+    };
+    fetchData();
   }, []);
+
   return (
     <div>
       <ImageUserProfile></ImageUserProfile>
