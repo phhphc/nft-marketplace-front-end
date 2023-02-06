@@ -5,11 +5,11 @@ import Link from "next/link";
 import { INFTCollectionItem } from "@Interfaces/index";
 import {
   uploadNFTToMarketplaceService,
-  getSignerAddressService,
   buyTokenService,
 } from "@Services/ApiService";
-import { useEffect, useState } from "react";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
+import { useContext } from "react";
+import { AppContext } from "@Store/index";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem;
@@ -22,18 +22,10 @@ const NFTCollectionGridItem = ({
   mode,
   viewType,
 }: INFTCollectionGridItemProps) => {
-  const [myAddress, setMyAddress] = useState<string>("");
-  useEffect(() => {
-    const fetchMyAddress = async () => {
-      const address = await getSignerAddressService();
-      setMyAddress(address);
-    };
-    fetchMyAddress();
-  }, []);
-
+  const web3Context = useContext(AppContext);
   const handleUploadNFTToMarketplace = async (tokenId: number) => {
     await uploadNFTToMarketplaceService({
-      ownerAddress: myAddress,
+      ownerAddress: web3Context.state.web3.myAddress,
       tokenId,
     });
   };

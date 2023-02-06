@@ -16,6 +16,8 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
+      "@Reducer/*": ["src/Reducer/*"],
+      "@Store/*": ["src/Store/*"],
       "@Components/*": ["src/Components/*"],
       "@Layouts/*": ["src/Layouts/*"],
       "@Interfaces/*": ["src/Interfaces/*"],

@@ -1,10 +1,7 @@
 import NFTUserProfileTabs from "@Components/NFTUserProfileTabs/NFTUserProfileTabs";
 import NFTImageUserProfile from "@Components/UserProfile/NFTImageUserProfile";
 import UserInfor from "@Components/UserProfile/UserInfor";
-import {
-  getNFTCollectionListService,
-  getSignerAddressService,
-} from "@Services/ApiService";
+import { getNFTCollectionListService } from "@Services/ApiService";
 import { useState, useEffect } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
 
