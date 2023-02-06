@@ -24,14 +24,6 @@ export const getNFTCollectionListService = async (
     .catch((err) => {});
 };
 
-export const getSignerAddressService = async (): Promise<string> => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-  const signer = provider.getSigner();
-
-  return signer.getAddress();
-};
-
 export const uploadNFTToMarketplaceService = async ({
   ownerAddress,
   tokenId,
