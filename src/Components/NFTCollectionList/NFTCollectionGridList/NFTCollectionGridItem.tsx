@@ -88,7 +88,9 @@ const NFTCollectionGridItem = ({
           ) : (
             <div
               className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom"
-              onClick={() => handleUploadNFTToMarketplace(item.token_id)}
+              onClick={() =>
+                handleUploadNFTToMarketplace(Number(item.token_id))
+              }
             >
               <button className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md">
                 Sell
