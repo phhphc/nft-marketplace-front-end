@@ -7,8 +7,8 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 
-ARG ARG_BE_URL
-ENV BACKEND_URL=$ARG_BE_URL
+ARG BACKEND_URL
+ENV BACKEND_URL=$BACKEND_URL
 RUN npm run build
 
 # Production image, copy all the files and run next
