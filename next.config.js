@@ -4,11 +4,12 @@ module.exports = () => {
     return [
       {
         source: "/nfts",
-        destination: "http://localhost:9090/nfts",
+        destination: process.env.BACKEND_URL,
       },
     ];
   };
   return {
     rewrites,
+    output: "standalone",
   };
 };

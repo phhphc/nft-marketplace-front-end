@@ -1,6 +1,6 @@
 import { INFTCollectionItem } from "@Interfaces/index";
 
-export const nftCollectionList: INFTCollectionItem[] = [
+export const nftCollectionList: Omit<INFTCollectionItem,"owner">[] = [
   {
     token_id: "1",
     name: "Item 1",
