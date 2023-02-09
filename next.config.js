@@ -3,7 +3,7 @@ module.exports = () => {
   const rewrites = () => {
     return [
       {
-        source: "/nfts",
+        source: "/api/v0.1/nft",
         destination: process.env.BACKEND_URL,
       },
     ];

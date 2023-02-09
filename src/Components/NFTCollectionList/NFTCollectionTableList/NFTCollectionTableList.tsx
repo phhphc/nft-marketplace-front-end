@@ -6,10 +6,12 @@ import { INFTCollectionItem } from "@Interfaces/index";
 
 export interface INFTCollectionTableListProps {
   nftCollectionList: INFTCollectionItem[];
+  setCountFetchNftCollectionList: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionTableList = ({
   nftCollectionList,
+  setCountFetchNftCollectionList,
 }: INFTCollectionTableListProps) => {
   const [selectedNFTs, setSelectedNFTs] = useState<INFTCollectionItem[]>([]);
   const router = useRouter();
@@ -18,7 +20,7 @@ const NFTCollectionTableList = ({
     return (
       <img
         src={
-          rowData.imageSrc ||
+          rowData.metadata.image ||
           "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
         }
         alt="item image"
@@ -35,7 +37,7 @@ const NFTCollectionTableList = ({
     return (
       <div>
         <a style={{ cursor: "pointer" }} onClick={() => router.push("/detail")}>
-          {rowData.name || "Item name"}
+          {rowData.metadata.name || "Item name"}
         </a>
       </div>
     );

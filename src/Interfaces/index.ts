@@ -8,16 +8,22 @@ export interface IDropDown {
   code: string;
 }
 
+export interface IMetaData {
+  name: string;
+  description: string;
+  image: string;
+}
+
 export interface INFTCollectionItem {
-  token_id: string;
+  token_id: number;
   owner: string;
-  imageSrc?: string;
-  name?: string;
+  contract_addr: string;
+  metadata: IMetaData;
   listing?: IListing;
 }
 
 export interface IListing {
   listing_id: number;
   price: number;
-  owner: string;
+  seller: string;
 }

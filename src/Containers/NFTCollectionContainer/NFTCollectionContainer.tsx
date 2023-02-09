@@ -5,23 +5,23 @@ import { NFT_COLLECTION_MODE } from "@Constants/index";
 import { getNFTCollectionListService } from "@Services/ApiService";
 import { useState, useEffect, useContext } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { AppContext } from "@Store/index";
 
 const NFTCollectionContainer = () => {
   const [nftCollectionList, setNftCollectionList] = useState<
     INFTCollectionItem[]
   >([]);
-  const web3Context = useContext(AppContext);
+  const [countFetchNftCollectionList, setCountFetchNftCollectionList] =
+    useState<number>(0);
+
   useEffect(() => {
     const fetchData = async () => {
-      getNFTCollectionListService(web3Context.state.web3.myAddress).then(
-        (data) => {
-          setNftCollectionList(data);
-        }
-      );
+      getNFTCollectionListService().then((data) => {
+        setNftCollectionList(data);
+      });
     };
+
     fetchData();
-  }, []);
+  }, [countFetchNftCollectionList]);
   return (
     <>
       <ImageProfile></ImageProfile>
@@ -29,6 +29,7 @@ const NFTCollectionContainer = () => {
       <NFTCollectionList
         nftCollectionList={nftCollectionList}
         mode={NFT_COLLECTION_MODE.CAN_BUY}
+        setCountFetchNftCollectionList={setCountFetchNftCollectionList}
       />
     </>
   );

@@ -2,19 +2,27 @@ import NFTUserProfileTabs from "@Components/NFTUserProfileTabs/NFTUserProfileTab
 import NFTImageUserProfile from "@Components/UserProfile/NFTImageUserProfile";
 import UserInfor from "@Components/UserProfile/UserInfor";
 import { getNFTCollectionListService } from "@Services/ApiService";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
+import { AppContext } from "@Store/index";
 
 const UserProfileContainer = () => {
   const [nftCollectionList, setNftCollectionList] = useState<
     INFTCollectionItem[]
   >([]);
+
+  const [countFetchNftCollectionList, setCountFetchNftCollectionList] =
+    useState<number>(0);
+
+  const web3Context = useContext(AppContext);
   useEffect(() => {
     const fetchData = async () => {
-      getNFTCollectionListService().then((res) => {
-        const data = res.filter((item: any) => !item.listing);
-        setNftCollectionList(data);
-      });
+      getNFTCollectionListService(web3Context.state.web3.myAddress).then(
+        (res) => {
+          const data = res.filter((item: any) => !item.listing);
+          setNftCollectionList(data);
+        }
+      );
     };
     fetchData();
   }, []);
@@ -23,7 +31,10 @@ const UserProfileContainer = () => {
     <div>
       <NFTImageUserProfile></NFTImageUserProfile>
       <UserInfor></UserInfor>
-      <NFTUserProfileTabs nftCollectionList={nftCollectionList} />
+      <NFTUserProfileTabs
+        nftCollectionList={nftCollectionList}
+        setCountFetchNftCollectionList={setCountFetchNftCollectionList}
+      />
     </div>
   );
 };
