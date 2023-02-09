@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ethers } from "ethers";
 import { erc721Abi, mkpAbi } from "@Constants/abi";
+import { BigNumber } from "bignumber.js";
 export interface IUploadNFTToMarketplaceServiceProps {
   ownerAddress: string;
   tokenId: number;
@@ -17,7 +18,7 @@ export const getNFTCollectionListService = async (
   const params: { [k: string]: any } = {};
   if (owner) params.owner = owner;
   return axios
-    .get("/nfts", { params })
+    .get("/api/v0.1/nft", { params })
     .then((response) => {
       return response.data.data || [];
     })
@@ -102,6 +103,6 @@ export const buyTokenService = async ({
 
   const mkpContractWithSigner = mkpContract.connect(signer);
   await mkpContractWithSigner["buy(uint256)"](listingId, {
-    value: listingPrice,
+    value: ethers.BigNumber.from(listingPrice),
   });
 };

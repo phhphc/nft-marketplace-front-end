@@ -15,26 +15,34 @@ export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem;
   viewType: COLLECTION_VIEW_TYPE;
   mode: NFT_COLLECTION_MODE;
+  setCountFetchNftCollectionList: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionGridItem = ({
   item,
   mode,
   viewType,
+  setCountFetchNftCollectionList,
 }: INFTCollectionGridItemProps) => {
   const web3Context = useContext(AppContext);
   const handleUploadNFTToMarketplace = async (tokenId: number) => {
-    await uploadNFTToMarketplaceService({
-      ownerAddress: web3Context.state.web3.myAddress,
-      tokenId,
-    });
+    try {
+      await uploadNFTToMarketplaceService({
+        ownerAddress: web3Context.state.web3.myAddress,
+        tokenId,
+      });
+      setCountFetchNftCollectionList((prev) => prev + 1);
+    } catch (error) {}
   };
 
   const handleBuyToken = async (listingId: number, listingPrice: number) => {
-    await buyTokenService({
-      listingId,
-      listingPrice,
-    });
+    try {
+      await buyTokenService({
+        listingId,
+        listingPrice,
+      });
+      setCountFetchNftCollectionList((prev) => prev + 1);
+    } catch (error) {}
   };
 
   return (
@@ -48,7 +56,7 @@ const NFTCollectionGridItem = ({
       >
         <img
           src={
-            item.imageSrc ||
+            item.metadata.image ||
             "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
           }
           alt="NFT Item"
@@ -57,12 +65,14 @@ const NFTCollectionGridItem = ({
       </Link>
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
-          <div className="p-4">
+          <div className="p-4 h-28">
             <h3 className="font-bold uppercase">
-              {item.token_id || "Item name"}
+              {item.metadata.name || "Item name"}
             </h3>
             <p className="text-sm font-medium text-gray-900 uppercase">
-              {(item?.listing?.price || 0) / 1000000000} GWEI
+              {(item?.listing?.price || 0) / 1000000000 < 1000000000
+                ? `${(item?.listing?.price || 0) / 1000000000} GWEI`
+                : `${(item?.listing?.price || 0) / 1000000000000000000} ETH`}
             </p>
           </div>
           {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
@@ -88,9 +98,7 @@ const NFTCollectionGridItem = ({
           ) : (
             <div
               className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom"
-              onClick={() =>
-                handleUploadNFTToMarketplace(Number(item.token_id))
-              }
+              onClick={() => handleUploadNFTToMarketplace(item.token_id)}
             >
               <button className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md">
                 Sell
