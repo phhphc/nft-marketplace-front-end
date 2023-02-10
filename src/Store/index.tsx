@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { ethers } from "ethers";
 
 export enum WEB3_ACTION_TYPES {
-  INIT = "INIT",
+  CHANGE = "CHANGE",
 }
 
 export interface IWeb3 {
@@ -49,11 +49,13 @@ const AppProvider = ({ children }: IAppProvider) => {
 
       const signer = provider.getSigner();
       dispatch({
-        type: WEB3_ACTION_TYPES.INIT,
+        type: WEB3_ACTION_TYPES.CHANGE,
         payload: { provider, myAddress: await signer.getAddress() },
       });
     };
-    fetchData();
+    if (window.ethereum._state.isUnlocked) {
+      fetchData();
+    }
   }, []);
 
   return (
