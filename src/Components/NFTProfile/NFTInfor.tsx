@@ -16,10 +16,12 @@ const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
 
   const totalVolume = useMemo(() => {
     return Math.round(
-      nftCollectionList.reduce(
-        (acc, cur) => acc + (cur.listing?.price || 0),
-        0
-      ) / 1000000000000000000
+      nftCollectionList
+        ? nftCollectionList.reduce(
+            (acc, cur) => acc + (cur.listing?.price || 0),
+            0
+          )
+        : 0 / 1000000000000000000
     );
   }, [nftCollectionList]);
 
