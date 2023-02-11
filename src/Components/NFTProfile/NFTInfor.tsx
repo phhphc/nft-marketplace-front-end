@@ -1,12 +1,40 @@
 import "primeicons/primeicons.css";
 import { Tooltip } from "primereact/tooltip";
 import { useState } from "react";
+import { INFTCollectionItem } from "@Interfaces/index";
+import { useMemo } from "react";
 
-const NFTInfor = () => {
+export interface INFTInforProps {
+  nftCollectionList: INFTCollectionItem[];
+}
+
+const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
   const [isSeeMore, setIsSeeMore] = useState(false);
   const handleClickToRead = () => {
     setIsSeeMore(!isSeeMore);
   };
+
+  const totalVolume = useMemo(() => {
+    return Math.round(
+      nftCollectionList.reduce(
+        (acc, cur) => acc + (cur.listing?.price || 0),
+        0
+      ) / 1000000000000000000
+    );
+  }, [nftCollectionList]);
+
+  const floorPrice = useMemo(() => {
+    return Math.round(
+      (nftCollectionList
+        ? Math.min(
+            ...(nftCollectionList
+              .filter((item) => !!item.listing)
+              .map((item) => item.listing?.price) as any)
+          )
+        : 0) / 1000000000000000000
+    );
+  }, [nftCollectionList]);
+
   return (
     <div id="nft-infor">
       <div className="flex justify-between">
@@ -63,18 +91,18 @@ const NFTInfor = () => {
         </div>
       </div>
       <div className="nft-author pt-3">
-        By{" "}
-        <span className="font-semibold">
-          GEMMA-Factory{" "}
-        </span>
+        By <span className="font-semibold">GEMMA-Factory </span>
       </div>
       <div className="flex detail-infor pt-3 text-lg">
         <div>
-          Items <span className="font-semibold pr-1">4,041</span>
+          Items{" "}
+          <span className="font-semibold pr-1">
+            {nftCollectionList?.length || 0}
+          </span>
         </div>
         ·
         <div className="pl-1">
-          Created <span className="font-semibold pr-1">Jan 2022</span>
+          Created <span className="font-semibold pr-1">Feb 2023</span>
         </div>
         ·
         <div className="pl-1">
@@ -106,18 +134,20 @@ const NFTInfor = () => {
         <button onClick={handleClickToRead} className="hover:opacity-80">
           {!isSeeMore ? "See More" : "See Less"}{" "}
           <span className="text-xs">
-            <i className={!isSeeMore ? "pi pi-angle-down" : "pi pi-angle-up"}></i>
+            <i
+              className={!isSeeMore ? "pi pi-angle-down" : "pi pi-angle-up"}
+            ></i>
           </span>
         </button>
       </div>
       <div className="nft-statistics pt-4">
         <div className="flex gap-5">
           <div className="flex flex-col" role="button">
-            <div className="font-semibold text-lg">1,096 ETH</div>
+            <div className="font-semibold text-lg">{totalVolume} ETH</div>
             <div className="text-sm text-slate-500">total volume</div>
           </div>
           <div className="flex flex-col" role="button">
-            <div className="font-semibold text-lg">0.2 ETH</div>
+            <div className="font-semibold text-lg">{floorPrice} ETH</div>
             <div className="text-sm text-slate-500">floor price</div>
           </div>
           <div className="flex flex-col" role="button">
