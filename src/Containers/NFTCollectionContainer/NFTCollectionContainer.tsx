@@ -5,7 +5,6 @@ import { NFT_COLLECTION_MODE } from "@Constants/index";
 import { getNFTCollectionListService } from "@Services/ApiService";
 import { useState, useEffect, useContext, useRef } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { AppContext } from "@Store/index";
 import { Toast } from "primereact/toast";
 
 const NFTCollectionContainer = () => {
@@ -16,8 +15,6 @@ const NFTCollectionContainer = () => {
     useState<number>(0);
 
   const toast = useRef<any>(null);
-
-  const web3Context = useContext(AppContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,15 +36,15 @@ const NFTCollectionContainer = () => {
   }, [countFetchNftCollectionList]);
   return (
     <>
-        <Toast ref={toast} position="bottom-right" />
-        <ImageProfile></ImageProfile>
-        <NFTInfor></NFTInfor>
-        <NFTCollectionList
-          nftCollectionList={nftCollectionList}
-          mode={NFT_COLLECTION_MODE.CAN_BUY}
-          setCountFetchNftCollectionList={setCountFetchNftCollectionList}
-        />
-        </>
+      <Toast ref={toast} position="bottom-right" />
+      <ImageProfile nftCollectionList={nftCollectionList}></ImageProfile>
+      <NFTInfor nftCollectionList={nftCollectionList}></NFTInfor>
+      <NFTCollectionList
+        nftCollectionList={nftCollectionList}
+        mode={NFT_COLLECTION_MODE.CAN_BUY}
+        setCountFetchNftCollectionList={setCountFetchNftCollectionList}
+      />
+    </>
   );
 };
 
