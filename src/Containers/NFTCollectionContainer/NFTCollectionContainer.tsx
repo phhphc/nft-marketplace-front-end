@@ -39,21 +39,15 @@ const NFTCollectionContainer = () => {
   }, [countFetchNftCollectionList]);
   return (
     <>
-      {web3Context.state.web3.provider ? (
-        <>
-          <Toast ref={toast} position="bottom-right" />
-          <ImageProfile nftCollectionList={nftCollectionList}></ImageProfile>
-          <NFTInfor nftCollectionList={nftCollectionList}></NFTInfor>
-          <NFTCollectionList
-            nftCollectionList={nftCollectionList}
-            mode={NFT_COLLECTION_MODE.CAN_BUY}
-            setCountFetchNftCollectionList={setCountFetchNftCollectionList}
-          />
+        <Toast ref={toast} position="bottom-right" />
+        <ImageProfile></ImageProfile>
+        <NFTInfor></NFTInfor>
+        <NFTCollectionList
+          nftCollectionList={nftCollectionList}
+          mode={NFT_COLLECTION_MODE.CAN_BUY}
+          setCountFetchNftCollectionList={setCountFetchNftCollectionList}
+        />
         </>
-      ) : (
-        <>Please login</>
-      )}
-    </>
   );
 };
 

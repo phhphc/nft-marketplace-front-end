@@ -17,33 +17,17 @@ import {
 
 import { Tooltip } from "primereact/tooltip";
 import { Accordion, AccordionTab } from "primereact/accordion";
+import { INFTCollectionItem } from "@Interfaces/index";
+import { useRouter } from "next/router";
 
-interface ISale {
-    end: string;
-    day: string;
-    hour: string;
-    minute: string;
-    second: string;
-}
+const NFTDetail = (nftList:INFTCollectionItem[]) => {
+    const router = useRouter();
+    const tokenID = router.query.token_id;
+    const nftDetail:INFTCollectionItem = nftList.nftList.filter((item: any) => item.token_id == tokenID)[0]
+    console.log("tokenID 1: ", tokenID);
+    console.log('detail from NFTDetail com:    ',nftList)
+    console.log('nftDetail: ',nftDetail.metadata.image)
 
-export interface INFTDetail {
-    chain: string;
-    imageSrc: string;
-    author: string;
-    name: string;
-    id: string;
-    owner: string;
-    view: number;
-    favorite: number;
-    category: string;
-    sale: ISale;
-    priceEth: number;
-    priceDol: number;
-}
-
-import { nftDetail } from "@Components/NFTDetail/mockData";
-
-const NFTDetail = () => {
     return (
         <div id="nft-detail" className="flex flex-wrap space-x-5 px-3">
             <div id="left-side" className="w-5/12 h-full">
@@ -52,13 +36,13 @@ const NFTDetail = () => {
                     className="border rounded-t-lg flex items-center w-full justify-between h-12 px-4 text-black font-bold"
                 >
                     <Tooltip target=".chain" position="top">
-                        {nftDetail.chain}
+                        {"Ethereum"}
                     </Tooltip>
                     <i className="chain cursor-pointer">
                         <FontAwesomeIcon icon={faEthereum} />
                     </i>
                     <div className="flex items-center space-x-2">
-                        <span className="text-xs">{nftDetail.favorite}</span>
+                        <span className="text-xs">{12}</span>
                         <Tooltip target=".favorite" position="top">
                             Favorite
                         </Tooltip>
@@ -69,7 +53,7 @@ const NFTDetail = () => {
                 </div>
                 <img
                     id="image"
-                    src={nftDetail.imageSrc}
+                    src={nftDetail.metadata.image}
                     alt="detail"
                     className="nft-detail-img rounded-b-lg h-full w-full object-cover object-center lg:h-full lg:w-full"
                 />
@@ -79,11 +63,7 @@ const NFTDetail = () => {
                             <FontAwesomeIcon icon={faBars} />
                             <span>Description</span>
                         </div>
-                        <div className="table-content p-5">
-                            By GEMMA-Factory GEMMA (The Generative Electronic Museum of Metaverse Art) is a
-                            comprehensive generative art collection by Tristan Eaton. Combining Eaton’s stunning
-                            portraiture and layered collage, each piece carries its own unique personality and identity.
-                        </div>
+                        <div className="table-content p-5">{nftDetail.metadata.description}</div>
                     </div>
                     <Accordion multiple>
                         <AccordionTab
@@ -145,7 +125,7 @@ const NFTDetail = () => {
                                 <div className="flex space-x-2">
                                     <FontAwesomeIcon icon={faClipboard} />
                                     <p>
-                                        About {nftDetail.name} BY {nftDetail.author}
+                                        About {nftDetail.metadata.name} BY {"AuthorName"}
                                     </p>
                                 </div>
                             }
@@ -153,7 +133,7 @@ const NFTDetail = () => {
                             <div className="flex space-x-3">
                                 <img
                                     className="avatar w-6 h-6 rounded-3xl mt-2"
-                                    src="https://i.seadn.io/gae/FeqZQ2fAjaNqCrxpz2x9ZlNR9PXAP6Ok-lwnaX6ti-BomzyEKmnslCZorU1-aKWM_zq6Mop7RJHT_YqVEKBXh9PIOEciNlxnQYjl?auto=format&w=256"
+                                    src={nftDetail.metadata.image}
                                     alt=""
                                 />
                                 <span className="about-text">
@@ -177,7 +157,7 @@ const NFTDetail = () => {
                                     <br />
                                     <span className="space-x-1">
                                         <span>Category</span>
-                                        <span className="font-semibold">{nftDetail.category}</span>
+                                        <span className="font-semibold">{"Art"}</span>
                                     </span>
                                 </span>
                             </div>
@@ -214,14 +194,14 @@ const NFTDetail = () => {
                             <div className="space-y-3">
                                 <div className="w-full flex justify-between">
                                     <span>Contract Address</span>
-                                    <a className="text-blue-500" href="">
-                                        0xc7d8...2aea
+                                    <a className="text-blue-500 w-28 overflow-hidden text-ellipsis" href="">
+                                        <span>{nftDetail.contract_addr}</span>
                                     </a>
                                 </div>
                                 <div className="w-full flex justify-between">
                                     <span>Token ID</span>
                                     <a className="text-blue-500" href="">
-                                        {nftDetail.id}
+                                        {nftDetail.token_id}
                                     </a>
                                 </div>
                                 <div className="w-full flex justify-between">
@@ -230,7 +210,7 @@ const NFTDetail = () => {
                                 </div>
                                 <div className="w-full flex justify-between">
                                     <span>Chain</span>
-                                    <span className="text-gray-500">{nftDetail.chain}</span>
+                                    <span className="text-gray-500">{"Ethereum"}</span>
                                 </div>
                             </div>
                         </AccordionTab>
@@ -241,7 +221,7 @@ const NFTDetail = () => {
                 <div className="flex justify-between">
                     <a href="/" className="author h-12 flex items-center space-x-2 text-blue-500">
                         <span>
-                            {nftDetail.name} BY {nftDetail.author}
+                            {nftDetail.metadata.name} BY {"AuthorName"}
                         </span>
                         <i>
                             <FontAwesomeIcon icon={faCircleCheck} />
@@ -263,7 +243,7 @@ const NFTDetail = () => {
                     </div>
                 </div>
                 <h1 className="name h-14 text-4xl flex items-center font-semibold mt-2 mb-1">
-                    {nftDetail.name} {nftDetail.id}
+                    {nftDetail.metadata.name}
                 </h1>
                 <h2 className="owner h-9 flex justify-start items-center space-x-1">
                     <span>Owned by</span>
@@ -276,21 +256,21 @@ const NFTDetail = () => {
                         <i>
                             <FontAwesomeIcon icon={faEye} />
                         </i>
-                        <span>{nftDetail.view}</span>
+                        <span>{100}</span>
                         <span>views</span>
                     </div>
                     <div className="favorite space-x-1">
                         <i>
                             <FontAwesomeIcon icon={faHeart} />
                         </i>
-                        <span>{nftDetail.favorite}</span>
+                        <span>{12}</span>
                         <span>favorites</span>
                     </div>
                     <div className="category space-x-1">
                         <i className="">
                             <FontAwesomeIcon icon={faShapes} />
                         </i>
-                        <span>{nftDetail.category}</span>
+                        <span>{"Art"}</span>
                     </div>
                 </div>
                 <div className="boxes w-full border rounded-lg">
@@ -299,23 +279,23 @@ const NFTDetail = () => {
                             <i>
                                 <FontAwesomeIcon icon={faClock} />
                             </i>
-                            <span>Sale ends {nftDetail.sale.end}</span>
+                            <span>Sale ends {"January 20, 2023 at 8:50 AM GMT+7"}</span>
                         </div>
                         <div className="time flex item-center space-x-14 mt-2">
                             <div className="day flex flex-col">
-                                <span className="font-semibold text-2xl">{nftDetail.sale.day}</span>
+                                <span className="font-semibold text-2xl">{"02"}</span>
                                 <span>Days</span>
                             </div>
                             <div className="hour flex flex-col">
-                                <span className="font-semibold text-2xl">{nftDetail.sale.hour}</span>
+                                <span className="font-semibold text-2xl">{"09"}</span>
                                 <span>Hours</span>
                             </div>
                             <div className="minute flex flex-col">
-                                <span className="font-semibold text-2xl">{nftDetail.sale.minute}</span>
+                                <span className="font-semibold text-2xl">{"17"}</span>
                                 <span>Minutes</span>
                             </div>
                             <div className="second flex flex-col">
-                                <span className="font-semibold text-2xl">{nftDetail.sale.second}</span>
+                                <span className="font-semibold text-2xl">{"02"}</span>
                                 <span>Seconds</span>
                             </div>
                         </div>
@@ -324,10 +304,10 @@ const NFTDetail = () => {
                         <span className="text-md text-gray-500">Current price</span>
                         <div className="price flex mb-3 space-x-2">
                             <span className="text-3xl font-bold space-x-1 my-1 ">
-                                <span className="price-value">{nftDetail.priceEth}</span>
+                                <span className="price-value">{nftDetail.listing?.price / 10000000000000 || 0 }</span>
                                 <span>ETH</span>
                             </span>
-                            <span className="flex flex-col justify-end text-gray-500 my-1">${nftDetail.priceDol}</span>
+                            <span className="flex flex-col justify-end text-gray-500 my-1">${10}</span>
                         </div>
                         <div className="buttons h-16 flex space-x-2 font-bold">
                             <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
