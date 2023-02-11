@@ -14,20 +14,23 @@ const NFTCollectionContainer = () => {
   const [countFetchNftCollectionList, setCountFetchNftCollectionList] =
     useState<number>(0);
 
-  const toast = useRef<any>(null);
+  const toast = useRef<Toast>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       getNFTCollectionListService().then((data) => {
         if (data) {
-          setNftCollectionList(data.nfts);
+          setNftCollectionList(
+            data.nfts.filter((item: INFTCollectionItem) => !!item.listing)
+          );
         } else {
-          toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Fail to load collections",
-            life: 3000,
-          });
+          toast.current &&
+            toast.current.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Fail to load collections",
+              life: 3000,
+            });
         }
       });
     };

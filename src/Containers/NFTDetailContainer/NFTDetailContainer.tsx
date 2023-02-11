@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 const NFTDetailContainer = () => {
   const [nftDetail, setNftDetail] = useState<INFTCollectionItem>();
 
-  const toast = useRef(null);
+  const toast = useRef<Toast>(null);
 
   const web3Context = useContext(AppContext);
   const router = useRouter();
@@ -24,12 +24,13 @@ const NFTDetailContainer = () => {
             nftList.filter((item: any) => item.token_id == tokenID)[0]
           );
         } else {
-          toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Fail to load NFT information",
-            life: 3000,
-          });
+          toast.current &&
+            toast.current.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Fail to load NFT information",
+              life: 3000,
+            });
         }
       });
     };

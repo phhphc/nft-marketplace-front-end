@@ -18,6 +18,7 @@ import {
   faBars,
   faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 
 import { Tooltip } from "primereact/tooltip";
 import { Accordion, AccordionTab } from "primereact/accordion";
@@ -28,6 +29,7 @@ export interface INFTDetailProps {
 }
 
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
+  console.log(nftDetail);
   return (
     <div id="nft-detail" className="flex flex-wrap space-x-5 px-3">
       <div id="left-side" className="w-5/12 h-full">
@@ -156,16 +158,16 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 />
                 <span className="about-text">
                   <span className="space-x-1">
-                    <a className="text-blue-500" href="">
+                    <Link className="text-blue-500" href="">
                       GEMMA
-                    </a>
+                    </Link>
                     <span>
                       (The Generative Electronic Museum of Metaverse Art) is a
                       comprehensive generative art collection by
                     </span>
-                    <a className="text-blue-500" href="">
+                    <Link className="text-blue-500" href="">
                       Tristan Eaton
-                    </a>
+                    </Link>
                     .
                     <span>
                       Combining Eaton's stunning portraiture and layered
@@ -213,18 +215,18 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               <div className="space-y-3">
                 <div className="w-full flex justify-between">
                   <span>Contract Address</span>
-                  <a
+                  <Link
                     className="text-blue-500 w-28 overflow-hidden text-ellipsis"
                     href=""
                   >
                     <span>{nftDetail.contract_addr}</span>
-                  </a>
+                  </Link>
                 </div>
                 <div className="w-full flex justify-between">
                   <span>Token ID</span>
-                  <a className="text-blue-500" href="">
+                  <Link className="text-blue-500" href="">
                     {nftDetail.token_id}
-                  </a>
+                  </Link>
                 </div>
                 <div className="w-full flex justify-between">
                   <span>Token Standard</span>
@@ -241,7 +243,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
       </div>
       <div id="right-side" className="flex-1">
         <div className="flex justify-between">
-          <a
+          <Link
             href="/"
             className="author h-12 flex items-center space-x-2 text-blue-500"
           >
@@ -251,7 +253,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             <i>
               <FontAwesomeIcon icon={faCircleCheck} />
             </i>
-          </a>
+          </Link>
           <div className="functions flex items-center space-x-8 text-xl mr-3">
             <Tooltip target=".share" position="top">
               Share
@@ -272,9 +274,9 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         </h1>
         <h2 className="owner h-9 flex justify-start items-center space-x-1">
           <span>Owned by</span>
-          <a href="/" className="text-blue-500">
+          <Link href="/" className="text-blue-500">
             {nftDetail.owner}
-          </a>
+          </Link>
         </h2>
         <div className="flex flex-start space-x-8 pt-5 pb-8">
           <div className="view space-x-1">
@@ -330,12 +332,12 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             <div className="price flex mb-3 space-x-2">
               <span className="text-3xl font-bold space-x-1 my-1 ">
                 <span className="price-value">
-                  {nftDetail.listing?.price / 10000000000000 || 0}
+                  {(nftDetail?.listing?.price || 0) / 1000000000 < 1000000000
+                    ? `${(nftDetail?.listing?.price || 0) / 1000000000} GWEI`
+                    : `${
+                        (nftDetail?.listing?.price || 0) / 1000000000000000000
+                      } ETH`}
                 </span>
-                <span>ETH</span>
-              </span>
-              <span className="flex flex-col justify-end text-gray-500 my-1">
-                ${10}
               </span>
             </div>
             <div className="buttons h-16 flex space-x-2 font-bold">
