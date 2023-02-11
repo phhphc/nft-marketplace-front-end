@@ -44,7 +44,10 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
           className="modal-content"
           src={
             isOpen
-              ? "https://i.seadn.io/gae/FeqZQ2fAjaNqCrxpz2x9ZlNR9PXAP6Ok-lwnaX6ti-BomzyEKmnslCZorU1-aKWM_zq6Mop7RJHT_YqVEKBXh9PIOEciNlxnQYjl?auto=format&w=256"
+              ? `${
+                  nftCollectionList?.[0]?.metadata.image ||
+                  "https://i.seadn.io/gae/mmyoMHBLnHMfHyb3r2T1050yScZqfx2G48kXmP6WruMNpJNnVYsD79tpczbCrAilRLCAkUh3qRTRdpHYx5z9QPnLG3tdXoTU_Hc9?auto=format&w=1920"
+                }`
               : ""
           }
         />
