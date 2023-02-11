@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Image from "next/image";
-import avatar from "@Assets/avatar.png"
-import cover from "@Assets/cover.png"
+import avatar from "@Assets/avatar.png";
+import cover from "@Assets/cover.png";
 
 const NFTImageUserProfile = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,11 +11,7 @@ const NFTImageUserProfile = () => {
 
   return (
     <div id="user-profile">
-      <Image
-        src={cover}
-        alt="cover-image"
-        className="cover-image"
-      ></Image>
+      <Image src={cover} alt="cover-image" className="cover-image"></Image>
       <div className="avt-frame">
         <Image
           onClick={handleShowDialog}
@@ -32,14 +28,7 @@ const NFTImageUserProfile = () => {
         >
           &times;
         </span>
-        <Image
-          className="modal-content"
-          src={
-            isOpen
-              ? {avatar}
-              : ""
-          }
-        />
+        <Image className="modal-content" src={isOpen ? avatar : ""} alt="" />
       </div>
     </div>
   );

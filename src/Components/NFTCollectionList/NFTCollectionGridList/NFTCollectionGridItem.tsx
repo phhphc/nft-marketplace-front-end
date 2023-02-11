@@ -35,7 +35,7 @@ const NFTCollectionGridItem = ({
     } catch (error) {}
   };
 
-  const handleBuyToken = async (listingId: number, listingPrice: number) => {
+  const handleBuyToken = async (listingId: number, listingPrice: Number) => {
     try {
       await buyTokenService({
         listingId,
@@ -70,9 +70,11 @@ const NFTCollectionGridItem = ({
               {item.metadata.name || "Item name"}
             </h3>
             <p className="text-sm font-medium text-gray-900 uppercase">
-              {(item?.listing?.price || 0) / 1000000000 < 1000000000
-                ? `${(item?.listing?.price || 0) / 1000000000} GWEI`
-                : `${(item?.listing?.price || 0) / 1000000000000000000} ETH`}
+              {mode === NFT_COLLECTION_MODE.CAN_BUY
+                ? (item?.listing?.price || 0) / 1000000000 < 1000000000
+                  ? `${(item?.listing?.price || 0) / 1000000000} GWEI`
+                  : `${(item?.listing?.price || 0) / 1000000000000000000} ETH`
+                : ""}
             </p>
           </div>
           {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
