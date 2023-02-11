@@ -19,14 +19,36 @@ import { Tooltip } from "primereact/tooltip";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { useRouter } from "next/router";
+import {
+  uploadNFTToMarketplaceService,
+  buyTokenService,
+} from "@Services/ApiService";
+import { useContext } from "react";
+import { AppContext } from "@Store/index";
 
 const NFTDetail = (nftList:INFTCollectionItem[]) => {
+    const web3Context = useContext(AppContext);
+    const handleUploadNFTToMarketplace = async (tokenId: number) => {
+    try {
+        await uploadNFTToMarketplaceService({
+        ownerAddress: web3Context.state.web3.myAddress,
+        tokenId
+        });
+    } catch (error) {}
+    };
+
+    const handleBuyToken = async (listingId: number, listingPrice: number) => {
+    try {
+        await buyTokenService({
+        listingId,
+        listingPrice
+        });
+    } catch (error) {}
+    };
+
     const router = useRouter();
     const tokenID = router.query.token_id;
     const nftDetail:INFTCollectionItem = nftList.nftList.filter((item: any) => item.token_id == tokenID)[0]
-    console.log("tokenID 1: ", tokenID);
-    console.log('detail from NFTDetail com:    ',nftList)
-    console.log('nftDetail: ',nftDetail.metadata.image)
 
     return (
         <div id="nft-detail" className="flex flex-wrap space-x-5 px-3">
@@ -311,13 +333,26 @@ const NFTDetail = (nftList:INFTCollectionItem[]) => {
                         </div>
                         <div className="buttons h-16 flex space-x-2 font-bold">
                             <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
-                                <button className="buy-now-btn w-12">
+                                <button 
+                                    className="buy-now-btn w-12" 
+                                    onClick={() =>
+                                        handleBuyToken(
+                                            nftDetail.listing?.listing_id || 0,
+                                            nftDetail.listing?.price || 0
+                                        )
+                                    }
+                                >
                                     <i>
                                         <FontAwesomeIcon icon={faBoltLightning} />
                                     </i>
                                     <span className="buy-now-text ml-4 hidden">Buy now</span>
                                 </button>
-                                <button className="add-to-cart-btn flex-1 border-r">Add to cart</button>
+                                <button
+                                    className="add-to-cart-btn flex-1 border-r"
+                                    onClick={() => handleUploadNFTToMarketplace(nftDetail.token_id)}
+                                >
+                                    Add to cart
+                                </button>
                             </div>
                             <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
                                 <i>

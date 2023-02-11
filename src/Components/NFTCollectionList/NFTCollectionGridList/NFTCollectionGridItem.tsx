@@ -50,7 +50,8 @@ const NFTCollectionGridItem = ({
       key={item.token_id}
       className="relative nft-collection-item cursor-pointer"
     >
-      <Link
+      {/* <Link/> => ERROR */}
+      <a
         href={`/detail/${item.token_id}`}
         className="block min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none lg:h-80"
       >
@@ -62,7 +63,7 @@ const NFTCollectionGridItem = ({
           alt="NFT Item"
           className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
         />
-      </Link>
+      </a>
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
           <div className="p-4 h-28">

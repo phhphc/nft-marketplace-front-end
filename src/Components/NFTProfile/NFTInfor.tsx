@@ -14,14 +14,16 @@ const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
     setIsSeeMore(!isSeeMore);
   };
 
-  const totalVolume = useMemo(() => {
-    return Math.round(
-      nftCollectionList.reduce(
-        (acc, cur) => acc + (cur.listing?.price || 0),
-        0
-      ) / 1000000000000000000
-    );
-  }, [nftCollectionList]);
+  const totalVolume = 50;
+  // ERROR
+  // const totalVolume = useMemo(() => {
+  //   return Math.round(
+  //     nftCollectionList.reduce(
+  //       (acc, cur) => acc + (cur.listing?.price || 0),
+  //       0
+  //     ) / 1000000000000000000
+  //   );
+  // }, [nftCollectionList]);
 
   const floorPrice = useMemo(() => {
     return Math.round(
