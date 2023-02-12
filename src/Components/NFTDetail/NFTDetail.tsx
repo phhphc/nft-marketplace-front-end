@@ -350,32 +350,36 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           </div>
         </div>
         <div className="boxes w-full border rounded-lg">
-          <div className="time-box flex flex-col border-b p-5 text-lg">
-            <div className="space-x-2 ">
-              <i>
-                <FontAwesomeIcon icon={faClock} />
-              </i>
-              <span>Sale ends {"January 20, 2023 at 8:50 AM GMT+7"}</span>
+          {nftDetail.listing ? (
+            <div className="time-box flex flex-col border-b p-5 text-lg">
+              <div className="space-x-2 ">
+                <i>
+                  <FontAwesomeIcon icon={faClock} />
+                </i>
+                <span>Sale ends {"January 20, 2023 at 8:50 AM GMT+7"}</span>
+              </div>
+              <div className="time flex item-center space-x-14 mt-2">
+                <div className="day flex flex-col">
+                  <span className="font-semibold text-2xl">{"02"}</span>
+                  <span>Days</span>
+                </div>
+                <div className="hour flex flex-col">
+                  <span className="font-semibold text-2xl">{"09"}</span>
+                  <span>Hours</span>
+                </div>
+                <div className="minute flex flex-col">
+                  <span className="font-semibold text-2xl">{"17"}</span>
+                  <span>Minutes</span>
+                </div>
+                <div className="second flex flex-col">
+                  <span className="font-semibold text-2xl">{"02"}</span>
+                  <span>Seconds</span>
+                </div>
+              </div>
             </div>
-            <div className="time flex item-center space-x-14 mt-2">
-              <div className="day flex flex-col">
-                <span className="font-semibold text-2xl">{"02"}</span>
-                <span>Days</span>
-              </div>
-              <div className="hour flex flex-col">
-                <span className="font-semibold text-2xl">{"09"}</span>
-                <span>Hours</span>
-              </div>
-              <div className="minute flex flex-col">
-                <span className="font-semibold text-2xl">{"17"}</span>
-                <span>Minutes</span>
-              </div>
-              <div className="second flex flex-col">
-                <span className="font-semibold text-2xl">{"02"}</span>
-                <span>Seconds</span>
-              </div>
-            </div>
-          </div>
+          ) : (
+            <div></div>
+          )}
           <div className="buy-box flex flex-col p-5 ">
             <span className="text-md text-gray-500">Current price</span>
             <div className="price flex mb-3 space-x-2">
@@ -390,10 +394,18 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               </span>
             </div>
 
-            {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
+            {mode == NFT_COLLECTION_MODE.CAN_BUY ? (
               <div className="buttons h-16 flex space-x-2 font-bold">
                 <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
-                  <button className="buy-now-btn w-12">
+                  <button
+                    className="buy-now-btn w-12"
+                    onClick={() =>
+                      handleBuyToken(
+                        nftDetail.listing?.listing_id || 0,
+                        nftDetail.listing?.price || 0
+                      )
+                    }
+                  >
                     <i>
                       <FontAwesomeIcon icon={faBoltLightning} />
                     </i>
@@ -411,24 +423,56 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 </button>
               </div>
             ) : (
-              <div className="buttons h-16 flex space-x-2 font-bold">
-                <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
-                  <button className="buy-now-btn w-12">
-                    <i>
-                      <FontAwesomeIcon icon={faBoltLightning} />
-                    </i>
-                    <span className="buy-now-text ml-4 hidden">Buy now</span>
-                  </button>
-                  <button className="add-to-cart-btn flex-1 border-r">
-                    Add to cart
-                  </button>
-                </div>
-                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
-                  <i>
-                    <FontAwesomeIcon icon={faTicketSimple} />
-                  </i>
-                  <span>Make offer</span>
+              <div className="w-1/2 h-16 flex">
+                <button
+                  className="bg-blue-500 rounded-xl text-white font-bold flex-1"
+                  onClick={() => setVisible(true)}
+                >
+                  Sell
                 </button>
+                <Dialog
+                  header="Please input the price that you want to sell"
+                  visible={visible}
+                  style={{ width: "50vw" }}
+                  onHide={() => setVisible(false)}
+                  footer={
+                    <div>
+                      <Button
+                        label="Cancel"
+                        icon="pi pi-times"
+                        onClick={() => setVisible(false)}
+                        className="p-button-text"
+                      />
+                      <Button
+                        label="Sell"
+                        icon="pi pi-check"
+                        onClick={() =>
+                          handleUploadNFTToMarketplace(nftDetail.token_id)
+                        }
+                        autoFocus
+                      />
+                    </div>
+                  }
+                >
+                  <div className="flex gap-3">
+                    <InputNumber
+                      placeholder="Input the price"
+                      value={price}
+                      onValueChange={(e: any) => setPrice(e.value)}
+                      minFractionDigits={2}
+                      maxFractionDigits={5}
+                      min={0}
+                    />
+                    <Dropdown
+                      value={selectedUnit}
+                      onChange={(e) => setSelectedUnit(e.value)}
+                      options={units}
+                      optionLabel="name"
+                      placeholder="Select a unit"
+                      className="md:w-14rem"
+                    />
+                  </div>
+                </Dialog>
               </div>
             )}
           </div>

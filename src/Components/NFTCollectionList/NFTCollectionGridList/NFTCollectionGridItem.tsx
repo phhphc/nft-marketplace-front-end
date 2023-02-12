@@ -70,7 +70,9 @@ const NFTCollectionGridItem = ({
         // href={`/detail?mode=${mode === NFT_COLLECTION_MODE.CAN_BUY ? 'buy' : 'sell'}/${item.token_id}`}
         href={{
           pathname: `/detail/${item.token_id}`,
-          query: { mode: mode===NFT_COLLECTION_MODE.CAN_BUY ? "buy" : "sell" },
+          query: {
+            mode: mode === NFT_COLLECTION_MODE.CAN_BUY ? NFT_COLLECTION_MODE.CAN_BUY : NFT_COLLECTION_MODE.CAN_SELL,
+          },
         }}
         className="block min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none lg:h-80"
       >
@@ -98,16 +100,16 @@ const NFTCollectionGridItem = ({
             </p>
           </div>
           {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
-            <div
-              className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom"
-              onClick={() =>
-                handleBuyToken(
-                  item.listing?.listing_id || 0,
-                  item.listing?.price || 0
-                )
-              }
-            >
-              <button className="bg-blue-500 py-2 px-4 buy-now-btn rounded-br-md">
+            <div className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom">
+              <button
+                className="bg-blue-500 py-2 px-4 buy-now-btn rounded-br-md"
+                onClick={() =>
+                  handleBuyToken(
+                    item.listing?.listing_id || 0,
+                    item.listing?.price || 0
+                  )
+                }
+              >
                 <i className="fa-1x">
                   <FontAwesomeIcon icon={faBoltLightning} />
                 </i>
