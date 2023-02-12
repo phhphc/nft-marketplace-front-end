@@ -66,7 +66,7 @@ const Header = () => {
 
   useEffect(() => {
     setInterval(() => {
-      if (!window.ethereum._state.isUnlocked) {
+      if (!window?.ethereum?._state?.isUnlocked) {
         handleLogOut(web3Context);
       }
     }, 2000);

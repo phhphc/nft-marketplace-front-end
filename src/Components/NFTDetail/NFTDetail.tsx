@@ -23,13 +23,62 @@ import Link from "next/link";
 import { Tooltip } from "primereact/tooltip";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { INFTCollectionItem } from "@Interfaces/index";
+import { NFT_COLLECTION_MODE } from "@Constants/index";
+import { AppContext } from "@Store/index";
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
+import { InputNumber } from "primereact/inputnumber";
+import { Dropdown } from "primereact/dropdown";
+import { useContext, useState } from "react";
+import {
+  uploadNFTToMarketplaceService,
+  buyTokenService,
+} from "@Services/ApiService";
+import { useRouter } from "next/router";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem;
+  mode: NFT_COLLECTION_MODE;
 }
 
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
+  const router = useRouter();
+  const {
+    query: { mode },
+  } = router;
+  console.log(mode);
   console.log(nftDetail);
+  const web3Context = useContext(AppContext);
+  const handleUploadNFTToMarketplace = async (tokenId: number) => {
+    try {
+      await uploadNFTToMarketplaceService({
+        ownerAddress: web3Context.state.web3.myAddress,
+        tokenId,
+        price: price.toString(),
+        unit: selectedUnit,
+      });
+    } catch (error) {}
+  };
+
+  const handleBuyToken = async (listingId: number, listingPrice: Number) => {
+    try {
+      await buyTokenService({
+        listingId,
+        listingPrice,
+      });
+    } catch (error) {}
+  };
+
+  const [visible, setVisible] = useState(false);
+
+  const [price, setPrice] = useState<number>(0);
+
+  const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const units = [
+    { name: "Ether", value: "ether" },
+    { name: "Gwei", value: "gwei" },
+  ];
+
   return (
     <div id="nft-detail" className="flex flex-wrap space-x-5 px-3">
       <div id="left-side" className="w-5/12 h-full">
@@ -275,7 +324,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         <h2 className="owner h-9 flex justify-start items-center space-x-1">
           <span>Owned by</span>
           <Link href="/" className="text-blue-500">
-            {nftDetail.owner}
+            {nftDetail.listing ? nftDetail.listing.seller : nftDetail.owner}
           </Link>
         </h2>
         <div className="flex flex-start space-x-8 pt-5 pb-8">
@@ -340,25 +389,48 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 </span>
               </span>
             </div>
-            <div className="buttons h-16 flex space-x-2 font-bold">
-              <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
-                <button className="buy-now-btn w-12">
+
+            {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
+              <div className="buttons h-16 flex space-x-2 font-bold">
+                <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
+                  <button className="buy-now-btn w-12">
+                    <i>
+                      <FontAwesomeIcon icon={faBoltLightning} />
+                    </i>
+                    <span className="buy-now-text ml-4 hidden">Buy now</span>
+                  </button>
+                  <button className="add-to-cart-btn flex-1 border-r">
+                    Add to cart
+                  </button>
+                </div>
+                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
                   <i>
-                    <FontAwesomeIcon icon={faBoltLightning} />
+                    <FontAwesomeIcon icon={faTicketSimple} />
                   </i>
-                  <span className="buy-now-text ml-4 hidden">Buy now</span>
-                </button>
-                <button className="add-to-cart-btn flex-1 border-r">
-                  Add to cart
+                  <span>Make offer</span>
                 </button>
               </div>
-              <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
-                <i>
-                  <FontAwesomeIcon icon={faTicketSimple} />
-                </i>
-                <span>Make offer</span>
-              </button>
-            </div>
+            ) : (
+              <div className="buttons h-16 flex space-x-2 font-bold">
+                <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
+                  <button className="buy-now-btn w-12">
+                    <i>
+                      <FontAwesomeIcon icon={faBoltLightning} />
+                    </i>
+                    <span className="buy-now-text ml-4 hidden">Buy now</span>
+                  </button>
+                  <button className="add-to-cart-btn flex-1 border-r">
+                    Add to cart
+                  </button>
+                </div>
+                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
+                  <i>
+                    <FontAwesomeIcon icon={faTicketSimple} />
+                  </i>
+                  <span>Make offer</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
