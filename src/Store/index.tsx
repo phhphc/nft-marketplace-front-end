@@ -53,7 +53,7 @@ const AppProvider = ({ children }: IAppProvider) => {
         payload: { provider, myAddress: await signer.getAddress() },
       });
     };
-    if (window.ethereum._state.isUnlocked) {
+    if (window?.ethereum?._state?.isUnlocked) {
       fetchData();
     }
   }, []);

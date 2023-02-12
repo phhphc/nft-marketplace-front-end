@@ -23,13 +23,61 @@ import Link from "next/link";
 import { Tooltip } from "primereact/tooltip";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { INFTCollectionItem } from "@Interfaces/index";
+import { NFT_COLLECTION_MODE } from "@Constants/index";
+import { AppContext } from "@Store/index";
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
+import { InputNumber } from "primereact/inputnumber";
+import { Dropdown } from "primereact/dropdown";
+import { useContext, useState } from "react";
+import {
+  uploadNFTToMarketplaceService,
+  buyTokenService,
+} from "@Services/ApiService";
+import { useRouter } from "next/router";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem;
 }
 
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
-  console.log(nftDetail);
+  const router = useRouter();
+  const {
+    query: { mode },
+  } = router;
+  const web3Context = useContext(AppContext);
+  const handleUploadNFTToMarketplace = async (tokenId: number) => {
+    try {
+      await uploadNFTToMarketplaceService({
+        ownerAddress: web3Context.state.web3.myAddress,
+        tokenId,
+        price: price.toString(),
+        unit: selectedUnit,
+      });
+      router.push("/collection/collection-name-example");
+    } catch (error) {}
+  };
+
+  const handleBuyToken = async (listingId: number, listingPrice: Number) => {
+    try {
+      await buyTokenService({
+        listingId,
+        listingPrice,
+      });
+      router.push(`/user-profile/${web3Context.state.web3.myAddress}`);
+    } catch (error) {}
+  };
+
+  const [visible, setVisible] = useState(false);
+
+  const [price, setPrice] = useState<number>(0);
+
+  const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const units = [
+    { name: "Ether", value: "ether" },
+    { name: "Gwei", value: "gwei" },
+  ];
+
   return (
     <div id="nft-detail" className="flex flex-wrap space-x-5 px-3">
       <div id="left-side" className="w-5/12 h-full">
@@ -275,7 +323,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         <h2 className="owner h-9 flex justify-start items-center space-x-1">
           <span>Owned by</span>
           <Link href="/" className="text-blue-500">
-            {nftDetail.owner}
+            {nftDetail.listing ? nftDetail.listing.seller : nftDetail.owner}
           </Link>
         </h2>
         <div className="flex flex-start space-x-8 pt-5 pb-8">
@@ -328,37 +376,116 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             </div>
           </div>
           <div className="buy-box flex flex-col p-5 ">
-            <span className="text-md text-gray-500">Current price</span>
-            <div className="price flex mb-3 space-x-2">
-              <span className="text-3xl font-bold space-x-1 my-1 ">
-                <span className="price-value">
-                  {(nftDetail?.listing?.price || 0) / 1000000000 < 1000000000
-                    ? `${(nftDetail?.listing?.price || 0) / 1000000000} GWEI`
-                    : `${
-                        (nftDetail?.listing?.price || 0) / 1000000000000000000
-                      } ETH`}
-                </span>
-              </span>
-            </div>
-            <div className="buttons h-16 flex space-x-2 font-bold">
-              <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
-                <button className="buy-now-btn w-12">
+            {!!nftDetail?.listing && (
+              <>
+                <span className="text-md text-gray-500">Current price</span>
+                <div className="price flex mb-3 space-x-2">
+                  <span className="text-3xl font-bold space-x-1 my-1 ">
+                    <span className="price-value">
+                      {(nftDetail?.listing?.price || 0) / 1000000000 <
+                      1000000000
+                        ? `${
+                            (nftDetail?.listing?.price || 0) / 1000000000
+                          } GWEI`
+                        : `${
+                            (nftDetail?.listing?.price || 0) /
+                            1000000000000000000
+                          } ETH`}
+                    </span>
+                  </span>
+                </div>
+              </>
+            )}
+
+            {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
+              <div
+                className="buttons h-16 flex space-x-2 font-bold"
+                onClick={() =>
+                  handleBuyToken(
+                    nftDetail.listing?.listing_id || 0,
+                    nftDetail.listing?.price || 0
+                  )
+                }
+              >
+                <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
+                  <button className="buy-now-btn w-12">
+                    <i>
+                      <FontAwesomeIcon icon={faBoltLightning} />
+                    </i>
+                    <span className="buy-now-text ml-4 hidden">Buy now</span>
+                  </button>
+                  <button className="add-to-cart-btn flex-1 border-r">
+                    Add to cart
+                  </button>
+                </div>
+                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
                   <i>
-                    <FontAwesomeIcon icon={faBoltLightning} />
+                    <FontAwesomeIcon icon={faTicketSimple} />
                   </i>
-                  <span className="buy-now-text ml-4 hidden">Buy now</span>
-                </button>
-                <button className="add-to-cart-btn flex-1 border-r">
-                  Add to cart
+                  <span>Make offer</span>
                 </button>
               </div>
-              <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
-                <i>
-                  <FontAwesomeIcon icon={faTicketSimple} />
-                </i>
-                <span>Make offer</span>
-              </button>
-            </div>
+            ) : (
+              <div className="buttons h-16 flex space-x-2 font-bold">
+                <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
+                  <button
+                    className="add-to-cart-btn flex-1 border-r"
+                    onClick={() => setVisible(true)}
+                  >
+                    Sell
+                  </button>
+                  <Dialog
+                    header="Please input the price that you want to sell"
+                    visible={visible}
+                    style={{ width: "50vw" }}
+                    onHide={() => setVisible(false)}
+                    footer={
+                      <div>
+                        <Button
+                          label="Cancel"
+                          icon="pi pi-times"
+                          onClick={() => setVisible(false)}
+                          className="p-button-text"
+                        />
+                        <Button
+                          label="Sell"
+                          icon="pi pi-check"
+                          onClick={() =>
+                            handleUploadNFTToMarketplace(nftDetail.token_id)
+                          }
+                          autoFocus
+                        />
+                      </div>
+                    }
+                  >
+                    <div className="flex gap-3">
+                      <InputNumber
+                        placeholder="Input the price"
+                        value={price}
+                        onValueChange={(e: any) => setPrice(e.value)}
+                        minFractionDigits={2}
+                        maxFractionDigits={5}
+                        min={0}
+                      />
+                      <Dropdown
+                        value={selectedUnit}
+                        onChange={(e) => setSelectedUnit(e.value)}
+                        options={units}
+                        optionLabel="name"
+                        placeholder="Select a unit"
+                        className="md:w-14rem"
+                      />
+                    </div>
+                  </Dialog>
+                </div>
+                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
+                  <i>
+                    <FontAwesomeIcon icon={faTicketSimple} />
+                  </i>
+                  <span>Make offer</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
