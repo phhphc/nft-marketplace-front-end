@@ -6,11 +6,14 @@ import { useState, useEffect, useContext, useRef } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { AppContext } from "@Store/index";
 import { Toast } from "primereact/toast";
+import { useRouter } from "next/router";
 
 const UserProfileContainer = () => {
   const [nftCollectionList, setNftCollectionList] = useState<
     INFTCollectionItem[]
   >([]);
+
+  const router = useRouter();
 
   const [countFetchNftCollectionList, setCountFetchNftCollectionList] =
     useState<number>(0);
@@ -38,7 +41,7 @@ const UserProfileContainer = () => {
       );
     };
     fetchData();
-  }, [countFetchNftCollectionList, web3Context.state.web3.myAddress]);
+  }, [countFetchNftCollectionList, web3Context.state.web3.myAddress, router]);
 
   return (
     <>

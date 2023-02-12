@@ -3,9 +3,10 @@ import ImageProfile from "@Components/NFTProfile/ImageProfile";
 import NFTInfor from "@Components/NFTProfile/NFTInfor";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
 import { getNFTCollectionListService } from "@Services/ApiService";
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { Toast } from "primereact/toast";
+import { useRouter } from "next/router";
 
 const NFTCollectionContainer = () => {
   const [nftCollectionList, setNftCollectionList] = useState<
@@ -15,6 +16,7 @@ const NFTCollectionContainer = () => {
     useState<number>(0);
 
   const toast = useRef<Toast>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,7 +38,7 @@ const NFTCollectionContainer = () => {
     };
 
     fetchData();
-  }, [countFetchNftCollectionList]);
+  }, [countFetchNftCollectionList, router]);
   return (
     <>
       <Toast ref={toast} position="bottom-right" />

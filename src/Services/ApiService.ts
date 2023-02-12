@@ -5,6 +5,8 @@ import { erc721Abi, mkpAbi } from "@Constants/abi";
 export interface IUploadNFTToMarketplaceServiceProps {
   ownerAddress: string;
   tokenId: number;
+  price: string;
+  unit: string;
 }
 
 export interface IBuyTokenProps {
@@ -28,6 +30,8 @@ export const getNFTCollectionListService = async (
 export const uploadNFTToMarketplaceService = async ({
   ownerAddress,
   tokenId,
+  price,
+  unit,
 }: IUploadNFTToMarketplaceServiceProps) => {
   const erc721Address =
     process.env.NEXT_PUBLIC_ERC721_ADDRESS ??
@@ -50,7 +54,7 @@ export const uploadNFTToMarketplaceService = async ({
 
   const erc721ContractWithSigner = erc721Contract.connect(signer);
 
-  const listingPrice = ethers.utils.parseUnits("1", "gwei");
+  const listingPrice = ethers.utils.parseUnits(price, unit);
   const listingData = ethers.utils.defaultAbiCoder.encode(
     ["int8", "uint256"],
     [0, listingPrice]
