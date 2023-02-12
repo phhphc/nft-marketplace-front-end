@@ -477,7 +477,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                         onChange={(e) => setSelectedUnit(e.value)}
                         options={units}
                         optionLabel="name"
-                        placeholder="Select a unit"
+                        placeholder="Select a Unit"
                         className="md:w-14rem"
                       />
                     </div>
