@@ -22,9 +22,7 @@ const NFTCollectionContainer = () => {
     const fetchData = async () => {
       getNFTCollectionListService().then((data) => {
         if (data) {
-          setNftCollectionList(
-            data.nfts.filter((item: INFTCollectionItem) => !!item.listing)
-          );
+          setNftCollectionList(data.nfts);
         } else {
           toast.current &&
             toast.current.show({

@@ -65,14 +65,14 @@ const NFTCollectionGridItem = ({
   return (
     <div
       key={item.token_id}
-      className="relative nft-collection-item cursor-pointer"
+      className="relative nft-collection-item cursor-pointer h-96"
     >
       <Link
         href={{
           pathname: `/detail/${item.token_id}`,
           query: { mode },
         }}
-        className="block min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none lg:h-80"
+        className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none"
       >
         <img
           src={
@@ -89,13 +89,15 @@ const NFTCollectionGridItem = ({
             <h3 className="font-bold uppercase">
               {item.metadata.name || "Item name"}
             </h3>
-            <p className="text-sm font-medium text-gray-900 uppercase">
-              {mode === NFT_COLLECTION_MODE.CAN_BUY
-                ? (item?.listing?.price || 0) / 1000000000 < 1000000000
-                  ? `${(item?.listing?.price || 0) / 1000000000} GWEI`
-                  : `${(item?.listing?.price || 0) / 1000000000000000000} ETH`
-                : ""}
-            </p>
+            {item.listing && (
+              <p className="text-sm font-medium text-gray-900 uppercase">
+                {mode === NFT_COLLECTION_MODE.CAN_BUY
+                  ? (item?.listing?.price || 0) / 1000000000 < 1000000000
+                    ? `${(item?.listing?.price || 0) / 1000000000} GWEI`
+                    : `${(item?.listing?.price || 0) / 1000000000000000000} ETH`
+                  : ""}
+              </p>
+            )}
           </div>
           {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
             <div
@@ -107,19 +109,26 @@ const NFTCollectionGridItem = ({
                 )
               }
             >
-              <button className="bg-blue-500 py-2 px-4 buy-now-btn rounded-br-md">
-                <i className="fa-1x">
-                  <FontAwesomeIcon icon={faBoltLightning} />
-                </i>
-                <div className="ml-4 hidden buy-now-text">Buy now</div>
-              </button>
-              <button className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md">
-                Add to cart
-              </button>
+              {item.listing && (
+                <>
+                  <button className="bg-blue-500 py-2 px-4 buy-now-btn rounded-br-md">
+                    <i className="fa-1x">
+                      <FontAwesomeIcon icon={faBoltLightning} />
+                    </i>
+                    <div className="ml-4 hidden buy-now-text">Buy now</div>
+                  </button>
+                  <button className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md">
+                    Add to cart
+                  </button>
+                </>
+              )}
             </div>
           ) : (
             <div className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom">
-              <button className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md">
+              <button
+                className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md"
+                onClick={() => setVisible(true)}
+              >
                 Sell
               </button>
               <Dialog
