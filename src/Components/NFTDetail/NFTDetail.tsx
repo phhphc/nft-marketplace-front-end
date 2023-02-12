@@ -400,17 +400,17 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             )}
 
             {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
-              <div
-                className="buttons h-16 flex space-x-2 font-bold"
-                onClick={() =>
-                  handleBuyToken(
-                    nftDetail.listing?.listing_id || 0,
-                    nftDetail.listing?.price || 0
-                  )
-                }
-              >
+              <div className="buttons h-16 flex space-x-2 font-bold">
                 {!!nftDetail.listing && (
-                  <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
+                  <div
+                    className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex"
+                    onClick={() =>
+                      handleBuyToken(
+                        nftDetail.listing?.listing_id || 0,
+                        nftDetail.listing?.price || 0
+                      )
+                    }
+                  >
                     <button className="buy-now-btn w-12">
                       <i>
                         <FontAwesomeIcon icon={faBoltLightning} />
@@ -422,12 +422,12 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     </button>
                   </div>
                 )}
-                {/* <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
+                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
                   <i>
                     <FontAwesomeIcon icon={faTicketSimple} />
                   </i>
                   <span>Make offer</span>
-                </button> */}
+                </button>
               </div>
             ) : (
               <div className="buttons h-16 flex space-x-2 font-bold">
