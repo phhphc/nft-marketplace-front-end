@@ -38,6 +38,7 @@ const NFTCollectionGridItem = ({
         unit: selectedUnit,
       });
       setCountFetchNftCollectionList((prev) => prev + 1);
+      setVisible(false);
     } catch (error) {}
   };
 
@@ -67,12 +68,9 @@ const NFTCollectionGridItem = ({
       className="relative nft-collection-item cursor-pointer"
     >
       <Link
-        // href={`/detail?mode=${mode === NFT_COLLECTION_MODE.CAN_BUY ? 'buy' : 'sell'}/${item.token_id}`}
         href={{
           pathname: `/detail/${item.token_id}`,
-          query: {
-            mode: mode === NFT_COLLECTION_MODE.CAN_BUY ? NFT_COLLECTION_MODE.CAN_BUY : NFT_COLLECTION_MODE.CAN_SELL,
-          },
+          query: { mode },
         }}
         className="block min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none lg:h-80"
       >

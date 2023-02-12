@@ -46,8 +46,6 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const {
     query: { mode },
   } = router;
-  console.log(mode);
-  console.log(nftDetail);
   const web3Context = useContext(AppContext);
   const handleUploadNFTToMarketplace = async (tokenId: number) => {
     try {
@@ -57,6 +55,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         price: price.toString(),
         unit: selectedUnit,
       });
+      router.push("/collection/collection-name-example");
     } catch (error) {}
   };
 
@@ -66,6 +65,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         listingId,
         listingPrice,
       });
+      router.push(`/user-profile/${web3Context.state.web3.myAddress}`);
     } catch (error) {}
   };
 
@@ -381,31 +381,39 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             <div></div>
           )}
           <div className="buy-box flex flex-col p-5 ">
-            <span className="text-md text-gray-500">Current price</span>
-            <div className="price flex mb-3 space-x-2">
-              <span className="text-3xl font-bold space-x-1 my-1 ">
-                <span className="price-value">
-                  {(nftDetail?.listing?.price || 0) / 1000000000 < 1000000000
-                    ? `${(nftDetail?.listing?.price || 0) / 1000000000} GWEI`
-                    : `${
-                        (nftDetail?.listing?.price || 0) / 1000000000000000000
-                      } ETH`}
-                </span>
-              </span>
-            </div>
+            {!!nftDetail?.listing && (
+              <>
+                <span className="text-md text-gray-500">Current price</span>
+                <div className="price flex mb-3 space-x-2">
+                  <span className="text-3xl font-bold space-x-1 my-1 ">
+                    <span className="price-value">
+                      {(nftDetail?.listing?.price || 0) / 1000000000 <
+                      1000000000
+                        ? `${
+                            (nftDetail?.listing?.price || 0) / 1000000000
+                          } GWEI`
+                        : `${
+                            (nftDetail?.listing?.price || 0) /
+                            1000000000000000000
+                          } ETH`}
+                    </span>
+                  </span>
+                </div>
+              </>
+            )}
 
-            {mode == NFT_COLLECTION_MODE.CAN_BUY ? (
-              <div className="buttons h-16 flex space-x-2 font-bold">
+            {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
+              <div
+                className="buttons h-16 flex space-x-2 font-bold"
+                onClick={() =>
+                  handleBuyToken(
+                    nftDetail.listing?.listing_id || 0,
+                    nftDetail.listing?.price || 0
+                  )
+                }
+              >
                 <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
-                  <button
-                    className="buy-now-btn w-12"
-                    onClick={() =>
-                      handleBuyToken(
-                        nftDetail.listing?.listing_id || 0,
-                        nftDetail.listing?.price || 0
-                      )
-                    }
-                  >
+                  <button className="buy-now-btn w-12">
                     <i>
                       <FontAwesomeIcon icon={faBoltLightning} />
                     </i>
@@ -423,56 +431,58 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 </button>
               </div>
             ) : (
-              <div className="w-1/2 h-16 flex">
-                <button
-                  className="bg-blue-500 rounded-xl text-white font-bold flex-1"
-                  onClick={() => setVisible(true)}
-                >
-                  Sell
-                </button>
-                <Dialog
-                  header="Please input the price that you want to sell"
-                  visible={visible}
-                  style={{ width: "50vw" }}
-                  onHide={() => setVisible(false)}
-                  footer={
-                    <div>
-                      <Button
-                        label="Cancel"
-                        icon="pi pi-times"
-                        onClick={() => setVisible(false)}
-                        className="p-button-text"
+              <div className="buttons h-16 flex space-x-2 font-bold">
+                <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
+                  <button
+                    className="add-to-cart-btn flex-1 border-r"
+                    onClick={() => setVisible(true)}
+                  >
+                    Sell
+                  </button>
+                  <Dialog
+                    header="Please input the price that you want to sell"
+                    visible={visible}
+                    style={{ width: "50vw" }}
+                    onHide={() => setVisible(false)}
+                    footer={
+                      <div>
+                        <Button
+                          label="Cancel"
+                          icon="pi pi-times"
+                          onClick={() => setVisible(false)}
+                          className="p-button-text"
+                        />
+                        <Button
+                          label="Sell"
+                          icon="pi pi-check"
+                          onClick={() =>
+                            handleUploadNFTToMarketplace(nftDetail.token_id)
+                          }
+                          autoFocus
+                        />
+                      </div>
+                    }
+                  >
+                    <div className="flex gap-3">
+                      <InputNumber
+                        placeholder="Input the price"
+                        value={price}
+                        onValueChange={(e: any) => setPrice(e.value)}
+                        minFractionDigits={2}
+                        maxFractionDigits={5}
+                        min={0}
                       />
-                      <Button
-                        label="Sell"
-                        icon="pi pi-check"
-                        onClick={() =>
-                          handleUploadNFTToMarketplace(nftDetail.token_id)
-                        }
-                        autoFocus
+                      <Dropdown
+                        value={selectedUnit}
+                        onChange={(e) => setSelectedUnit(e.value)}
+                        options={units}
+                        optionLabel="name"
+                        placeholder="Select a unit"
+                        className="md:w-14rem"
                       />
                     </div>
-                  }
-                >
-                  <div className="flex gap-3">
-                    <InputNumber
-                      placeholder="Input the price"
-                      value={price}
-                      onValueChange={(e: any) => setPrice(e.value)}
-                      minFractionDigits={2}
-                      maxFractionDigits={5}
-                      min={0}
-                    />
-                    <Dropdown
-                      value={selectedUnit}
-                      onChange={(e) => setSelectedUnit(e.value)}
-                      options={units}
-                      optionLabel="name"
-                      placeholder="Select a unit"
-                      className="md:w-14rem"
-                    />
-                  </div>
-                </Dialog>
+                  </Dialog>
+                </div>
               </div>
             )}
           </div>
