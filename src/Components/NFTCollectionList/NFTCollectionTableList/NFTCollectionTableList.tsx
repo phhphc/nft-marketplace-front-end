@@ -20,7 +20,7 @@ const NFTCollectionTableList = ({
     return (
       <img
         src={
-          rowData.metadata.image ||
+          rowData.metadata?.image ||
           "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
         }
         alt="item image"
@@ -37,7 +37,7 @@ const NFTCollectionTableList = ({
     return (
       <div>
         <a style={{ cursor: "pointer" }} onClick={() => router.push("/detail")}>
-          {rowData.metadata.name || "Item name"}
+          {rowData.metadata?.name || "Item name"}
         </a>
       </div>
     );

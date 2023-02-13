@@ -103,7 +103,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         </div>
         <img
           id="image"
-          src={nftDetail.metadata.image}
+          src={nftDetail.metadata?.image}
           alt="detail"
           className="nft-detail-img rounded-b-lg h-full w-full object-cover object-center lg:h-full lg:w-full"
         />
@@ -114,7 +114,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               <span>Description</span>
             </div>
             <div className="table-content p-5">
-              {nftDetail.metadata.description}
+              {nftDetail.metadata?.description}
             </div>
           </div>
           <Accordion multiple>
@@ -193,7 +193,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="flex space-x-2">
                   <FontAwesomeIcon icon={faClipboard} />
                   <p>
-                    About {nftDetail.metadata.name} BY {"AuthorName"}
+                    About {nftDetail.metadata?.name} BY {"AuthorName"}
                   </p>
                 </div>
               }
@@ -201,7 +201,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               <div className="flex space-x-3">
                 <img
                   className="avatar w-6 h-6 rounded-3xl mt-2"
-                  src={nftDetail.metadata.image}
+                  src={nftDetail.metadata?.image}
                   alt=""
                 />
                 <span className="about-text">
@@ -296,7 +296,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             className="author h-12 flex items-center space-x-2 text-blue-500"
           >
             <span>
-              {nftDetail.metadata.name} BY {"AuthorName"}
+              {nftDetail.metadata?.name} BY {"AuthorName"}
             </span>
             <i>
               <FontAwesomeIcon icon={faCircleCheck} />
@@ -318,7 +318,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           </div>
         </div>
         <h1 className="name h-14 text-4xl flex items-center font-semibold mt-2 mb-1">
-          {nftDetail.metadata.name}
+          {nftDetail.metadata?.name}
         </h1>
         <h2 className="owner h-9 flex justify-start items-center space-x-1">
           <span>Owned by</span>
