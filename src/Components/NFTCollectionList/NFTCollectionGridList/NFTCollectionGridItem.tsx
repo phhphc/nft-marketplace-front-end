@@ -76,7 +76,7 @@ const NFTCollectionGridItem = ({
       >
         <img
           src={
-            item.metadata.image ||
+            item.metadata?.image ||
             "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
           }
           alt="NFT Item"
@@ -87,7 +87,7 @@ const NFTCollectionGridItem = ({
         <div>
           <div className="p-4 h-28">
             <h3 className="font-bold uppercase">
-              {item.metadata.name || "Item name"}
+              {item.metadata?.name || "Item name"}
             </h3>
             {item.listing && (
               <p className="text-sm font-medium text-gray-900 uppercase">

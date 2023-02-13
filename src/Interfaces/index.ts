@@ -18,7 +18,7 @@ export interface INFTCollectionItem {
   token_id: number;
   owner: string;
   contract_addr: string;
-  metadata: IMetaData;
+  metadata?: IMetaData;
   listing?: IListing;
 }
 
