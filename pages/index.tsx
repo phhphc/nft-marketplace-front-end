@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Link from "next/link";
+import HomeContainer from "@Containers/HomeContainer/HomeContainer";
 
 export default function Home() {
   return (
@@ -11,15 +11,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className="flex flex-col">
-          <span className="text-3xl">This is Home page</span>
-          <span>Click wallet icon to UNLOCK your metamask first</span>
-          <Link href={"/collection/collection-name-example"}>
-          <span className="bg-red-500">
-            Then, click here to move to collection page
-          </span>
-          </Link>
-        </div>
+        <HomeContainer />
       </main>
     </>
   );
