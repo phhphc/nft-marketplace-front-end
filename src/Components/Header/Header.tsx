@@ -104,16 +104,16 @@ const Header = () => {
                     <span className="ml-4">Profile</span>
                   </Link>
                   <Link
-                    href={`/user-profile/${address}/collection`}
+                    href={`/user-profile/collection`}
                     className="py-3 w-full hover:bg-slate-200 border-b"
                   >
                     <span className="ml-4">Collection</span>
                   </Link>
-                  <Link href={`/user-profile/${address}/favorite`} className="py-3 w-full hover:bg-slate-200 border-b">
+                  <Link href={`/user-profile/favorite`} className="py-3 w-full hover:bg-slate-200 border-b">
                     <span className="ml-4">Favorite</span>
                   </Link>
                   <Link
-                    href={`/user-profile/${address}/create`}
+                    href={`/create-collection`}
                     className="py-3 w-full hover:bg-slate-200 rounded-b-lg"
                   >
                     <span className="ml-4">Create</span>
