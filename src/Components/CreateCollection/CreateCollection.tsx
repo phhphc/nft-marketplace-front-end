@@ -65,6 +65,18 @@ const CreateCollection = () => {
     setBannerFile(URL.createObjectURL(e.target.files[0]));
   }
 
+  function removeLogoImage() {
+    setLogoFile("");
+  }
+
+  function removeFeaturedImage() {
+    setFeaturedFile("");
+  }
+
+  function removeBannerImage() {
+    setBannerFile("");
+  }
+
   const { control, handleSubmit } = useForm<IFormInput>();
 
   const onSubmit = (data: IFormInput) => {
@@ -86,14 +98,30 @@ const CreateCollection = () => {
                 This image will also be used for navigation. 350 x 350
                 recommended.
               </p>
-              <div className="flex">
-                <input
-                  {...field}
-                  type="file"
-                  onChange={handleChangeLogo}
-                  accept=".jpg, .jpeg, .png"
+              <div className="flex pt-3">
+                <div className="upload-logo-btn-wrapper">
+                  <button className="btn">
+                    <i className="pi pi-image text-6xl" />
+                  </button>
+                  <input
+                    {...field}
+                    type="file"
+                    onChange={handleChangeLogo}
+                    accept=".jpg, .jpeg, .png"
+                    role="button"
+                  />
+                </div>
+                <Image
+                  src={logoFile}
+                  className="logoImage"
+                  alt="Image"
+                  preview
                 />
-                <Image src={logoFile} alt="Image" width="250" preview />
+                {logoFile != "" && (
+                  <div role="button" onClick={removeLogoImage}>
+                    <i className="pi pi-times" />
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -109,14 +137,30 @@ const CreateCollection = () => {
                 homepage, category pages, or other promotional areas of OpenSea.
                 600 x 400 recommended.
               </p>
-              <div className="flex">
-                <input
-                  {...field}
-                  type="file"
-                  onChange={handleChangeFeatured}
-                  accept=".jpg, .jpeg, .png"
+              <div className="flex pt-3">
+                <div className="upload-featured-btn-wrapper">
+                  <button className="btn" role="button">
+                    <i className="pi pi-image text-6xl" />
+                  </button>
+                  <input
+                    {...field}
+                    type="file"
+                    onChange={handleChangeFeatured}
+                    accept=".jpg, .jpeg, .png"
+                    role="button"
+                  />
+                </div>
+                <Image
+                  src={featuredFile}
+                  alt="Image"
+                  className="featuredImage"
+                  preview
                 />
-                <Image src={featuredFile} alt="Image" width="250" preview />
+                {featuredFile != "" && (
+                  <div role="button" onClick={removeFeaturedImage}>
+                    <i className="pi pi-times" />
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -132,14 +176,34 @@ const CreateCollection = () => {
                 including too much text in this banner image, as the dimensions
                 change on different devices. 1400 x 350 recommended.
               </p>
-              <div className="flex">
-                <input
-                  {...field}
-                  type="file"
-                  onChange={handleChangeBanner}
-                  accept=".jpg, .jpeg, .png"
+              <div className="flex pt-3">
+                <div className="upload-banner-btn-wrapper">
+                  <button className="btn" role="button">
+                    <i className="pi pi-image text-6xl" />
+                  </button>
+                  <input
+                    {...field}
+                    type="file"
+                    onChange={handleChangeBanner}
+                    accept=".jpg, .jpeg, .png"
+                    role="button"
+                  />
+                </div>
+                <Image
+                  src={bannerFile}
+                  alt="Image"
+                  className="bannerImage"
+                  preview
                 />
-                <Image src={bannerFile} alt="Image" width="250" preview />
+                {bannerFile != "" && (
+                  <div
+                    role="button"
+                    className="z-0 absolute times-banner"
+                    onClick={removeBannerImage}
+                  >
+                    <i className="pi pi-times" />
+                  </div>
+                )}
               </div>
             </div>
           )}
