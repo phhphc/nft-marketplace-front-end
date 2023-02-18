@@ -5,31 +5,14 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-
-interface IFormInput {
-  logoImage: string;
-  featuredImage: string;
-  bannerImage: string;
-  name: string;
-  url: string;
-  desc: string;
-  category: { label: string; value: string };
-  link: string;
-  blockchain: { label: string; value: string };
-}
-
-interface Category {
-  categoryName: string;
-  code: string;
-}
-
-interface Blockchain {
-  blockchainName: string;
-  code: string;
-}
+import {
+  ICategory,
+  IBlockchain,
+  IFormCollectionInput,
+} from "@Interfaces/index";
 
 const CreateCollection = () => {
-  const categories: Category[] = [
+  const categories: ICategory[] = [
     { categoryName: "Art", code: "art" },
     { categoryName: "Domain names", code: "domain" },
     { categoryName: "Gaming", code: "gaming" },
@@ -42,7 +25,7 @@ const CreateCollection = () => {
     { categoryName: "No category", code: "no" },
   ];
 
-  const blockchains: Blockchain[] = [
+  const blockchains: IBlockchain[] = [
     { blockchainName: "Ethereum", code: "ethereum" },
     { blockchainName: "Polygon", code: "polygon" },
   ];
@@ -77,9 +60,9 @@ const CreateCollection = () => {
     setBannerFile("");
   }
 
-  const { control, handleSubmit } = useForm<IFormInput>();
+  const { control, handleSubmit } = useForm<IFormCollectionInput>();
 
-  const onSubmit = (data: IFormInput) => {
+  const onSubmit = (data: IFormCollectionInput) => {
     alert(JSON.stringify(data));
   };
 
@@ -263,7 +246,7 @@ const CreateCollection = () => {
         <Controller
           render={({ field }) => (
             <div className="pt-4">
-              <label className="text-lg font-medium">Category</label>
+              <label className="text-lg font-medium">ICategory</label>
               <Dropdown
                 {...field}
                 options={categories}

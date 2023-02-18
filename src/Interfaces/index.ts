@@ -27,3 +27,40 @@ export interface IListing {
   price: number;
   seller: string;
 }
+
+export interface IFormCollectionInput {
+  logoImage: string;
+  featuredImage: string;
+  bannerImage: string;
+  name: string;
+  url: string;
+  desc: string;
+  category: { label: string; value: string };
+  link: string;
+  blockchain: { label: string; value: string };
+}
+
+export interface IFormNewNFTInput {
+  featuredImage: string;
+  name: string;
+  url: string;
+  desc: string;
+  collection: { label: string; value: string };
+  supply: string;
+  blockchain: { label: string; value: string };
+}
+
+export interface ICategory {
+  categoryName: string;
+  code: string;
+}
+
+export interface IBlockchain {
+  blockchainName: string;
+  code: string;
+}
+
+export interface ICollection {
+  collectionName: string;
+  code: string;
+}
