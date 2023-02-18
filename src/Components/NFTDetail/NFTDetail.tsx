@@ -225,7 +225,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                   </span>
                   <br />
                   <span className="space-x-1">
-                    <span>Category</span>
+                    <span>ICategory</span>
                     <span className="font-semibold">{"Art"}</span>
                   </span>
                 </span>
