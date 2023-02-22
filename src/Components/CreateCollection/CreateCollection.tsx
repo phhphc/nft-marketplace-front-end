@@ -50,20 +50,24 @@ const CreateCollection = () => {
 
   function removeLogoImage() {
     setLogoFile("");
+    resetField("logoImage")
   }
 
   function removeFeaturedImage() {
     setFeaturedFile("");
+    resetField("featuredImage")
   }
 
   function removeBannerImage() {
     setBannerFile("");
+    resetField("bannerImage")
   }
 
-  const { control, handleSubmit } = useForm<IFormCollectionInput>();
+  const { register, resetField, control, handleSubmit } = useForm<IFormCollectionInput>();
 
   const onSubmit = (data: IFormCollectionInput) => {
     alert(JSON.stringify(data));
+    console.log("data", data);
   };
 
   return (
@@ -73,126 +77,104 @@ const CreateCollection = () => {
         <span className="text-red-500">*</span> Required fields
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          render={({ field }) => (
-            <div>
-              <label className="text-lg font-medium">Logo image *</label>
-              <p>
-                This image will also be used for navigation. 350 x 350
-                recommended.
-              </p>
-              <div className="flex pt-3">
-                <div className="upload-logo-btn-wrapper">
-                  <button className="btn">
-                    <i className="pi pi-image text-6xl" />
-                  </button>
-                  <input
-                    {...field}
-                    type="file"
-                    onChange={handleChangeLogo}
-                    accept=".jpg, .jpeg, .png"
-                    role="button"
-                  />
-                </div>
-                <Image
-                  src={logoFile}
-                  className="logoImage"
-                  alt="Image"
-                  preview
-                />
-                {logoFile != "" && (
-                  <div role="button" onClick={removeLogoImage}>
-                    <i className="pi pi-times" />
-                  </div>
-                )}
-              </div>
+        <div>
+          <label className="text-lg font-medium">Logo image *</label>
+          <p>
+            This image will also be used for navigation. 350 x 350 recommended.
+          </p>
+          <div className="flex pt-3">
+            <div className="upload-logo-btn-wrapper">
+              <button className="btn">
+                <i className="pi pi-image text-6xl" />
+              </button>
+              <input
+                {...register("logoImage", { required: true })}
+                type="file"
+                onChange={handleChangeLogo}
+                accept=".jpg, .jpeg, .png"
+                role="button"
+              />
             </div>
-          )}
-          name="logoImage"
-          control={control}
-        />
-        <Controller
-          render={({ field }) => (
-            <div className="pt-4">
-              <label className="text-lg font-medium">Featured image</label>
-              <p>
-                This image will be used for featuring your collection on the
-                homepage, category pages, or other promotional areas of OpenSea.
-                600 x 400 recommended.
-              </p>
-              <div className="flex pt-3">
-                <div className="upload-featured-btn-wrapper">
-                  <button className="btn" role="button">
-                    <i className="pi pi-image text-6xl" />
-                  </button>
-                  <input
-                    {...field}
-                    type="file"
-                    onChange={handleChangeFeatured}
-                    accept=".jpg, .jpeg, .png"
-                    role="button"
-                  />
-                </div>
-                <Image
-                  src={featuredFile}
-                  alt="Image"
-                  className="featuredImage"
-                  preview
-                />
-                {featuredFile != "" && (
-                  <div role="button" onClick={removeFeaturedImage}>
-                    <i className="pi pi-times" />
-                  </div>
-                )}
+            <Image src={logoFile} className="logoImage" alt="Image" preview />
+            {logoFile != "" && (
+              <div role="button" onClick={removeLogoImage}>
+                <i className="pi pi-times" />
               </div>
+            )}
+          </div>
+        </div>
+
+        <div className="pt-4">
+          <label className="text-lg font-medium">Featured image</label>
+          <p>
+            This image will be used for featuring your collection on the
+            homepage, category pages, or other promotional areas of OpenSea. 600
+            x 400 recommended.
+          </p>
+          <div className="flex pt-3">
+            <div className="upload-featured-btn-wrapper">
+              <button className="btn" role="button">
+                <i className="pi pi-image text-6xl" />
+              </button>
+              <input
+                {...register("featuredImage", { required: true })}
+                type="file"
+                onChange={handleChangeFeatured}
+                accept=".jpg, .jpeg, .png"
+                role="button"
+              />
             </div>
-          )}
-          name="featuredImage"
-          control={control}
-        />
-        <Controller
-          render={({ field }) => (
-            <div className="pt-4">
-              <label className="text-lg font-medium">Banner image</label>
-              <p>
-                This image will appear at the top of your collection page. Avoid
-                including too much text in this banner image, as the dimensions
-                change on different devices. 1400 x 350 recommended.
-              </p>
-              <div className="flex pt-3">
-                <div className="upload-banner-btn-wrapper">
-                  <button className="btn" role="button">
-                    <i className="pi pi-image text-6xl" />
-                  </button>
-                  <input
-                    {...field}
-                    type="file"
-                    onChange={handleChangeBanner}
-                    accept=".jpg, .jpeg, .png"
-                    role="button"
-                  />
-                </div>
-                <Image
-                  src={bannerFile}
-                  alt="Image"
-                  className="bannerImage"
-                  preview
-                />
-                {bannerFile != "" && (
-                  <div
-                    role="button"
-                    className="z-0 absolute times-banner"
-                    onClick={removeBannerImage}
-                  >
-                    <i className="pi pi-times" />
-                  </div>
-                )}
+            <Image
+              src={featuredFile}
+              alt="Image"
+              className="featuredImage"
+              preview
+            />
+            {featuredFile != "" && (
+              <div role="button" onClick={removeFeaturedImage}>
+                <i className="pi pi-times" />
               </div>
+            )}
+          </div>
+        </div>
+
+        <div className="pt-4">
+          <label className="text-lg font-medium">Banner image</label>
+          <p>
+            This image will appear at the top of your collection page. Avoid
+            including too much text in this banner image, as the dimensions
+            change on different devices. 1400 x 350 recommended.
+          </p>
+          <div className="flex pt-3">
+            <div className="upload-banner-btn-wrapper">
+              <button className="btn" role="button">
+                <i className="pi pi-image text-6xl" />
+              </button>
+              <input
+                {...register("bannerImage", { required: true })}
+                type="file"
+                onChange={handleChangeBanner}
+                accept=".jpg, .jpeg, .png"
+                role="button"
+              />
             </div>
-          )}
-          name="bannerImage"
-          control={control}
-        />
+            <Image
+              src={bannerFile}
+              alt="Image"
+              className="bannerImage"
+              preview
+            />
+            {bannerFile != "" && (
+              <div
+                role="button"
+                className="z-0 absolute times-banner"
+                onClick={removeBannerImage}
+              >
+                <i className="pi pi-times" />
+              </div>
+            )}
+          </div>
+        </div>
 
         <Controller
           render={({ field }) => (

@@ -34,9 +34,10 @@ const CreateNFT = () => {
 
   function removeFeaturedImage() {
     setFeaturedFile("");
+    resetField("featuredImage")
   }
 
-  const { control, handleSubmit } = useForm<IFormNewNFTInput>();
+  const { register, resetField, control, handleSubmit } = useForm<IFormNewNFTInput>();
 
   const onSubmit = (data: IFormNewNFTInput) => {
     alert(JSON.stringify(data));
@@ -49,46 +50,41 @@ const CreateNFT = () => {
         <span className="text-red-500">*</span> Required fields
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          render={({ field }) => (
-            <div className="pt-4">
-              <label className="text-lg font-medium">
-                Image, Video, Audio, or 3D Model *
-              </label>
-              <p className="text-gray-500">
-                File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV,
-                OGG, GLB, GLTF. Max size: 100 MB
-              </p>
-              <div className="flex pt-3">
-                <div className="upload-featured-btn-wrapper">
-                  <button className="btn" role="button">
-                    <i className="pi pi-image text-6xl" />
-                  </button>
-                  <input
-                    {...field}
-                    type="file"
-                    onChange={handleChangeFeatured}
-                    accept=".jpg, .jpeg, .png"
-                    role="button"
-                  />
-                </div>
-                <Image
-                  src={featuredFile}
-                  alt="Image"
-                  className="featuredImage"
-                  preview
-                />
-                {featuredFile != "" && (
-                  <div role="button" onClick={removeFeaturedImage}>
-                    <i className="pi pi-times" />
-                  </div>
-                )}
-              </div>
+        <div className="pt-4">
+          <label className="text-lg font-medium">
+            Image, Video, Audio, or 3D Model *
+          </label>
+          <p className="text-gray-500">
+            File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG,
+            GLB, GLTF. Max size: 100 MB
+          </p>
+          <div className="flex pt-3">
+            <div className="upload-featured-btn-wrapper">
+              <button className="btn" role="button">
+                <i className="pi pi-image text-6xl" />
+              </button>
+              <input
+                {...register("featuredImage", { required: true })}
+                type="file"
+                onChange={handleChangeFeatured}
+                accept=".jpg, .jpeg, .png"
+                role="button"
+              />
             </div>
-          )}
-          name="featuredImage"
-          control={control}
-        />
+            <Image
+              src={featuredFile}
+              alt="Image"
+              className="featuredImage"
+              preview
+            />
+            {featuredFile != "" && (
+              <div role="button" onClick={removeFeaturedImage}>
+                <i className="pi pi-times" />
+              </div>
+            )}
+          </div>
+        </div>
+
         <Controller
           render={({ field }) => (
             <div className="pt-4">
