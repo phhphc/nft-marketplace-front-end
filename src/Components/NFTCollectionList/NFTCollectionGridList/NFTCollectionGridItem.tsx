@@ -70,14 +70,13 @@ const NFTCollectionGridItem = ({
       <Link
         href={{
           pathname: `/detail/${item.token_id}`,
-          query: { mode },
         }}
         className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none"
       >
         <img
           src={
             item.metadata?.image ||
-            "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
+            "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
           }
           alt="NFT Item"
           className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
@@ -99,19 +98,20 @@ const NFTCollectionGridItem = ({
               </p>
             )}
           </div>
-          {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
-            <div
-              className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom"
-              onClick={() =>
-                handleBuyToken(
-                  item.listing?.listing_id || 0,
-                  item.listing?.price || 0
-                )
-              }
-            >
-              {item.listing && (
+          {item.listing &&
+            item.listing.seller.toLowerCase() !==
+              web3Context.state.web3.myAddress.toLowerCase() && (
+              <div className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom">
                 <>
-                  <button className="bg-blue-500 py-2 px-4 buy-now-btn rounded-br-md">
+                  <button
+                    className="bg-blue-500 py-2 px-4 buy-now-btn rounded-br-md"
+                    onClick={() =>
+                      handleBuyToken(
+                        item.listing?.listing_id || 0,
+                        item.listing?.price || 0
+                      )
+                    }
+                  >
                     <i className="fa-1x">
                       <FontAwesomeIcon icon={faBoltLightning} />
                     </i>
@@ -121,61 +121,63 @@ const NFTCollectionGridItem = ({
                     Add to cart
                   </button>
                 </>
-              )}
-            </div>
-          ) : (
-            <div className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom">
-              <button
-                className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md"
-                onClick={() => setVisible(true)}
-              >
-                Sell
-              </button>
-              <Dialog
-                header="Please input the price that you want to sell"
-                visible={visible}
-                style={{ width: "50vw" }}
-                onHide={() => setVisible(false)}
-                footer={
-                  <div>
-                    <Button
-                      label="Cancel"
-                      icon="pi pi-times"
-                      onClick={() => setVisible(false)}
-                      className="p-button-text"
+              </div>
+            )}
+          {!item.listing &&
+            item.owner.toLowerCase() ===
+              web3Context.state.web3.myAddress.toLowerCase() && (
+              <div className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom">
+                <button
+                  className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md"
+                  onClick={() => setVisible(true)}
+                >
+                  Sell
+                </button>
+                <Dialog
+                  header="Please input the price that you want to sell"
+                  visible={visible}
+                  style={{ width: "50vw" }}
+                  onHide={() => setVisible(false)}
+                  footer={
+                    <div>
+                      <Button
+                        label="Cancel"
+                        icon="pi pi-times"
+                        onClick={() => setVisible(false)}
+                        className="p-button-text"
+                      />
+                      <Button
+                        label="Sell"
+                        icon="pi pi-check"
+                        onClick={() =>
+                          handleUploadNFTToMarketplace(item.token_id)
+                        }
+                        autoFocus
+                      />
+                    </div>
+                  }
+                >
+                  <div className="flex gap-3">
+                    <InputNumber
+                      placeholder="Input the price"
+                      value={price}
+                      onValueChange={(e: any) => setPrice(e.value)}
+                      minFractionDigits={2}
+                      maxFractionDigits={5}
+                      min={0}
                     />
-                    <Button
-                      label="Sell"
-                      icon="pi pi-check"
-                      onClick={() =>
-                        handleUploadNFTToMarketplace(item.token_id)
-                      }
-                      autoFocus
+                    <Dropdown
+                      value={selectedUnit}
+                      onChange={(e) => setSelectedUnit(e.value)}
+                      options={units}
+                      optionLabel="name"
+                      placeholder="Select a unit"
+                      className="md:w-14rem"
                     />
                   </div>
-                }
-              >
-                <div className="flex gap-3">
-                  <InputNumber
-                    placeholder="Input the price"
-                    value={price}
-                    onValueChange={(e: any) => setPrice(e.value)}
-                    minFractionDigits={2}
-                    maxFractionDigits={5}
-                    min={0}
-                  />
-                  <Dropdown
-                    value={selectedUnit}
-                    onChange={(e) => setSelectedUnit(e.value)}
-                    options={units}
-                    optionLabel="name"
-                    placeholder="Select a unit"
-                    className="md:w-14rem"
-                  />
-                </div>
-              </Dialog>
-            </div>
-          )}
+                </Dialog>
+              </div>
+            )}
         </div>
       )}
     </div>

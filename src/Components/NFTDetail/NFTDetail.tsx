@@ -42,9 +42,6 @@ export interface INFTDetailProps {
 
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const router = useRouter();
-  const {
-    query: { mode },
-  } = router;
   const web3Context = useContext(AppContext);
   const handleUploadNFTToMarketplace = async (tokenId: number) => {
     try {
@@ -399,19 +396,20 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               </>
             )}
 
-            {mode === NFT_COLLECTION_MODE.CAN_BUY ? (
-              <div className="buttons h-16 flex space-x-2 font-bold">
-                {!!nftDetail.listing && (
-                  <div
-                    className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex"
-                    onClick={() =>
-                      handleBuyToken(
-                        nftDetail.listing?.listing_id || 0,
-                        nftDetail.listing?.price || 0
-                      )
-                    }
-                  >
-                    <button className="buy-now-btn w-12">
+            {nftDetail.listing &&
+              nftDetail.listing.seller.toLowerCase() !==
+                web3Context.state.web3.myAddress.toLowerCase() && (
+                <div className="buttons h-16 flex space-x-2 font-bold">
+                  <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
+                    <button
+                      className="buy-now-btn w-12"
+                      onClick={() =>
+                        handleBuyToken(
+                          nftDetail.listing?.listing_id || 0,
+                          nftDetail.listing?.price || 0
+                        )
+                      }
+                    >
                       <i>
                         <FontAwesomeIcon icon={faBoltLightning} />
                       </i>
@@ -421,77 +419,80 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                       Add to cart
                     </button>
                   </div>
-                )}
-                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
-                  <i>
-                    <FontAwesomeIcon icon={faTicketSimple} />
-                  </i>
-                  <span>Make offer</span>
-                </button>
-              </div>
-            ) : (
-              <div className="buttons h-16 flex space-x-2 font-bold">
-                <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
-                  {!nftDetail.listing && (
-                    <button
-                      className="add-to-cart-btn flex-1 border-r"
-                      onClick={() => setVisible(true)}
+
+                  <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
+                    <i>
+                      <FontAwesomeIcon icon={faTicketSimple} />
+                    </i>
+                    <span>Make offer</span>
+                  </button>
+                </div>
+              )}
+            {!nftDetail.listing &&
+              nftDetail.owner.toLowerCase() ===
+                web3Context.state.web3.myAddress.toLowerCase() && (
+                <div className="buttons h-16 flex space-x-2 font-bold">
+                  <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
+                    {!nftDetail.listing && (
+                      <button
+                        className="add-to-cart-btn flex-1 border-r"
+                        onClick={() => setVisible(true)}
+                      >
+                        Sell
+                      </button>
+                    )}
+                    <Dialog
+                      header="Please input the price that you want to sell"
+                      visible={visible}
+                      style={{ width: "50vw" }}
+                      onHide={() => setVisible(false)}
+                      footer={
+                        <div>
+                          <Button
+                            label="Cancel"
+                            icon="pi pi-times"
+                            onClick={() => setVisible(false)}
+                            className="p-button-text"
+                          />
+                          <Button
+                            label="Sell"
+                            icon="pi pi-check"
+                            onClick={() =>
+                              handleUploadNFTToMarketplace(nftDetail.token_id)
+                            }
+                            autoFocus
+                          />
+                        </div>
+                      }
                     >
-                      Sell
-                    </button>
-                  )}
-                  <Dialog
-                    header="Please input the price that you want to sell"
-                    visible={visible}
-                    style={{ width: "50vw" }}
-                    onHide={() => setVisible(false)}
-                    footer={
-                      <div>
-                        <Button
-                          label="Cancel"
-                          icon="pi pi-times"
-                          onClick={() => setVisible(false)}
-                          className="p-button-text"
+                      <div className="flex gap-3">
+                        <InputNumber
+                          placeholder="Input the price"
+                          value={price}
+                          onValueChange={(e: any) => setPrice(e.value)}
+                          minFractionDigits={2}
+                          maxFractionDigits={5}
+                          min={0}
                         />
-                        <Button
-                          label="Sell"
-                          icon="pi pi-check"
-                          onClick={() =>
-                            handleUploadNFTToMarketplace(nftDetail.token_id)
-                          }
-                          autoFocus
+                        <Dropdown
+                          value={selectedUnit}
+                          onChange={(e) => setSelectedUnit(e.value)}
+                          options={units}
+                          optionLabel="name"
+                          placeholder="Select a unit"
+                          className="md:w-14rem"
                         />
                       </div>
-                    }
-                  >
-                    <div className="flex gap-3">
-                      <InputNumber
-                        placeholder="Input the price"
-                        value={price}
-                        onValueChange={(e: any) => setPrice(e.value)}
-                        minFractionDigits={2}
-                        maxFractionDigits={5}
-                        min={0}
-                      />
-                      <Dropdown
-                        value={selectedUnit}
-                        onChange={(e) => setSelectedUnit(e.value)}
-                        options={units}
-                        optionLabel="name"
-                        placeholder="Select a unit"
-                        className="md:w-14rem"
-                      />
-                    </div>
-                  </Dialog>
+                    </Dialog>
+                  </div>
+                  <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
+                    <i>
+                      <FontAwesomeIcon icon={faTicketSimple} />
+                    </i>
+                    <span>Make offer</span>
+                  </button>
                 </div>
-                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
-                  <i>
-                    <FontAwesomeIcon icon={faTicketSimple} />
-                  </i>
-                  <span>Make offer</span>
-                </button>
-              </div>
-            )}
+              )}
           </div>
         </div>
       </div>
