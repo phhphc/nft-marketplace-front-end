@@ -6,54 +6,53 @@ import { Tooltip } from "primereact/tooltip";
 import { Sidebar } from "primereact/sidebar";
 import Link from "next/link";
 import { AppContext } from "@Store/index";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState, useRef } from "react";
 import { ethers } from "ethers";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import avatar from "@Assets/avatar.png";
-import { cartItemList } from "./cartMockData";
-
-const handleConnectWallet = async (web3Context: any) => {
-  // If metamask is installed
-  if (window.ethereum) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const addresses = await provider.send("eth_requestAccounts", []);
-    web3Context.dispatch({
-      type: WEB3_ACTION_TYPES.CHANGE,
-      payload: { provider: provider, myAddress: addresses[0] },
-    });
-  }
-  // If metamask is not installed
-  else {
-    alert("You don't have metamask on your brownser");
-  }
-};
-
-const handleLogOut = (web3Context: any) => {
-  web3Context.dispatch({
-    type: WEB3_ACTION_TYPES.CHANGE,
-    payload: { provider: null, myAddress: "" },
-  });
-};
+import { getNFTCollectionListService } from "@Services/ApiService";
+import { INFTCollectionItem } from "@Interfaces/index";
 
 const Header = () => {
   const web3Context = useContext(AppContext);
-
-  const [address, setAddress] = useState(web3Context.state.web3.myAddress);
+  const [myAddress, setMyAddress] = useState(web3Context.state.web3.myAddress);
   const [provider, setProvider] = useState(web3Context.state.web3.provider);
+
   // Wallet
   const [walletConnected, setWalletConnected] = useState(false);
   const [walletModalVisible, setWalletModalVisible] = useState(false);
   const [balance, setBalance] = useState(0);
-  // Cart
-  const [cartModalVisible, setCartModalVisible] = useState(false);
-  const totalPrice = useMemo(() => {
-    return Math.round(
-      (cartItemList ? cartItemList.reduce((acc, cur) => acc + (cur.listing?.price || 0), 0) : 0) / 1000000000000000000
-    );
-  }, [cartItemList]);
+
+  const handleConnectWallet = async () => {
+    // If metamask is installed
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const addresses = await provider.send("eth_requestAccounts", []);
+      console.log("CONNECT WALLET");
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.CHANGE,
+        payload: {
+          provider: provider,
+          myAddress: addresses[0],
+          cart: web3Context.state.web3.cart,
+        },
+      });
+    }
+    // If metamask is not installed
+    else {
+      alert("No metamask on your brownser");
+    }
+  };
+
+  const handleLogOut = () => {
+    web3Context.dispatch({
+      type: WEB3_ACTION_TYPES.CHANGE,
+      payload: { provider: null, myAddress: "", cart: web3Context.state.web3.cart },
+    });
+  };
 
   useEffect(() => {
-    setAddress(web3Context.state.web3.myAddress);
+    setMyAddress(web3Context.state.web3.myAddress);
     setProvider(web3Context.state.web3.provider);
     if (web3Context.state.web3.provider !== null) {
       setWalletConnected(true);
@@ -69,10 +68,71 @@ const Header = () => {
   useEffect(() => {
     setInterval(() => {
       if (!window?.ethereum?._state?.isUnlocked) {
-        handleLogOut(web3Context);
+        handleLogOut();
       }
     }, 2000);
   }, []);
+
+  // Cart
+  const [cartItemList, setCartItemList] = useState<INFTCollectionItem[]>([]);
+  const [cartModalVisible, setCartModalVisible] = useState(false);
+  const totalPrice = useMemo(() => {
+    return Math.round(
+      (cartItemList ? cartItemList.reduce((acc, cur) => acc + (cur.listing?.price || 0), 0) : 0) / 1000000000000000000
+    );
+  }, [cartItemList]);
+
+  const handleAddToCart = (tokenId: number, quantity: number = 1) => {
+    const currCart = web3Context.state.web3.cart;
+    const newCart = { ...currCart, [tokenId]: quantity };
+    web3Context.dispatch({
+      type: WEB3_ACTION_TYPES.CHANGE,
+      payload: {
+        provider: web3Context.state.web3.provider,
+        myAddress: web3Context.state.web3.myAddress,
+        cart: newCart,
+      },
+    });
+  };
+
+  const handleRemoveFromCart = (tokenId: number, quantity: number = 1) => {
+    const currCart = web3Context.state.web3.cart;
+    const newCart: any = { ...currCart };
+    delete newCart[[tokenId].toString()];
+    web3Context.dispatch({
+      type: WEB3_ACTION_TYPES.CHANGE,
+      payload: {
+        provider: web3Context.state.web3.provider,
+        myAddress: web3Context.state.web3.myAddress,
+        cart: newCart,
+      },
+    });
+  };
+
+  const handleRemoveAllFromCart = () => {
+    setCartItemList([]);
+    web3Context.dispatch({
+      type: WEB3_ACTION_TYPES.CHANGE,
+      payload: {
+        provider: web3Context.state.web3.provider,
+        myAddress: web3Context.state.web3.myAddress,
+        cart: {},
+      },
+    });
+  };
+
+  useEffect(() => {
+    const cart = { ...web3Context.state.web3.cart };
+    const fetchData = async () => {
+      getNFTCollectionListService().then((data) => {
+        if (data) {
+          const nftList = data.nfts;
+          setCartItemList(nftList.filter((item: any) => item.token_id in cart));
+        }
+      });
+    };
+    fetchData();
+  }, [web3Context.state.web3.cart]);
 
   return (
     <div id="header" className="fixed top-0 right-0 left-0 h-24 z-10">
@@ -94,29 +154,26 @@ const Header = () => {
           {walletConnected && (
             <>
               {/* Profile */}
-              <Link href={`/user-profile/${address}`} className="profile-btn relative">
+              <Link href={`/user-profile/${myAddress}`} className="profile-btn relative">
                 <Image src={avatar} alt="avatar" className="h-12 w-12 border-2 border-black rounded-full" />
                 <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
                   <Link
-                    href={`/user-profile/${address}`}
+                    href={`/user-profile/${myAddress}`}
                     className="py-3 w-full hover:bg-slate-200 rounded-t-lg border-b"
                   >
                     <span className="ml-4">Profile</span>
                   </Link>
-                  <Link
-                    href={`/user-profile/collection`}
-                    className="py-3 w-full hover:bg-slate-200 border-b"
-                  >
+                  <Link href={`/user-profile/collection`} className="py-3 w-full hover:bg-slate-200 border-b">
                     <span className="ml-4">Collection</span>
                   </Link>
                   <Link href={`/user-profile/favorite`} className="py-3 w-full hover:bg-slate-200 border-b">
                     <span className="ml-4">Favorite</span>
                   </Link>
-                  <Link
-                    href={`/create-collection`}
-                    className="py-3 w-full hover:bg-slate-200 rounded-b-lg"
-                  >
-                    <span className="ml-4">Create</span>
+                  <Link href={`/create-collection`} className="py-3 w-full hover:bg-slate-200 border-b">
+                    <span className="ml-4">New Collection</span>
+                  </Link>
+                  <Link href={`/create-nft`} className="py-3 w-full hover:bg-slate-200 rounded-b-lg">
+                    <span className="ml-4">Create NFT</span>
                   </Link>
                 </div>
               </Link>
@@ -140,7 +197,7 @@ const Header = () => {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-start space-x-3">
                     <Image src={avatar} alt="avatar" className="h-12 w-12 border-2 border-black rounded-full" />
-                    <span className="text-base w-32 overflow-hidden text-ellipsis">{address}</span>
+                    <span className="text-base w-32 overflow-hidden text-ellipsis">{myAddress}</span>
                   </div>
                   <div className="border-b-2 w-full my-4"></div>
                   <div className="flex px-2 items-center justify-between">
@@ -151,7 +208,7 @@ const Header = () => {
                     <button
                       className="p-2 bg-red-500 rounded-lg text-white font-bold"
                       onClick={() => {
-                        handleLogOut(web3Context);
+                        handleLogOut();
                       }}
                     >
                       Log out
@@ -192,7 +249,7 @@ const Header = () => {
                 </div>
                 <button
                   className="flex justify-between w-full items-center border-2 p-3 rounded-lg hover:bg-gray-300"
-                  onClick={() => handleConnectWallet(web3Context)}
+                  onClick={() => handleConnectWallet()}
                 >
                   <div className="flex items-center space-x-2">
                     <Image src={metamaskLogo} alt="avatar" className="h-8 w-8"></Image>
@@ -223,28 +280,38 @@ const Header = () => {
               <div className="text-xl font-bold mx-3 pb-4 border-b-2">YOUR CART</div>
               <div className="flex justify-between items-center font-bold m-3">
                 <span>{cartItemList.length} item(s)</span>
-                <button className="bg-red-500 p-2 text-white rounded-lg hover:bg-red-400">Remove all</button>
+                <button
+                  className="bg-red-500 p-2 text-white rounded-lg hover:bg-red-400"
+                  onClick={() => handleRemoveAllFromCart()}
+                >
+                  Remove all
+                </button>
               </div>
               <div className="space-y-2">
                 {cartItemList.map((cartItem) => (
-                  <Link
+                  <div
+                    key={cartItem.token_id}
                     className="cart-item flex justify-between items-center w-full py-2 px-4 rounded-lg hover:bg-gray-100"
-                    href={`/detail/${cartItem.token_id}`}
                   >
                     <div className="flex justify-start space-x-2">
-                      <img src={cartItem.metadata?.image} alt="cart item" className="h-16 w-16 rounded-lg" />
+                      <Link href={`/detail/${cartItem.token_id}`}>
+                        <img src={cartItem.metadata?.image} alt="cart-item" className="h-16 w-16 rounded-lg" />
+                      </Link>
                       <div className="flex flex-col items-start justify-start text-sm">
                         <span className="font-medium">{cartItem.metadata?.name}</span>
-                        <span className="">{"Collection name"}</span>
+                        <span className="">{"Gemma"}</span>
                       </div>
                     </div>
                     <span className="price text-sm">
                       {cartItem.listing?.price ? cartItem.listing.price / 1000000000000000000 : 0} ETH
                     </span>
-                    <button className="delete-cart-btn hidden hover:text-white">
+                    <button
+                      className="delete-cart-btn hidden hover:text-white"
+                      onClick={() => handleRemoveFromCart(cartItem.token_id)}
+                    >
                       <i className="pi pi-trash" />
                     </button>
-                  </Link>
+                  </div>
                 ))}
               </div>
               <div className="flex justify-between border-t-2 mx-3 my-3 pt-3">

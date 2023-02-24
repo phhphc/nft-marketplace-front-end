@@ -20,9 +20,7 @@ const NFTDetailContainer = () => {
       getNFTCollectionListService().then((data) => {
         if (data) {
           const nftList = data.nfts;
-          setNftDetail(
-            nftList.filter((item: any) => item.token_id == tokenID)[0]
-          );
+          setNftDetail(nftList.filter((item: any) => item.token_id == tokenID)[0]);
         } else {
           toast.current &&
             toast.current.show({
@@ -39,13 +37,11 @@ const NFTDetailContainer = () => {
 
   return (
     <>
-      {web3Context.state.web3.provider && nftDetail ? (
+      {nftDetail && (
         <>
           <Toast ref={toast} position="bottom-right" />
           <NFTDetail nftDetail={nftDetail} />
         </>
-      ) : (
-        <>Please login</>
       )}
     </>
   );
