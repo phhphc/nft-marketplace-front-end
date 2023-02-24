@@ -10,6 +10,7 @@ export enum WEB3_ACTION_TYPES {
 export interface IWeb3 {
   provider: any;
   myAddress: string;
+  cart: {};
 }
 
 export interface IWeb3Action {
@@ -22,7 +23,7 @@ export interface IState {
 }
 
 const initialState: IState = {
-  web3: { provider: null, myAddress: "" },
+  web3: { provider: null, myAddress: "", cart: {} },
 };
 
 const AppContext = createContext<{
@@ -43,20 +44,32 @@ export interface IAppProvider {
 
 const AppProvider = ({ children }: IAppProvider) => {
   const [state, dispatch] = useReducer(mainReducer, initialState);
+
   useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("shoppingCart") || "{}");
+
     const fetchData = async () => {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
 
       const signer = provider.getSigner();
       dispatch({
         type: WEB3_ACTION_TYPES.CHANGE,
-        payload: { provider, myAddress: await signer.getAddress() },
+        payload: { provider, myAddress: await signer.getAddress(), cart },
       });
     };
     if (window?.ethereum?._state?.isUnlocked) {
       fetchData();
+    } else {
+      dispatch({
+        type: WEB3_ACTION_TYPES.CHANGE,
+        payload: { provider: state.web3.provider, myAddress: state.web3.myAddress, cart },
+      });
     }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("shoppingCart", JSON.stringify(state.web3.cart));
+  }, [state.web3.cart]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
