@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { Image } from "primereact/image";
 import { InputText } from "primereact/inputtext";
@@ -6,8 +6,11 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { IBlockchain, ICollection, IFormNewNFTInput } from "@Interfaces/index";
+import { createNFTService } from "@Services/ApiService";
+import { AppContext } from "@Store/index";
 
 const CreateNFT = () => {
+  const web3Context = useContext(AppContext);
   const collections: ICollection[] = [
     { collectionName: "Art", code: "art" },
     { collectionName: "Domain names", code: "domain" },
@@ -34,13 +37,14 @@ const CreateNFT = () => {
 
   function removeFeaturedImage() {
     setFeaturedFile("");
-    resetField("featuredImage")
+    resetField("featuredImage");
   }
 
-  const { register, resetField, control, handleSubmit } = useForm<IFormNewNFTInput>();
+  const { register, resetField, control, handleSubmit } =
+    useForm<IFormNewNFTInput>();
 
-  const onSubmit = (data: IFormNewNFTInput) => {
-    alert(JSON.stringify(data));
+  const onSubmit = async (data: IFormNewNFTInput) => {
+    await createNFTService();
   };
 
   return (
@@ -201,7 +205,7 @@ const CreateNFT = () => {
 
         {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
-          <Button label="Submit" />
+          <Button label="Submit" onClick={() => createNFTService()} />
         </div>
       </form>
     </div>

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import UserProfileContainer from "@Containers/UserProfileContainer/UserProfileContainer";
 
-export default function Home() {
+export default function UserProfilePage() {
   return (
     <>
       <Head>
