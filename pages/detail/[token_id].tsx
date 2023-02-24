@@ -1,7 +1,7 @@
 import Head from "next/head";
 import NFTDetailContainer from "@Containers/NFTDetailContainer/NFTDetailContainer";
 
-export default function Home() {
+export default function NFTDetailPage() {
   return (
     <>
       <Head>

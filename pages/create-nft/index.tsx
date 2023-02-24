@@ -1,7 +1,7 @@
 import Head from "next/head";
 import CreateNFTContainer from "@Containers/CreateNFTContainer/CreateNFTContainer";
 
-export default function Home() {
+export default function CreateNFTPage() {
   return (
     <>
       <Head>

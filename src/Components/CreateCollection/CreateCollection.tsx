@@ -10,6 +10,7 @@ import {
   IBlockchain,
   IFormCollectionInput,
 } from "@Interfaces/index";
+import { createNFTCollectionService } from "@Services/ApiService";
 
 const CreateCollection = () => {
   const categories: ICategory[] = [
@@ -50,24 +51,24 @@ const CreateCollection = () => {
 
   function removeLogoImage() {
     setLogoFile("");
-    resetField("logoImage")
+    resetField("logoImage");
   }
 
   function removeFeaturedImage() {
     setFeaturedFile("");
-    resetField("featuredImage")
+    resetField("featuredImage");
   }
 
   function removeBannerImage() {
     setBannerFile("");
-    resetField("bannerImage")
+    resetField("bannerImage");
   }
 
-  const { register, resetField, control, handleSubmit } = useForm<IFormCollectionInput>();
+  const { register, resetField, control, handleSubmit } =
+    useForm<IFormCollectionInput>();
 
-  const onSubmit = (data: IFormCollectionInput) => {
-    alert(JSON.stringify(data));
-    console.log("data", data);
+  const onSubmit = async (data: IFormCollectionInput) => {
+    await createNFTCollectionService();
   };
 
   return (
@@ -285,7 +286,7 @@ const CreateCollection = () => {
 
         {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
-          <Button label="Submit" />
+          <Button label="Submit" onClick={() => createNFTCollectionService()} />
         </div>
       </form>
     </div>

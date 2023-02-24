@@ -1,7 +1,7 @@
 import Head from "next/head";
 import CreateCollectionContainer from "@Containers/CreateCollectionContainer/CreateCollectionContainer";
 
-export default function Home() {
+export default function CreateCollectionPage() {
   return (
     <>
       <Head>
@@ -12,7 +12,7 @@ export default function Home() {
       </Head>
       <div>
         <>
-          <CreateCollectionContainer/>
+          <CreateCollectionContainer />
         </>
       </div>
     </>
