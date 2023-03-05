@@ -1,5 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEthereum, faInstagram, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import {
+  faEthereum,
+  faInstagram,
+  faTwitter,
+} from "@fortawesome/free-brands-svg-icons";
 import { faHeart, faEye, faClock } from "@fortawesome/free-regular-svg-icons";
 import {
   faBoltLightning,
@@ -24,8 +28,12 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
-import { useContext, useState, useEffect } from "react";
-import { uploadNFTToMarketplaceService, buyTokenService } from "@Services/ApiService";
+import { Toast } from "primereact/toast";
+import { useContext, useState, useEffect, useRef } from "react";
+import {
+  uploadNFTToMarketplaceService,
+  buyTokenService,
+} from "@Services/ApiService";
 import { useRouter } from "next/router";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 
@@ -37,6 +45,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const router = useRouter();
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const toast = useRef<Toast>(null);
 
   const handleUploadNFTToMarketplace = async (tokenId: number) => {
     try {
@@ -46,8 +55,23 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         price: price.toString(),
         unit: selectedUnit,
       });
+      toast.current &&
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Sell NFT successfully!",
+          life: 3000,
+        });
       router.push("/collection/collection-name-example");
-    } catch (error) {}
+    } catch (error) {
+      toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to sell NFT!",
+          life: 3000,
+        });
+    }
   };
 
   const handleBuyToken = async (listingId: number, listingPrice: Number) => {
@@ -56,8 +80,23 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         listingId,
         listingPrice,
       });
+      toast.current &&
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Buy NFT successfully!",
+          life: 3000,
+        });
       router.push(`/user-profile/${web3Context.state.web3.myAddress}`);
-    } catch (error) {}
+    } catch (error) {
+      toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to buy NFT!",
+          life: 3000,
+        });
+    }
   };
 
   const handleAddToCart = (tokenId: number, quantity: number = 1) => {
@@ -107,6 +146,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
 
   return (
     <div id="nft-detail" className="flex flex-wrap space-x-5 px-3">
+      <Toast ref={toast} position="top-center" />
       <div id="left-side" className="w-5/12 h-full">
         <div
           id="image-head-bar"
@@ -140,7 +180,9 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               <FontAwesomeIcon icon={faBars} />
               <span>Description</span>
             </div>
-            <div className="table-content p-5">{nftDetail.metadata?.description}</div>
+            <div className="table-content p-5">
+              {nftDetail.metadata?.description}
+            </div>
           </div>
           <Accordion multiple>
             <AccordionTab
@@ -156,42 +198,58 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
                   <span className="text-xs text-sky-500">BACKGOUND</span>
                   <span className="text-lg text-black">Blue</span>
-                  <span className="text-sm text-gray-500">7% have this trait</span>
+                  <span className="text-sm text-gray-500">
+                    7% have this trait
+                  </span>
                 </div>
                 <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
                   <span className="text-xs text-sky-500">FACIAL TEARS</span>
                   <span className="text-lg text-black">CMYK</span>
-                  <span className="text-sm text-gray-500">68% have this trait</span>
+                  <span className="text-sm text-gray-500">
+                    68% have this trait
+                  </span>
                 </div>
                 <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
                   <span className="text-xs text-sky-500">BACKGOUND</span>
                   <span className="text-lg text-black">Blue</span>
-                  <span className="text-sm text-gray-500">7% have this trait</span>
+                  <span className="text-sm text-gray-500">
+                    7% have this trait
+                  </span>
                 </div>
                 <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
                   <span className="text-xs text-sky-500">FACIAL TEARS</span>
                   <span className="text-lg text-black">CMYK</span>
-                  <span className="text-sm text-gray-500">68% have this trait</span>
+                  <span className="text-sm text-gray-500">
+                    68% have this trait
+                  </span>
                 </div>
                 <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
                   <span className="text-xs text-sky-500">BACKGOUND</span>
                   <span className="text-lg text-black">Blue</span>
-                  <span className="text-sm text-gray-500">7% have this trait</span>
+                  <span className="text-sm text-gray-500">
+                    7% have this trait
+                  </span>
                 </div>
                 <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
                   <span className="text-xs text-sky-500">FACIAL TEARS</span>
                   <span className="text-lg text-black">CMYK</span>
-                  <span className="text-sm text-gray-500">68% have this trait</span>
+                  <span className="text-sm text-gray-500">
+                    68% have this trait
+                  </span>
                 </div>
                 <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
                   <span className="text-xs text-sky-500">BACKGOUND</span>
                   <span className="text-lg text-black">Blue</span>
-                  <span className="text-sm text-gray-500">7% have this trait</span>
+                  <span className="text-sm text-gray-500">
+                    7% have this trait
+                  </span>
                 </div>
                 <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
                   <span className="text-xs text-sky-500">FACIAL TEARS</span>
                   <span className="text-lg text-black">CMYK</span>
-                  <span className="text-sm text-gray-500">68% have this trait</span>
+                  <span className="text-sm text-gray-500">
+                    68% have this trait
+                  </span>
                 </div>
               </div>
             </AccordionTab>
@@ -208,23 +266,28 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               }
             >
               <div className="flex space-x-3">
-                <img className="avatar w-6 h-6 rounded-3xl mt-2" src={nftDetail.metadata?.image} alt="" />
+                <img
+                  className="avatar w-6 h-6 rounded-3xl mt-2"
+                  src={nftDetail.metadata?.image}
+                  alt=""
+                />
                 <span className="about-text">
                   <span className="space-x-1">
                     <Link className="text-blue-500" href="">
                       GEMMA
                     </Link>
                     <span>
-                      (The Generative Electronic Museum of Metaverse Art) is a comprehensive generative art collection
-                      by
+                      (The Generative Electronic Museum of Metaverse Art) is a
+                      comprehensive generative art collection by
                     </span>
                     <Link className="text-blue-500" href="">
                       Tristan Eaton
                     </Link>
                     .
                     <span>
-                      Combining Eaton's stunning portraiture and layered collage, each piece carries its own unique
-                      personality and identity.
+                      Combining Eaton's stunning portraiture and layered
+                      collage, each piece carries its own unique personality and
+                      identity.
                     </span>
                   </span>
                   <br />
@@ -267,7 +330,10 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               <div className="space-y-3">
                 <div className="w-full flex justify-between">
                   <span>Contract Address</span>
-                  <Link className="text-blue-500 w-28 overflow-hidden text-ellipsis" href="">
+                  <Link
+                    className="text-blue-500 w-28 overflow-hidden text-ellipsis"
+                    href=""
+                  >
                     <span>{nftDetail.contract_addr}</span>
                   </Link>
                 </div>
@@ -292,7 +358,10 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
       </div>
       <div id="right-side" className="flex-1">
         <div className="flex justify-between">
-          <Link href="/" className="author h-12 flex items-center space-x-2 text-blue-500">
+          <Link
+            href="/"
+            className="author h-12 flex items-center space-x-2 text-blue-500"
+          >
             <span>
               {nftDetail.metadata?.name} BY {"AuthorName"}
             </span>
@@ -315,7 +384,9 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             </i>
           </div>
         </div>
-        <h1 className="name h-14 text-4xl flex items-center font-semibold mt-2 mb-1">{nftDetail.metadata?.name}</h1>
+        <h1 className="name h-14 text-4xl flex items-center font-semibold mt-2 mb-1">
+          {nftDetail.metadata?.name}
+        </h1>
         <h2 className="owner h-9 flex justify-start items-center space-x-1">
           <span>Owned by</span>
           <Link href="/" className="text-blue-500">
@@ -380,9 +451,15 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="price flex mb-3 space-x-2">
                   <span className="text-3xl font-bold space-x-1 my-1 ">
                     <span className="price-value">
-                      {(nftDetail?.listing?.price || 0) / 1000000000 < 1000000000
-                        ? `${(nftDetail?.listing?.price || 0) / 1000000000} GWEI`
-                        : `${(nftDetail?.listing?.price || 0) / 1000000000000000000} ETH`}
+                      {(nftDetail?.listing?.price || 0) / 1000000000 <
+                      1000000000
+                        ? `${
+                            (nftDetail?.listing?.price || 0) / 1000000000
+                          } GWEI`
+                        : `${
+                            (nftDetail?.listing?.price || 0) /
+                            1000000000000000000
+                          } ETH`}
                     </span>
                   </span>
                 </div>
@@ -390,12 +467,18 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             )}
 
             {nftDetail.listing &&
-              nftDetail.listing.seller.toLowerCase() !== web3Context.state.web3.myAddress.toLowerCase() && (
+              nftDetail.listing.seller.toLowerCase() !==
+                web3Context.state.web3.myAddress.toLowerCase() && (
                 <div className="buttons h-16 flex space-x-2 font-bold">
                   <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
                     <button
                       className="buy-now-btn w-12"
-                      onClick={() => handleBuyToken(nftDetail.listing?.listing_id || 0, nftDetail.listing?.price || 0)}
+                      onClick={() =>
+                        handleBuyToken(
+                          nftDetail.listing?.listing_id || 0,
+                          nftDetail.listing?.price || 0
+                        )
+                      }
                     >
                       <i>
                         <FontAwesomeIcon icon={faBoltLightning} />
@@ -427,64 +510,71 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                   </button>
                 </div>
               )}
-            {!nftDetail.listing && nftDetail.owner.toLowerCase() === web3Context.state.web3.myAddress.toLowerCase() && (
-              <div className="buttons h-16 flex space-x-2 font-bold">
-                <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
-                  {!nftDetail.listing && (
-                    <button className="add-to-cart-btn flex-1 border-r" onClick={() => setVisible(true)}>
-                      Sell
-                    </button>
-                  )}
-                  <Dialog
-                    header="Please input the price that you want to sell"
-                    visible={visible}
-                    style={{ width: "50vw" }}
-                    onHide={() => setVisible(false)}
-                    footer={
-                      <div>
-                        <Button
-                          label="Cancel"
-                          icon="pi pi-times"
-                          onClick={() => setVisible(false)}
-                          className="p-button-text"
+            {!nftDetail.listing &&
+              nftDetail.owner.toLowerCase() ===
+                web3Context.state.web3.myAddress.toLowerCase() && (
+                <div className="buttons h-16 flex space-x-2 font-bold">
+                  <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
+                    {!nftDetail.listing && (
+                      <button
+                        className="add-to-cart-btn flex-1 border-r"
+                        onClick={() => setVisible(true)}
+                      >
+                        Sell
+                      </button>
+                    )}
+                    <Dialog
+                      header="Please input the price that you want to sell"
+                      visible={visible}
+                      style={{ width: "50vw" }}
+                      onHide={() => setVisible(false)}
+                      footer={
+                        <div>
+                          <Button
+                            label="Cancel"
+                            icon="pi pi-times"
+                            onClick={() => setVisible(false)}
+                            className="p-button-text"
+                          />
+                          <Button
+                            label="Sell"
+                            icon="pi pi-check"
+                            onClick={() =>
+                              handleUploadNFTToMarketplace(nftDetail.token_id)
+                            }
+                            autoFocus
+                          />
+                        </div>
+                      }
+                    >
+                      <div className="flex gap-3">
+                        <InputNumber
+                          placeholder="Input the price"
+                          value={price}
+                          onValueChange={(e: any) => setPrice(e.value)}
+                          minFractionDigits={2}
+                          maxFractionDigits={5}
+                          min={0}
                         />
-                        <Button
-                          label="Sell"
-                          icon="pi pi-check"
-                          onClick={() => handleUploadNFTToMarketplace(nftDetail.token_id)}
-                          autoFocus
+                        <Dropdown
+                          value={selectedUnit}
+                          onChange={(e) => setSelectedUnit(e.value)}
+                          options={units}
+                          optionLabel="name"
+                          placeholder="Select a unit"
+                          className="md:w-14rem"
                         />
                       </div>
-                    }
-                  >
-                    <div className="flex gap-3">
-                      <InputNumber
-                        placeholder="Input the price"
-                        value={price}
-                        onValueChange={(e: any) => setPrice(e.value)}
-                        minFractionDigits={2}
-                        maxFractionDigits={5}
-                        min={0}
-                      />
-                      <Dropdown
-                        value={selectedUnit}
-                        onChange={(e) => setSelectedUnit(e.value)}
-                        options={units}
-                        optionLabel="name"
-                        placeholder="Select a unit"
-                        className="md:w-14rem"
-                      />
-                    </div>
-                  </Dialog>
+                    </Dialog>
+                  </div>
+                  <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
+                    <i>
+                      <FontAwesomeIcon icon={faTicketSimple} />
+                    </i>
+                    <span>Make offer</span>
+                  </button>
                 </div>
-                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
-                  <i>
-                    <FontAwesomeIcon icon={faTicketSimple} />
-                  </i>
-                  <span>Make offer</span>
-                </button>
-              </div>
-            )}
+              )}
           </div>
         </div>
       </div>

@@ -39,7 +39,7 @@ const NFTDetailContainer = () => {
     <>
       {nftDetail && (
         <>
-          <Toast ref={toast} position="bottom-right" />
+          <Toast ref={toast} position="top-center" />
           <NFTDetail nftDetail={nftDetail} />
         </>
       )}

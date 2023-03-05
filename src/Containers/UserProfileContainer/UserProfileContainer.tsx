@@ -48,7 +48,7 @@ const UserProfileContainer = () => {
       {web3Context.state.web3.provider ? (
         <>
           <div>
-            <Toast ref={toast} position="bottom-right" />
+            <Toast ref={toast} position="top-center" />
             <NFTImageUserProfile></NFTImageUserProfile>
             <UserInfor></UserInfor>
             <NFTUserProfileTabs
