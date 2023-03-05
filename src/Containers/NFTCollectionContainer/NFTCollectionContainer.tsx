@@ -39,7 +39,7 @@ const NFTCollectionContainer = () => {
   }, [countFetchNftCollectionList, router]);
   return (
     <>
-      <Toast ref={toast} position="bottom-right" />
+      <Toast ref={toast} position="top-center" />
       <ImageProfile nftCollectionList={nftCollectionList}></ImageProfile>
       <NFTInfor nftCollectionList={nftCollectionList}></NFTInfor>
       <NFTCollectionList
