@@ -23,22 +23,19 @@ const UserProfileContainer = () => {
   const web3Context = useContext(AppContext);
   useEffect(() => {
     const fetchData = async () => {
-      getNFTCollectionListService(web3Context.state.web3.myAddress).then(
-        (res) => {
-          if (res) {
-            const nftsProfile = res.nfts.filter((item: any) => !item.listing);
-            setNftCollectionList(nftsProfile);
-          } else {
-            toast.current &&
-              toast.current.show({
-                severity: "error",
-                summary: "Error",
-                detail: "Fail to load your collections",
-                life: 3000,
-              });
-          }
+      getNFTCollectionListService().then((res) => {
+        if (res) {
+          setNftCollectionList(res.nfts);
+        } else {
+          toast.current &&
+            toast.current.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Fail to load your collections",
+              life: 3000,
+            });
         }
-      );
+      });
     };
     fetchData();
   }, [countFetchNftCollectionList, web3Context.state.web3.myAddress, router]);

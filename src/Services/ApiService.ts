@@ -1,9 +1,21 @@
 import axios from "axios";
 import { ethers } from "ethers";
 import { erc721Abi, mkpAbi } from "@Constants/abi";
+import {
+  getTestItem721,
+  getItemETH,
+  createOrder,
+  transformData,
+} from "@Utils/index";
+import { CURRENCY } from "@Constants/index";
+import { parseGwei } from "@Utils/index";
 
-export interface IUploadNFTToMarketplaceServiceProps {
-  ownerAddress: string;
+const { parseEther } = ethers.utils;
+
+export interface IsellNFTProps {
+  provider: any;
+  myAddress: string;
+  myWallet: any;
   tokenId: number;
   price: string;
   unit: string;
@@ -27,64 +39,107 @@ export const getNFTCollectionListService = async (
     .catch((err) => {});
 };
 
-export const uploadNFTToMarketplaceService = async ({
-  ownerAddress,
+export const sellNFT = async ({
+  provider,
+  myAddress,
+  myWallet,
   tokenId,
   price,
   unit,
-}: IUploadNFTToMarketplaceServiceProps) => {
-  const erc721Address =
-    process.env.NEXT_PUBLIC_ERC721_ADDRESS ??
-    "0x29F46089d9CFCD121a9bb70DCFd04129ce9E5B7F";
-  const mkpAddress =
-    process.env.NEXT_PUBLIC_MKP_ADDRESS ??
-    "0xF7E7948A19ab416df252337966262CF1C150Be3c";
+}: IsellNFTProps) => {
+  try {
+    const erc721Address =
+      process.env.NEXT_PUBLIC_ERC721_ADDRESS ??
+      "0xc9c7e04c41a01c9072c2d074e1258a1f56d0603a";
+    const mkpAddress =
+      process.env.NEXT_PUBLIC_MKP_ADDRESS ??
+      "0x5300EEEeA4751fDF9f32647B965599e8Ef7656DC";
 
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
 
-  await provider.send("eth_requestAccounts", []);
+    const erc721Contract = new ethers.Contract(
+      erc721Address,
+      erc721Abi,
+      provider
+    );
 
-  const signer = provider.getSigner();
+    const erc721ContractWithSigner = erc721Contract.connect(myWallet);
 
-  const erc721Contract = new ethers.Contract(
-    erc721Address,
-    erc721Abi,
-    provider
-  );
+    await erc721ContractWithSigner["setApprovalForAll(address,bool)"](
+      mkpAddress,
+      true
+    );
 
-  const erc721ContractWithSigner = erc721Contract.connect(signer);
+    const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 
-  const listingPrice = ethers.utils.parseUnits(price, unit);
-  const listingData = ethers.utils.defaultAbiCoder.encode(
-    ["int8", "uint256"],
-    [0, listingPrice]
-  );
+    const mkpContractWithSigner = mkpContract.connect(myWallet);
 
-  await erc721ContractWithSigner[
-    "safeTransferFrom(address,address,uint256,bytes)"
-  ](ownerAddress, mkpAddress, tokenId, listingData);
+    // await erc721ContractWithSigner["mint"](await signer.getAddress(), nftId, uri);
+    const offer = [
+      getTestItem721(
+        tokenId,
+        unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
+        unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price)
+      ),
+    ];
+    const consideration = [
+      getItemETH(
+        unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
+        unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
+        myAddress
+      ),
+    ];
+    const { chainId } = await provider.getNetwork();
+    const {
+      order,
+      orderHash,
+      value,
+      orderStatus,
+      orderComponents,
+      startTime,
+      endTime,
+      signature,
+    } = await createOrder(
+      mkpContractWithSigner,
+      chainId,
+      myWallet,
+      undefined,
+      offer,
+      consideration,
+      0 // FULL_OPEN
+    );
+
+    console.log(orderHash);
+
+    // const tx = await mkpContractWithSigner[
+    //   "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
+    // ](order, { value });
+
+    await axios.post(
+      "/api/v0.1/orders",
+      transformData({
+        orderHash,
+        offerer: myAddress,
+        zone: "",
+        zone_hash: "",
+        signature,
+        offer,
+        consideration,
+        orderType: orderComponents.orderType,
+        orderValue: value,
+        startTime,
+        endTime,
+        salt: orderComponents.salt,
+        counter: orderComponents.counter,
+      })
+    );
+  } catch (err) {
+    console.error(err);
+  }
 };
 
-export const buyTokenService = async ({
-  listingId,
-  listingPrice,
-}: IBuyTokenProps) => {
-  const mkpAddress =
-    process.env.NEXT_PUBLIC_MKP_ADDRESS ??
-    "0x60f63bb3084c8e3e55c0072813a0efc696a3c50e";
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-  await provider.send("eth_requestAccounts", []);
-
-  const signer = provider.getSigner();
-
-  const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
-
-  const mkpContractWithSigner = mkpContract.connect(signer);
-
-  await mkpContractWithSigner["buy(uint256)"](listingId, {
-    value: listingPrice.toString(),
-  });
+export const buyTokenService = async () => {
+  //todo
 };
 
 export const createNFTService = async () => {
