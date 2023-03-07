@@ -27,6 +27,7 @@
       "@Constants/*": ["src/Constants/*"],
       "@Containers/*": ["src/Containers/*"],
       "@Assets/*": ["src/Assets/*"],
+      "@Utils/*": ["src/Utils/*"],
       "@Src/*": ["src/*"]
     }
   },

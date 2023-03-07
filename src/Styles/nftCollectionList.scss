@@ -3,6 +3,7 @@
     .nft-collection-item {
       position: relative;
       box-shadow: rgb(0 0 0 / 8%) 0px 4px 15px;
+      min-height: 24rem;
       &:hover {
         .nft-collection-img {
           transition: all 0.2s ease-in-out;
