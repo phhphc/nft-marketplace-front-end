@@ -7,7 +7,6 @@ import {
   uploadNFTToMarketplaceService,
   buyTokenService,
 } from "@Services/ApiService";
-import { NFT_COLLECTION_MODE } from "@Constants/index";
 import { useContext, useState, useEffect, useRef } from "react";
 import { AppContext } from "@Store/index";
 import { Dialog } from "primereact/dialog";
@@ -20,13 +19,11 @@ import { WEB3_ACTION_TYPES } from "@Store/index";
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem;
   viewType: COLLECTION_VIEW_TYPE;
-  mode: NFT_COLLECTION_MODE;
   setCountFetchNftCollectionList: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionGridItem = ({
   item,
-  mode,
   viewType,
   setCountFetchNftCollectionList,
 }: INFTCollectionGridItemProps) => {
@@ -161,7 +158,9 @@ const NFTCollectionGridItem = ({
             </h3>
             {item.listing && (
               <p className="text-sm font-medium text-gray-900 uppercase">
-                {mode === NFT_COLLECTION_MODE.CAN_BUY
+                {item.listing &&
+                item.listing.seller.toLowerCase() !==
+                  web3Context.state.web3.myAddress.toLowerCase()
                   ? (item?.listing?.price || 0) / 1000000000 < 1000000000
                     ? `${(item?.listing?.price || 0) / 1000000000} GWEI`
                     : `${(item?.listing?.price || 0) / 1000000000000000000} ETH`

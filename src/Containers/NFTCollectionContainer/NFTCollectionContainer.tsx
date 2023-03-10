@@ -1,7 +1,6 @@
 import NFTCollectionList from "@Components/NFTCollectionList/NFTCollectionList";
 import ImageProfile from "@Components/NFTProfile/ImageProfile";
 import NFTInfor from "@Components/NFTProfile/NFTInfor";
-import { NFT_COLLECTION_MODE } from "@Constants/index";
 import { getNFTCollectionListService } from "@Services/ApiService";
 import { useState, useEffect, useRef } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
@@ -44,7 +43,6 @@ const NFTCollectionContainer = () => {
       <NFTInfor nftCollectionList={nftCollectionList}></NFTInfor>
       <NFTCollectionList
         nftCollectionList={nftCollectionList}
-        mode={NFT_COLLECTION_MODE.CAN_BUY}
         setCountFetchNftCollectionList={setCountFetchNftCollectionList}
       />
     </>

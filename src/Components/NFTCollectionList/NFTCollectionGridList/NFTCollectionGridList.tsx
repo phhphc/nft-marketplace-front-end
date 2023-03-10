@@ -1,19 +1,16 @@
 import NFTCollectionGridItem from "./NFTCollectionGridItem";
 import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { NFT_COLLECTION_MODE } from "@Constants/index";
 
 export interface INFTCollectionGridListProps {
   nftCollectionList: INFTCollectionItem[];
   viewType: COLLECTION_VIEW_TYPE;
-  mode: NFT_COLLECTION_MODE;
   setCountFetchNftCollectionList: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionGridList = ({
   nftCollectionList,
   viewType,
-  mode,
   setCountFetchNftCollectionList,
 }: INFTCollectionGridListProps) => {
   return (
@@ -32,7 +29,6 @@ const NFTCollectionGridList = ({
               key={item.token_id}
               item={item}
               viewType={viewType}
-              mode={mode}
             />
           ))}
         </div>

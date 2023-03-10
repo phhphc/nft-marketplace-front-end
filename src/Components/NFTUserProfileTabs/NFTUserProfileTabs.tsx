@@ -5,7 +5,6 @@ import {
 } from "@Constants/index";
 import NFTCollectionList from "@Components/NFTCollectionList/NFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { NFT_COLLECTION_MODE } from "@Constants/index";
 
 export interface INFTUserProfileTabsProps {
   nftCollectionList: INFTCollectionItem[];
@@ -44,7 +43,6 @@ const NFTUserProfileTabs = ({
         <NFTCollectionList
           nftCollectionList={nftCollectionList}
           key={1}
-          mode={NFT_COLLECTION_MODE.CAN_SELL}
           setCountFetchNftCollectionList={setCountFetchNftCollectionList}
         />
       )}
@@ -52,7 +50,6 @@ const NFTUserProfileTabs = ({
         <NFTCollectionList
           nftCollectionList={nftCollectionList}
           key={2}
-          mode={NFT_COLLECTION_MODE.CAN_SELL}
           setCountFetchNftCollectionList={setCountFetchNftCollectionList}
         />
       )}
@@ -60,7 +57,6 @@ const NFTUserProfileTabs = ({
         <NFTCollectionList
           nftCollectionList={nftCollectionList}
           key={3}
-          mode={NFT_COLLECTION_MODE.CAN_SELL}
           setCountFetchNftCollectionList={setCountFetchNftCollectionList}
         />
       )}

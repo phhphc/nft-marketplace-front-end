@@ -64,8 +64,3 @@ export const SORT_OPTIONS: IDropDown[] = [
   { name: "Price low to high", code: "1" },
   { name: "Price high to low", code: "2" },
 ];
-
-export enum NFT_COLLECTION_MODE {
-  CAN_BUY = "CAN_BUY",
-  CAN_SELL = "CAN_SELL",
-}

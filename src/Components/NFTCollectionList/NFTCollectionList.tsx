@@ -5,17 +5,14 @@ import NFTCollectionListTopSection from "@Components/NFTCollectionList/NFTCollec
 import NFTCollectionFilter from "@Components/NFTCollectionList/NFTCollectionFilter";
 import NFTCollectionTableList from "@Components/NFTCollectionList/NFTCollectionTableList/NFTCollectionTableList";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { NFT_COLLECTION_MODE } from "@Constants/index";
 
 export interface INFTCollectionListProps {
   nftCollectionList: INFTCollectionItem[];
-  mode: NFT_COLLECTION_MODE;
   setCountFetchNftCollectionList: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionList = ({
   nftCollectionList,
-  mode,
   setCountFetchNftCollectionList,
 }: INFTCollectionListProps) => {
   const [viewType, setViewType] = useState<COLLECTION_VIEW_TYPE>(
@@ -45,7 +42,6 @@ const NFTCollectionList = ({
             <NFTCollectionGridList
               viewType={viewType}
               nftCollectionList={nftCollectionList}
-              mode={mode}
               setCountFetchNftCollectionList={setCountFetchNftCollectionList}
             />
           )}
