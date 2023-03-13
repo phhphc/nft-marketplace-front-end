@@ -2,7 +2,7 @@ import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBoltLightning } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
-import { INFTCollectionItem } from "@Interfaces/index";
+import { INFTCollectionItem, Order, OrderParameters } from "@Interfaces/index";
 import { sellNFT, buyTokenService } from "@Services/ApiService";
 import { NFT_COLLECTION_MODE, CURRENCY_UNITS } from "@Constants/index";
 import { useContext, useState, useEffect, useRef } from "react";
@@ -27,6 +27,12 @@ const NFTCollectionGridItem = ({
   viewType,
   setCountFetchNftCollectionList,
 }: INFTCollectionGridItemProps) => {
+  const canBuy = (item: INFTCollectionItem) => {
+    return !!item.order;
+  };
+  const canSell = (item: INFTCollectionItem) => {
+    return !item.order;
+  };
   const [price, setPrice] = useState<number>(0);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
@@ -62,9 +68,13 @@ const NFTCollectionGridItem = ({
     }
   };
 
-  const handleBuyToken = async (listingId: number, listingPrice: Number) => {
+  const handleBuyToken = async (
+    myWallet: any,
+    provider: any,
+    order?: Order
+  ) => {
     try {
-      await buyTokenService();
+      if (order) await buyTokenService({ order, myWallet, provider });
       toast.current &&
         toast.current.show({
           severity: "success",
@@ -74,6 +84,7 @@ const NFTCollectionGridItem = ({
         });
       setCountFetchNftCollectionList((prev) => prev + 1);
     } catch (error) {
+      console.log(error);
       toast.current &&
         toast.current.show({
           severity: "error",
@@ -158,15 +169,16 @@ const NFTCollectionGridItem = ({
               </p>
             )}
           </div>
-          {false && (
+          {canBuy(item) && (
             <div className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom">
               <>
                 <button
                   className="bg-blue-500 py-2 px-4 buy-now-btn rounded-br-md"
                   onClick={() =>
                     handleBuyToken(
-                      item.listing?.listing_id || 0,
-                      item.listing?.price || 0
+                      web3Context.state.web3.myWallet,
+                      web3Context.state.web3.provider,
+                      item.order?.[0]
                     )
                   }
                 >
@@ -193,7 +205,7 @@ const NFTCollectionGridItem = ({
               </>
             </div>
           )}
-          {true && (
+          {canSell(item) && (
             <div className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom">
               <button
                 className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md"

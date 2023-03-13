@@ -100,13 +100,19 @@ export const orderType = {
   ],
 };
 
-export const DATA_MAPPING: any = {
+export const DATA_MAPPING_SNAKIZE: any = {
   identifier: "token_id",
   itemType: "type_number",
   token: "token_address",
 };
 
-export const NORMAL_STRING_MAPPING: any = ["type_number", "order_type"];
+export const DATA_MAPPING_CAMELIZE: any = {
+  identifier: "token_id",
+  itemType: "type_number",
+  token: "token_address",
+};
+
+export const NORMAL_STRING_MAPPING: any = ["type_number", "order_type", "salt"];
 
 export const CURRENCY = {
   ETHER: "Ether",

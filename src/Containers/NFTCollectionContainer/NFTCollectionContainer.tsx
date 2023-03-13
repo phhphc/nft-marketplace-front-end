@@ -2,7 +2,10 @@ import NFTCollectionList from "@Components/NFTCollectionList/NFTCollectionList";
 import ImageProfile from "@Components/NFTProfile/ImageProfile";
 import NFTInfor from "@Components/NFTProfile/NFTInfor";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
-import { getNFTCollectionListService } from "@Services/ApiService";
+import {
+  getNFTCollectionListService,
+  getOfferByToken,
+} from "@Services/ApiService";
 import { useState, useEffect, useRef } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { Toast } from "primereact/toast";
@@ -20,19 +23,42 @@ const NFTCollectionContainer = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      getNFTCollectionListService().then((data) => {
+      try {
+        const data = await getNFTCollectionListService();
         if (data) {
-          setNftCollectionList(data.nfts);
-        } else {
-          toast.current &&
-            toast.current.show({
-              severity: "error",
-              summary: "Error",
-              detail: "Fail to load collections",
-              life: 3000,
-            });
+          const newData = await Promise.all(
+            data.nfts.map(async (item: any) => {
+              const orderParameters = await getOfferByToken({
+                tokenId: item.token_id,
+                tokenAddress: item.contract_addr,
+              });
+              if (orderParameters?.length) {
+                const signature = orderParameters[0].signature;
+                delete orderParameters[0].signature;
+                delete orderParameters[0].is_cancelled;
+                delete orderParameters[0].is_validated;
+                return {
+                  ...item,
+                  order: {
+                    parameters: orderParameters[0],
+                    signature,
+                  },
+                };
+              } else return item;
+            })
+          );
+          console.log(newData);
+          setNftCollectionList(newData);
         }
-      });
+      } catch (err) {
+        toast.current &&
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Fail to load collections",
+            life: 3000,
+          });
+      }
     };
 
     fetchData();

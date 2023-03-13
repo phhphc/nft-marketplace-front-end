@@ -22,7 +22,7 @@ import Link from "next/link";
 
 import { Tooltip } from "primereact/tooltip";
 import { Accordion, AccordionTab } from "primereact/accordion";
-import { INFTCollectionItem } from "@Interfaces/index";
+import { INFTCollectionItem, Order } from "@Interfaces/index";
 import { AppContext } from "@Store/index";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
@@ -74,9 +74,13 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
     }
   };
 
-  const handleBuyToken = async (listingId: number, listingPrice: Number) => {
+  const handleBuyToken = async (
+    myWallet: any,
+    provider: any,
+    order?: Order
+  ) => {
     try {
-      await buyTokenService();
+      if (order) await buyTokenService({ order, myWallet, provider });
       toast.current &&
         toast.current.show({
           severity: "success",
@@ -84,8 +88,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           detail: "Buy NFT successfully!",
           life: 3000,
         });
-      router.push(`/user-profile/${web3Context.state.web3.myAddress}`);
     } catch (error) {
+      console.log(error);
       toast.current &&
         toast.current.show({
           severity: "error",
@@ -466,8 +470,9 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     className="buy-now-btn w-12"
                     onClick={() =>
                       handleBuyToken(
-                        nftDetail.listing?.listing_id || 0,
-                        nftDetail.listing?.price || 0
+                        web3Context.state.web3.myWallet,
+                        web3Context.state.web3.provider,
+                        nftDetail.order?.[0]
                       )
                     }
                   >
