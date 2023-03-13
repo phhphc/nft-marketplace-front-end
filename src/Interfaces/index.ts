@@ -20,6 +20,7 @@ export interface INFTCollectionItem {
   contract_addr: string;
   metadata?: IMetaData;
   listing?: IListing;
+  order?: Order[];
 }
 
 export interface IListing {

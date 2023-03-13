@@ -6,9 +6,11 @@ import {
   getItemETH,
   createOrder,
   transformData,
+  camelizeKeys,
 } from "@Utils/index";
 import { CURRENCY } from "@Constants/index";
-import { parseGwei } from "@Utils/index";
+import { parseGwei, toBN } from "@Utils/index";
+import { Order, OrderParameters } from "@Interfaces/index";
 
 const { parseEther } = ethers.utils;
 
@@ -26,6 +28,17 @@ export interface IBuyTokenProps {
   listingPrice: Number;
 }
 
+export interface IGetOfferByTokenProps {
+  tokenId: string;
+  tokenAddress: string;
+}
+
+export interface IBuyTokenServiceProps {
+  provider: any;
+  myWallet: any;
+  order: Order;
+}
+
 export const getNFTCollectionListService = async (
   owner?: string
 ): Promise<any> => {
@@ -33,6 +46,20 @@ export const getNFTCollectionListService = async (
   if (owner) params.owner = owner;
   return axios
     .get("/api/v0.1/nft", { params })
+    .then((response) => {
+      return response.data.data || [];
+    })
+    .catch((err) => {});
+};
+
+export const getOfferByToken = async ({
+  tokenId,
+  tokenAddress,
+}: IGetOfferByTokenProps): Promise<any> => {
+  return axios
+    .get("/api/v0.1/orders/offer", {
+      params: transformData({ tokenId, tokenAddress }),
+    })
     .then((response) => {
       return response.data.data || [];
     })
@@ -109,11 +136,7 @@ export const sellNFT = async ({
       0 // FULL_OPEN
     );
 
-    console.log(orderHash);
-
-    // const tx = await mkpContractWithSigner[
-    //   "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
-    // ](order, { value });
+    console.log(orderHash, orderComponents.salt);
 
     await axios.post(
       "/api/v0.1/orders",
@@ -129,7 +152,7 @@ export const sellNFT = async ({
         orderValue: value,
         startTime,
         endTime,
-        salt: orderComponents.salt,
+        salt: 1,
         counter: orderComponents.counter,
       })
     );
@@ -138,8 +161,35 @@ export const sellNFT = async ({
   }
 };
 
-export const buyTokenService = async () => {
-  //todo
+export const buyTokenService = async ({
+  order,
+  myWallet,
+  provider,
+}: IBuyTokenServiceProps) => {
+  const erc721Address =
+    process.env.NEXT_PUBLIC_ERC721_ADDRESS ??
+    "0xc9c7e04c41a01c9072c2d074e1258a1f56d0603a";
+  const mkpAddress =
+    process.env.NEXT_PUBLIC_MKP_ADDRESS ??
+    "0x5300EEEeA4751fDF9f32647B965599e8Ef7656DC";
+
+  await provider.send("eth_requestAccounts", []);
+
+  const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
+
+  const mkpContractWithSigner = mkpContract.connect(myWallet);
+  console.log(
+    "🚀 ~ file: ApiService.ts:184 ~ mkpContractWithSigner:",
+    Object.keys(mkpContractWithSigner)[13]
+  );
+  console.log("🚀 ~ file: ApiService.ts:172 ~ order:", order);
+  await mkpContractWithSigner[
+    "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
+  ](
+    camelizeKeys(order),
+
+    { value: parseEther("10"), gasLimit: 100000 }
+  );
 };
 
 export const createNFTService = async () => {

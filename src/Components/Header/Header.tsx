@@ -10,10 +10,15 @@ import { useContext, useEffect, useMemo, useState, useRef } from "react";
 import { ethers } from "ethers";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import avatar from "@Assets/avatar.png";
-import { getNFTCollectionListService } from "@Services/ApiService";
+import {
+  getNFTCollectionListService,
+  getOfferByToken,
+} from "@Services/ApiService";
 import { INFTCollectionItem } from "@Interfaces/index";
+import { Toast } from "primereact/toast";
 
 const Header = () => {
+  const toast = useRef<Toast>(null);
   const web3Context = useContext(AppContext);
   const [myAddress, setMyAddress] = useState(web3Context.state.web3.myAddress);
   const [provider, setProvider] = useState(web3Context.state.web3.provider);
@@ -47,7 +52,11 @@ const Header = () => {
   const handleLogOut = () => {
     web3Context.dispatch({
       type: WEB3_ACTION_TYPES.CHANGE,
-      payload: { provider: null, myAddress: "", cart: web3Context.state.web3.cart },
+      payload: {
+        provider: null,
+        myAddress: "",
+        cart: web3Context.state.web3.cart,
+      },
     });
   };
 
@@ -56,9 +65,11 @@ const Header = () => {
     setProvider(web3Context.state.web3.provider);
     if (web3Context.state.web3.provider !== null) {
       setWalletConnected(true);
-      web3Context.state.web3.provider.getBalance(web3Context.state.web3.myAddress).then((result: any) => {
-        setBalance(Number(ethers.utils.formatEther(result)));
-      });
+      web3Context.state.web3.provider
+        .getBalance(web3Context.state.web3.myAddress)
+        .then((result: any) => {
+          setBalance(Number(ethers.utils.formatEther(result)));
+        });
     } else {
       setWalletConnected(false);
       setBalance(0);
@@ -78,7 +89,9 @@ const Header = () => {
   const [cartModalVisible, setCartModalVisible] = useState(false);
   const totalPrice = useMemo(() => {
     return Math.round(
-      (cartItemList ? cartItemList.reduce((acc, cur) => acc + (cur.listing?.price || 0), 0) : 0) / 1000000000000000000
+      (cartItemList
+        ? cartItemList.reduce((acc, cur) => acc + (cur.listing?.price || 0), 0)
+        : 0) / 1000000000000000000
     );
   }, [cartItemList]);
 
@@ -124,12 +137,41 @@ const Header = () => {
   useEffect(() => {
     const cart = { ...web3Context.state.web3.cart };
     const fetchData = async () => {
-      getNFTCollectionListService().then((data) => {
+      try {
+        const data = await getNFTCollectionListService();
         if (data) {
-          const nftList = data.nfts;
-          setCartItemList(nftList.filter((item: any) => item.token_id in cart));
+          const newData = await Promise.all(
+            data.nfts.map(async (item: any) => {
+              const orderParameters = await getOfferByToken({
+                tokenId: item.token_id,
+                tokenAddress: item.contract_addr,
+              });
+              if (orderParameters?.length) {
+                const signature = orderParameters[0].signature;
+                delete orderParameters[0].signature;
+                delete orderParameters[0].is_cancelled;
+                delete orderParameters[0].is_validated;
+                return {
+                  ...item,
+                  order: {
+                    parameters: orderParameters[0],
+                    signature,
+                  },
+                };
+              } else return item;
+            })
+          );
+          setCartItemList(newData);
         }
-      });
+      } catch (err) {
+        toast.current &&
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Fail to load collections",
+            life: 3000,
+          });
+      }
     };
     fetchData();
   }, [web3Context.state.web3.cart]);
@@ -145,17 +187,30 @@ const Header = () => {
         {/* Search bar */}
         <span id="search-bar" className="p-input-icon-left">
           <i className="pi pi-search" />
-          <InputText placeholder="Search NFTs, collections, and accounts" className="w-96 h-10" />
+          <InputText
+            placeholder="Search NFTs, collections, and accounts"
+            className="w-96 h-10"
+          />
         </span>
 
         {/* Profile, wallet and cart */}
-        <div id="navbar" className="w-56 flex items-center justify-end space-x-5">
+        <div
+          id="navbar"
+          className="w-56 flex items-center justify-end space-x-5"
+        >
           {/* Profile icon and wallet icon when connecting to wallet */}
           {walletConnected && (
             <>
               {/* Profile */}
-              <Link href={`/user-profile/${myAddress}`} className="profile-btn relative">
-                <Image src={avatar} alt="avatar" className="h-12 w-12 border-2 border-black rounded-full" />
+              <Link
+                href={`/user-profile/${myAddress}`}
+                className="profile-btn relative"
+              >
+                <Image
+                  src={avatar}
+                  alt="avatar"
+                  className="h-12 w-12 border-2 border-black rounded-full"
+                />
                 <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
                   <Link
                     href={`/user-profile/${myAddress}`}
@@ -163,16 +218,28 @@ const Header = () => {
                   >
                     <span className="ml-4">Profile</span>
                   </Link>
-                  <Link href={`/user-profile/collection`} className="py-3 w-full hover:bg-slate-200 border-b">
+                  <Link
+                    href={`/user-profile/collection`}
+                    className="py-3 w-full hover:bg-slate-200 border-b"
+                  >
                     <span className="ml-4">Collection</span>
                   </Link>
-                  <Link href={`/user-profile/favorite`} className="py-3 w-full hover:bg-slate-200 border-b">
+                  <Link
+                    href={`/user-profile/favorite`}
+                    className="py-3 w-full hover:bg-slate-200 border-b"
+                  >
                     <span className="ml-4">Favorite</span>
                   </Link>
-                  <Link href={`/create-collection`} className="py-3 w-full hover:bg-slate-200 border-b">
+                  <Link
+                    href={`/create-collection`}
+                    className="py-3 w-full hover:bg-slate-200 border-b"
+                  >
                     <span className="ml-4">New Collection</span>
                   </Link>
-                  <Link href={`/create-nft`} className="py-3 w-full hover:bg-slate-200 rounded-b-lg">
+                  <Link
+                    href={`/create-nft`}
+                    className="py-3 w-full hover:bg-slate-200 rounded-b-lg"
+                  >
                     <span className="ml-4">Create NFT</span>
                   </Link>
                 </div>
@@ -196,14 +263,26 @@ const Header = () => {
               >
                 <div className="flex flex-col">
                   <div className="flex items-center justify-start space-x-3">
-                    <Image src={avatar} alt="avatar" className="h-12 w-12 border-2 border-black rounded-full" />
-                    <span className="text-base w-32 overflow-hidden text-ellipsis">{myAddress}</span>
+                    <Image
+                      src={avatar}
+                      alt="avatar"
+                      className="h-12 w-12 border-2 border-black rounded-full"
+                    />
+                    <span className="text-base w-32 overflow-hidden text-ellipsis">
+                      {myAddress}
+                    </span>
                   </div>
                   <div className="border-b-2 w-full my-4"></div>
                   <div className="flex px-2 items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Image src={metamaskLogo} alt="avatar" className="h-8 w-8" />
-                      <span className="text-black text-base font-bold">Metamask</span>
+                      <Image
+                        src={metamaskLogo}
+                        alt="avatar"
+                        className="h-8 w-8"
+                      />
+                      <span className="text-black text-base font-bold">
+                        Metamask
+                      </span>
                     </div>
                     <button
                       className="p-2 bg-red-500 rounded-lg text-white font-bold"
@@ -252,10 +331,18 @@ const Header = () => {
                   onClick={() => handleConnectWallet()}
                 >
                   <div className="flex items-center space-x-2">
-                    <Image src={metamaskLogo} alt="avatar" className="h-8 w-8"></Image>
-                    <span className="text-black text-base font-bold">Metamask</span>
+                    <Image
+                      src={metamaskLogo}
+                      alt="avatar"
+                      className="h-8 w-8"
+                    ></Image>
+                    <span className="text-black text-base font-bold">
+                      Metamask
+                    </span>
                   </div>
-                  <div className="bg-sky-500 text-white rounded-md p-2">Ethereum</div>
+                  <div className="bg-sky-500 text-white rounded-md p-2">
+                    Ethereum
+                  </div>
                 </button>
               </Sidebar>
             </div>
@@ -277,7 +364,9 @@ const Header = () => {
             onHide={() => setCartModalVisible(false)}
           >
             <div className="flex flex-col text-black overflow-y-auto">
-              <div className="text-xl font-bold mx-3 pb-4 border-b-2">YOUR CART</div>
+              <div className="text-xl font-bold mx-3 pb-4 border-b-2">
+                YOUR CART
+              </div>
               <div className="flex justify-between items-center font-bold m-3">
                 <span>{cartItemList.length} item(s)</span>
                 <button
@@ -295,15 +384,24 @@ const Header = () => {
                   >
                     <div className="flex justify-start space-x-2">
                       <Link href={`/detail/${cartItem.token_id}`}>
-                        <img src={cartItem.metadata?.image} alt="cart-item" className="h-16 w-16 rounded-lg" />
+                        <img
+                          src={cartItem.metadata?.image}
+                          alt="cart-item"
+                          className="h-16 w-16 rounded-lg"
+                        />
                       </Link>
                       <div className="flex flex-col items-start justify-start text-sm">
-                        <span className="font-medium">{cartItem.metadata?.name}</span>
+                        <span className="font-medium">
+                          {cartItem.metadata?.name}
+                        </span>
                         <span className="">{"Gemma"}</span>
                       </div>
                     </div>
                     <span className="price text-sm">
-                      {cartItem.listing?.price ? cartItem.listing.price / 1000000000000000000 : 0} ETH
+                      {cartItem.listing?.price
+                        ? cartItem.listing.price / 1000000000000000000
+                        : 0}{" "}
+                      ETH
                     </span>
                     <button
                       className="delete-cart-btn hidden hover:text-white"

@@ -1,5 +1,5 @@
 import { randomBytes as nodeRandomBytes } from "crypto";
-import { snakeCase } from "lodash";
+import { snakeCase, camelCase } from "lodash";
 import { BigNumber, constants, utils } from "ethers";
 import {
   getAddress,
@@ -16,8 +16,9 @@ import {
 import type { Contract, Wallet } from "ethers";
 import {
   orderType,
-  DATA_MAPPING,
+  DATA_MAPPING_SNAKIZE,
   NORMAL_STRING_MAPPING,
+  DATA_MAPPING_CAMELIZE,
 } from "@Constants/index";
 
 const randomBytes = (n: number) => nodeRandomBytes(n).toString("hex");
@@ -391,9 +392,26 @@ export const snakizeKeys = (obj: any): any => {
     return Object.keys(obj).reduce(
       (result, key) => ({
         ...result,
-        [Object.keys(DATA_MAPPING).indexOf(key) != -1
-          ? DATA_MAPPING[key]
+        [Object.keys(DATA_MAPPING_SNAKIZE).indexOf(key) != -1
+          ? DATA_MAPPING_SNAKIZE[key]
           : snakeCase(key)]: snakizeKeys(obj[key]),
+      }),
+      {}
+    );
+  }
+  return obj;
+};
+
+export const camelizeKeys = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map((v) => camelizeKeys(v));
+  } else if (obj != null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => ({
+        ...result,
+        [Object.keys(DATA_MAPPING_CAMELIZE).indexOf(key) != -1
+          ? DATA_MAPPING_CAMELIZE[key]
+          : camelCase(key)]: camelizeKeys(obj[key]),
       }),
       {}
     );

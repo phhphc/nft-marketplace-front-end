@@ -491,12 +491,28 @@ export const mkpAbi = [
   {
     inputs: [
       {
+        internalType: "bytes32",
+        name: "orderHash",
+        type: "bytes32",
+      },
+    ],
+    name: "InvalidContractOrder",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "amount",
         type: "uint256",
       },
     ],
     name: "InvalidERC721TransferAmount",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidFulfillmentComponentData",
     type: "error",
   },
   {
@@ -513,6 +529,17 @@ export const mkpAbi = [
   {
     inputs: [],
     name: "InvalidNativeOfferItem",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "orderHash",
+        type: "bytes32",
+      },
+    ],
+    name: "InvalidRestrictedOrder",
     type: "error",
   },
   {
@@ -539,6 +566,28 @@ export const mkpAbi = [
       },
     ],
     name: "InvalidTime",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "fulfillmentIndex",
+        type: "uint256",
+      },
+    ],
+    name: "MismatchedFulfillmentOfferAndConsiderationComponents",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum Side",
+        name: "side",
+        type: "uint8",
+      },
+    ],
+    name: "MissingFulfillmentComponentOnAggregation",
     type: "error",
   },
   {
@@ -581,6 +630,11 @@ export const mkpAbi = [
   {
     inputs: [],
     name: "NoSpecifiedOrdersAvailable",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "OfferAndConsiderationRequiredOnFulfillment",
     type: "error",
   },
   {
@@ -1064,6 +1118,236 @@ export const mkpAbi = [
       },
     ],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "offerer",
+                type: "address",
+              },
+              {
+                internalType: "address",
+                name: "zone",
+                type: "address",
+              },
+              {
+                components: [
+                  {
+                    internalType: "enum ItemType",
+                    name: "itemType",
+                    type: "uint8",
+                  },
+                  {
+                    internalType: "address",
+                    name: "token",
+                    type: "address",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "identifier",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "startAmount",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "endAmount",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct OfferItem[]",
+                name: "offer",
+                type: "tuple[]",
+              },
+              {
+                components: [
+                  {
+                    internalType: "enum ItemType",
+                    name: "itemType",
+                    type: "uint8",
+                  },
+                  {
+                    internalType: "address",
+                    name: "token",
+                    type: "address",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "identifier",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "startAmount",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "endAmount",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "address payable",
+                    name: "recipient",
+                    type: "address",
+                  },
+                ],
+                internalType: "struct ConsiderationItem[]",
+                name: "consideration",
+                type: "tuple[]",
+              },
+              {
+                internalType: "enum OrderType",
+                name: "orderType",
+                type: "uint8",
+              },
+              {
+                internalType: "uint256",
+                name: "startTime",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "endTime",
+                type: "uint256",
+              },
+              {
+                internalType: "bytes32",
+                name: "zoneHash",
+                type: "bytes32",
+              },
+              {
+                internalType: "uint256",
+                name: "salt",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "totalOriginalConsiderationItems",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct OrderParameters",
+            name: "parameters",
+            type: "tuple",
+          },
+          {
+            internalType: "bytes",
+            name: "signature",
+            type: "bytes",
+          },
+        ],
+        internalType: "struct Order[]",
+        name: "",
+        type: "tuple[]",
+      },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "orderIndex",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "itemIndex",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct FulfillmentComponent[][]",
+        name: "",
+        type: "tuple[][]",
+      },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "orderIndex",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "itemIndex",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct FulfillmentComponent[][]",
+        name: "",
+        type: "tuple[][]",
+      },
+      {
+        internalType: "uint256",
+        name: "maximumFulfilled",
+        type: "uint256",
+      },
+    ],
+    name: "fulfillAvailableOrders",
+    outputs: [
+      {
+        internalType: "bool[]",
+        name: "",
+        type: "bool[]",
+      },
+      {
+        components: [
+          {
+            components: [
+              {
+                internalType: "enum ItemType",
+                name: "itemType",
+                type: "uint8",
+              },
+              {
+                internalType: "address",
+                name: "token",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "identifier",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "amount",
+                type: "uint256",
+              },
+              {
+                internalType: "address payable",
+                name: "recipient",
+                type: "address",
+              },
+            ],
+            internalType: "struct ReceivedItem",
+            name: "item",
+            type: "tuple",
+          },
+          {
+            internalType: "address",
+            name: "offerer",
+            type: "address",
+          },
+          {
+            internalType: "bytes32",
+            name: "conduitKey",
+            type: "bytes32",
+          },
+        ],
+        internalType: "struct Execution[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "payable",
     type: "function",
   },
   {
