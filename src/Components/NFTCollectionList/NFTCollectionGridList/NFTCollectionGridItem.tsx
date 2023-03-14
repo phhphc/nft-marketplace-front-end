@@ -28,10 +28,10 @@ const NFTCollectionGridItem = ({
   setCountFetchNftCollectionList,
 }: INFTCollectionGridItemProps) => {
   const canBuy = (item: INFTCollectionItem) => {
-    return !!item.order;
+    return false;
   };
   const canSell = (item: INFTCollectionItem) => {
-    return !item.order;
+    return true;
   };
   const [price, setPrice] = useState<number>(0);
   const web3Context = useContext(AppContext);
@@ -73,26 +73,26 @@ const NFTCollectionGridItem = ({
     provider: any,
     order?: Order
   ) => {
-    try {
-      if (order) await buyTokenService({ order, myWallet, provider });
-      toast.current &&
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Buy NFT successfully!",
-          life: 3000,
-        });
-      setCountFetchNftCollectionList((prev) => prev + 1);
-    } catch (error) {
-      console.log(error);
-      toast.current &&
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Fail to buy NFT!",
-          life: 3000,
-        });
-    }
+    // try {
+    if (order) await buyTokenService({ order, myWallet, provider });
+    toast.current &&
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Buy NFT successfully!",
+        life: 3000,
+      });
+    setCountFetchNftCollectionList((prev) => prev + 1);
+    // } catch (error) {
+    //   console.log(error);
+    //   toast.current &&
+    //     toast.current.show({
+    //       severity: "error",
+    //       summary: "Error",
+    //       detail: "Fail to buy NFT!",
+    //       life: 3000,
+    //     });
+    // }
   };
 
   const handleAddToCart = (tokenId: number, quantity: number = 1) => {
@@ -178,7 +178,7 @@ const NFTCollectionGridItem = ({
                     handleBuyToken(
                       web3Context.state.web3.myWallet,
                       web3Context.state.web3.provider,
-                      item.order?.[0]
+                      item.order
                     )
                   }
                 >
