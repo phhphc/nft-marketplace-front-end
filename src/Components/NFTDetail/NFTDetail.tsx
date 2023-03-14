@@ -6,10 +6,8 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { faHeart, faEye, faClock } from "@fortawesome/free-regular-svg-icons";
 import {
-  faBoltLightning,
   faShapes,
   faCircleCheck,
-  faTicketSimple,
   faShareNodes,
   faEllipsis,
   faChartSimple,
@@ -41,10 +39,18 @@ export interface INFTDetailProps {
 
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const canBuy = (item: INFTCollectionItem) => {
-    return true;
+    return (
+      item.listing &&
+      item.listing.seller.toLowerCase() !==
+        web3Context.state.web3.myAddress.toLowerCase()
+    );
   };
   const canSell = (item: INFTCollectionItem) => {
-    return false;
+    return (
+      !item.listing &&
+      item.owner.toLowerCase() ===
+        web3Context.state.web3.myAddress.toLowerCase()
+    );
   };
   const router = useRouter();
   const web3Context = useContext(AppContext);
@@ -263,7 +269,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="flex space-x-2">
                   <FontAwesomeIcon icon={faClipboard} />
                   <p>
-                    About {nftDetail.metadata?.name} BY {"AuthorName"}
+                    About {nftDetail.metadata?.name.toUpperCase()} BY{" "}
+                    {"AuthorName"}
                   </p>
                 </div>
               }
@@ -366,7 +373,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             className="author h-12 flex items-center space-x-2 text-blue-500"
           >
             <span>
-              {nftDetail.metadata?.name} BY {"AuthorName"}
+              {nftDetail.metadata?.name.toUpperCase()} BY {"AuthorName"}
             </span>
             <i>
               <FontAwesomeIcon icon={faCircleCheck} />
@@ -388,7 +395,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           </div>
         </div>
         <h1 className="name h-14 text-4xl flex items-center font-semibold mt-2 mb-1">
-          {nftDetail.metadata?.name}
+          {nftDetail.metadata?.name.toUpperCase()}
         </h1>
         <h2 className="owner h-9 flex justify-start items-center space-x-1">
           <span>Owned by</span>
@@ -470,10 +477,37 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             )}
 
             {canBuy(nftDetail) && (
-              <div className="buttons h-16 flex space-x-2 font-bold">
-                <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
+              <div className="flex justify-between w-full">
+                <div className="flex gap-3 justify-between">
+                  {isAddedToCart ? (
+                    <div
+                      onClick={() => handleRemoveFromCart(nftDetail.token_id)}
+                      className="flex justify-center gap-2 w-72 bg-red-100 h-16 pt-4 rounded-md"
+                    >
+                      <i
+                        className="pi pi-shopping-cart text-red-600"
+                        style={{ fontSize: "2rem" }}
+                      ></i>
+                      <div className="pl-1 pt-1 text-red-600 text-lg">
+                        Remove from cart
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => handleAddToCart(nftDetail.token_id)}
+                      className="flex justify-center gap-2 w-72 bg-red-100 h-16 pt-4 rounded-md"
+                    >
+                      <i
+                        className="pi pi-cart-plus text-red-600"
+                        style={{ fontSize: "2rem" }}
+                      ></i>
+                      <div className="pl-1 pt-1 text-red-600 text-lg">
+                        Add to cart
+                      </div>
+                    </div>
+                  )}
                   <button
-                    className="buy-now-btn w-12"
+                    className="w-48 bg-red-500 text-white h-16 rounded-md text-lg"
                     onClick={() =>
                       handleBuyToken(
                         web3Context.state.web3.myWallet,
@@ -482,95 +516,65 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                       )
                     }
                   >
-                    <i>
-                      <FontAwesomeIcon icon={faBoltLightning} />
-                    </i>
-                    <span className="buy-now-text ml-4 hidden">Buy now</span>
+                    Buy Now
                   </button>
-                  {isAddedToCart ? (
-                    <button
-                      className="add-to-cart-btn flex-1 border-r"
-                      onClick={() => handleRemoveFromCart(nftDetail.token_id)}
-                    >
-                      Remove from cart
-                    </button>
-                  ) : (
-                    <button
-                      className="add-to-cart-btn flex-1 border-r"
-                      onClick={() => handleAddToCart(nftDetail.token_id)}
-                    >
-                      Add to cart
-                    </button>
-                  )}
                 </div>
-
-                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
-                  <i>
-                    <FontAwesomeIcon icon={faTicketSimple} />
-                  </i>
-                  <span>Make offer</span>
+                <button className="w-60 bg-sky-500 text-white h-16 rounded-md text-lg">
+                  <i className="pi pi-tag"></i>
+                  <span className="pl-2">Make offer</span>
                 </button>
               </div>
             )}
+
             {canSell(nftDetail) && (
-              <div className="buttons h-16 flex space-x-2 font-bold">
-                <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
-                  {!nftDetail.listing && (
-                    <button
-                      className="add-to-cart-btn flex-1 border-r"
-                      onClick={() => setVisible(true)}
-                    >
-                      Sell
-                    </button>
-                  )}
-                  <Dialog
-                    header="Please input the price that you want to sell"
-                    visible={visible}
-                    style={{ width: "50vw" }}
-                    onHide={() => setVisible(false)}
-                    footer={
-                      <div>
-                        <Button
-                          label="Cancel"
-                          icon="pi pi-times"
-                          onClick={() => setVisible(false)}
-                          className="p-button-text"
-                        />
-                        <Button
-                          label="Sell"
-                          icon="pi pi-check"
-                          onClick={() => handleSellNFT(nftDetail.token_id)}
-                          autoFocus
-                        />
-                      </div>
-                    }
-                  >
-                    <div className="flex gap-3">
-                      <InputNumber
-                        placeholder="Input the price"
-                        value={price}
-                        onValueChange={(e: any) => setPrice(e.value)}
-                        minFractionDigits={2}
-                        maxFractionDigits={5}
-                        min={0}
+              <div>
+                <button
+                  className="w-1/2 bg-green-500 h-16 text-white rounded-md text-xl"
+                  onClick={() => setVisible(true)}
+                >
+                  Sell
+                </button>
+                <Dialog
+                  header="Please input the price that you want to sell"
+                  visible={visible}
+                  style={{ width: "50vw" }}
+                  onHide={() => setVisible(false)}
+                  footer={
+                    <div>
+                      <Button
+                        label="Cancel"
+                        icon="pi pi-times"
+                        onClick={() => setVisible(false)}
+                        className="p-button-text"
                       />
-                      <Dropdown
-                        value={selectedUnit}
-                        onChange={(e) => setSelectedUnit(e.value)}
-                        options={CURRENCY_UNITS}
-                        optionLabel="name"
-                        placeholder="Select a unit"
-                        className="md:w-14rem"
+                      <Button
+                        label="Sell"
+                        icon="pi pi-check"
+                        onClick={() => handleSellNFT(nftDetail.token_id)}
+                        autoFocus
                       />
                     </div>
-                  </Dialog>
-                </div>
-                <button className="make-ofter-btn w-1/2 border-2 border-slate-300 rounded-xl space-x-2 text-blue-500">
-                  <i>
-                    <FontAwesomeIcon icon={faTicketSimple} />
-                  </i>
-                  <span>Make offer</span>
-                </button>
+                  }
+                >
+                  <div className="flex gap-3">
+                    <InputNumber
+                      placeholder="Input the price"
+                      value={price}
+                      onValueChange={(e: any) => setPrice(e.value)}
+                      minFractionDigits={2}
+                      maxFractionDigits={5}
+                      min={0.00001}
+                    />
+                    <Dropdown
+                      value={selectedUnit}
+                      onChange={(e) => setSelectedUnit(e.value)}
+                      options={CURRENCY_UNITS}
+                      optionLabel="name"
+                      placeholder="Select a unit"
+                      className="md:w-14rem"
+                    />
+                  </div>
+                </Dialog>
               </div>
             )}
           </div>
