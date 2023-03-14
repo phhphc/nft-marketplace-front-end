@@ -19,6 +19,7 @@ import {
   DATA_MAPPING_SNAKIZE,
   NORMAL_STRING_MAPPING,
   DATA_MAPPING_CAMELIZE,
+  TO_NUMBER_MAPPING,
 } from "@Constants/index";
 
 const randomBytes = (n: number) => nodeRandomBytes(n).toString("hex");
@@ -295,7 +296,7 @@ export const createOrder = async (
     timeFlag !== "EXPIRED" ? toBN("0xff00000000000000000000000000") : 1;
   const orderParameters = {
     offerer: await offerer.getAddress(),
-    zone: constants.AddressZero,
+    zone: await offerer.getAddress(),
     offer,
     consideration,
     totalOriginalConsiderationItems: consideration.length,
@@ -327,7 +328,7 @@ export const createOrder = async (
   );
   const order = {
     parameters: orderParameters,
-    signature: !extraCheap ? flatSig : convertSignatureToEIP2098(flatSig),
+    signature: convertSignatureToEIP2098(flatSig),
   };
   // if (useBulkSignature) {
   //     order.signature = await signBulkOrder(
@@ -381,7 +382,7 @@ export const createOrder = async (
     orderComponents,
     startTime,
     endTime,
-    signature: !extraCheap ? flatSig : convertSignatureToEIP2098(flatSig),
+    signature: convertSignatureToEIP2098(flatSig),
   };
 };
 
@@ -439,6 +440,23 @@ export const toBigNumberHex = (obj: any): any => {
   return obj;
 };
 
+export const toNumber = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map((v) => toNumber(v));
+  } else if (obj != null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => ({
+        ...result,
+        [key]: TO_NUMBER_MAPPING[key]
+          ? Number(obj[key] / TO_NUMBER_MAPPING[key])
+          : toNumber(obj[key]),
+      }),
+      {}
+    );
+  }
+  return obj;
+};
+
 export const enhanceHexString = (str: string, index: number): string => {
   let res = str;
   if (str.length >= index && str?.[index] == "0") {
@@ -447,8 +465,14 @@ export const enhanceHexString = (str: string, index: number): string => {
   return res;
 };
 
-export const transformData = (obj: any): any => {
+export const transformDataRequestToSellNFT = (obj: any): any => {
   return JSON.parse(JSON.stringify(toBigNumberHex(snakizeKeys(obj))));
+};
+
+export const transformDataRequestToBuyNFT = (obj: any): any => {
+  return JSON.parse(
+    JSON.stringify(toNumber(toBigNumberHex(camelizeKeys(obj))))
+  );
 };
 
 export const parseGwei = (str: string) => {

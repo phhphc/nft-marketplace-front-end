@@ -40,6 +40,12 @@ export interface INFTDetailProps {
 }
 
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
+  const canBuy = (item: INFTCollectionItem) => {
+    return true;
+  };
+  const canSell = (item: INFTCollectionItem) => {
+    return false;
+  };
   const router = useRouter();
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
@@ -463,7 +469,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               </>
             )}
 
-            {false && (
+            {canBuy(nftDetail) && (
               <div className="buttons h-16 flex space-x-2 font-bold">
                 <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
                   <button
@@ -472,7 +478,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                       handleBuyToken(
                         web3Context.state.web3.myWallet,
                         web3Context.state.web3.provider,
-                        nftDetail.order?.[0]
+                        nftDetail.order
                       )
                     }
                   >
@@ -506,7 +512,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 </button>
               </div>
             )}
-            {true && (
+            {canSell(nftDetail) && (
               <div className="buttons h-16 flex space-x-2 font-bold">
                 <div className="w-1/2 rounded-xl text-white bg-blue-500 flex-row-reverse flex">
                   {!nftDetail.listing && (

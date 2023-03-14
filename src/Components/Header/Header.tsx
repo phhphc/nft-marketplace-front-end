@@ -11,7 +11,7 @@ import { ethers } from "ethers";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import avatar from "@Assets/avatar.png";
 import {
-  getNFTCollectionListService,
+  getNFTCollectionListInfoService,
   getOfferByToken,
 } from "@Services/ApiService";
 import { INFTCollectionItem } from "@Interfaces/index";
@@ -136,44 +136,7 @@ const Header = () => {
 
   useEffect(() => {
     const cart = { ...web3Context.state.web3.cart };
-    const fetchData = async () => {
-      try {
-        const data = await getNFTCollectionListService();
-        if (data) {
-          const newData = await Promise.all(
-            data.nfts.map(async (item: any) => {
-              const orderParameters = await getOfferByToken({
-                tokenId: item.token_id,
-                tokenAddress: item.contract_addr,
-              });
-              if (orderParameters?.length) {
-                const signature = orderParameters[0].signature;
-                delete orderParameters[0].signature;
-                delete orderParameters[0].is_cancelled;
-                delete orderParameters[0].is_validated;
-                return {
-                  ...item,
-                  order: {
-                    parameters: orderParameters[0],
-                    signature,
-                  },
-                };
-              } else return item;
-            })
-          );
-          setCartItemList(newData);
-        }
-      } catch (err) {
-        toast.current &&
-          toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Fail to load collections",
-            life: 3000,
-          });
-      }
-    };
-    fetchData();
+    getNFTCollectionListInfoService({ toast, callback: setCartItemList });
   }, [web3Context.state.web3.cart]);
 
   return (

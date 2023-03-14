@@ -5,12 +5,11 @@ import {
   getTestItem721,
   getItemETH,
   createOrder,
-  transformData,
-  camelizeKeys,
+  transformDataRequestToSellNFT,
 } from "@Utils/index";
 import { CURRENCY } from "@Constants/index";
-import { parseGwei, toBN } from "@Utils/index";
-import { Order, OrderParameters } from "@Interfaces/index";
+import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
+import { Order } from "@Interfaces/index";
 
 const { parseEther } = ethers.utils;
 
@@ -39,6 +38,11 @@ export interface IBuyTokenServiceProps {
   order: Order;
 }
 
+export interface IGetNFTCollectionListInfoServiceProps {
+  toast: any;
+  callback: any;
+}
+
 export const getNFTCollectionListService = async (
   owner?: string
 ): Promise<any> => {
@@ -58,7 +62,7 @@ export const getOfferByToken = async ({
 }: IGetOfferByTokenProps): Promise<any> => {
   return axios
     .get("/api/v0.1/orders/offer", {
-      params: transformData({ tokenId, tokenAddress }),
+      params: transformDataRequestToSellNFT({ tokenId, tokenAddress }),
     })
     .then((response) => {
       return response.data.data || [];
@@ -136,15 +140,12 @@ export const sellNFT = async ({
       0 // FULL_OPEN
     );
 
-    console.log(orderHash, orderComponents.salt);
-
-    await axios.post(
-      "/api/v0.1/orders",
-      transformData({
+    console.log(
+      transformDataRequestToSellNFT({
         orderHash,
         offerer: myAddress,
-        zone: "",
-        zone_hash: "",
+        zone: orderComponents.zone,
+        zone_hash: orderComponents.zoneHash,
         signature,
         offer,
         consideration,
@@ -152,12 +153,77 @@ export const sellNFT = async ({
         orderValue: value,
         startTime,
         endTime,
-        salt: 1,
+        salt: Number(orderComponents.salt),
+        counter: orderComponents.counter,
+      })
+    );
+
+    await axios.post(
+      "/api/v0.1/orders",
+      transformDataRequestToSellNFT({
+        orderHash,
+        offerer: myAddress,
+        zone: orderComponents.zone,
+        zone_hash: orderComponents.zoneHash,
+        signature,
+        offer,
+        consideration,
+        orderType: orderComponents.orderType,
+        orderValue: value,
+        startTime,
+        endTime,
+        salt: Number(orderComponents.salt),
         counter: orderComponents.counter,
       })
     );
   } catch (err) {
     console.error(err);
+  }
+};
+
+export const getNFTCollectionListInfoService = async ({
+  toast,
+  callback,
+}: IGetNFTCollectionListInfoServiceProps) => {
+  try {
+    const data = await getNFTCollectionListService();
+    if (data) {
+      const newData = await Promise.all(
+        data.nfts.map(async (item: any) => {
+          const orderParameters = await getOfferByToken({
+            tokenId: item.token_id,
+            tokenAddress: item.contract_addr,
+          });
+          if (orderParameters?.length) {
+            const signature = orderParameters[0].signature;
+            delete orderParameters[0].signature;
+            delete orderParameters[0].is_cancelled;
+            delete orderParameters[0].is_validated;
+            return {
+              ...item,
+              order: {
+                parameters: {
+                  ...orderParameters[0],
+                  totalOriginalConsiderationItems:
+                    orderParameters[0].consideration.length,
+                },
+                signature,
+              },
+            };
+          } else return item;
+        })
+      );
+      console.log(newData);
+      callback(newData);
+    }
+  } catch (err) {
+    toast.current &&
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Fail to load collections",
+        life: 3000,
+      });
   }
 };
 
@@ -182,14 +248,23 @@ export const buyTokenService = async ({
     "🚀 ~ file: ApiService.ts:184 ~ mkpContractWithSigner:",
     Object.keys(mkpContractWithSigner)[13]
   );
-  console.log("🚀 ~ file: ApiService.ts:172 ~ order:", order);
-  await mkpContractWithSigner[
+  console.log(
+    "🚀 ~ file: ApiService.ts:172 ~ order:",
+    transformDataRequestToBuyNFT(order)
+  );
+
+  const tx = await mkpContractWithSigner[
     "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
   ](
-    camelizeKeys(order),
+    transformDataRequestToBuyNFT(order),
 
-    { value: parseEther("10"), gasLimit: 100000 }
+    { value: toBN(parseEther("10")), gasLimit: 1000000 }
   );
+  console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
+  await tx.wait();
+  // } catch (err) {
+  //   console.dir(err);
+  // }
 };
 
 export const createNFTService = async () => {
