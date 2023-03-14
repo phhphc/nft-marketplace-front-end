@@ -1,6 +1,4 @@
 import { COLLECTION_VIEW_TYPE } from "@Constants/index";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBoltLightning } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { INFTCollectionItem, Order, OrderParameters } from "@Interfaces/index";
 import { sellNFT, buyTokenService } from "@Services/ApiService";
@@ -28,16 +26,28 @@ const NFTCollectionGridItem = ({
   setCountFetchNftCollectionList,
 }: INFTCollectionGridItemProps) => {
   const canBuy = (item: INFTCollectionItem) => {
-    return false;
+    return (
+      item.listing &&
+      item.listing.seller.toLowerCase() !==
+        web3Context.state.web3.myAddress.toLowerCase()
+    );
   };
   const canSell = (item: INFTCollectionItem) => {
-    return true;
+    return (
+      !item.listing &&
+      item.owner.toLowerCase() ===
+        web3Context.state.web3.myAddress.toLowerCase()
+    );
   };
+
   const [price, setPrice] = useState<number>(0);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
-
+  console.log(
+    "eb3Context.state.web3.myAddress",
+    web3Context.state.web3.myAddress.toLowerCase()
+  );
   const handleSellNFT = async (tokenId: number) => {
     try {
       await sellNFT({
@@ -157,7 +167,7 @@ const NFTCollectionGridItem = ({
       </Link>
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
-          <div className="p-4 h-28">
+          <div className="p-4 h-20">
             <h3 className="font-bold uppercase">
               {item.metadata?.name || "Item name"}
             </h3>
@@ -170,45 +180,48 @@ const NFTCollectionGridItem = ({
             )}
           </div>
           {canBuy(item) && (
-            <div className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom">
-              <>
-                <button
-                  className="bg-blue-500 py-2 px-4 buy-now-btn rounded-br-md"
-                  onClick={() =>
-                    handleBuyToken(
-                      web3Context.state.web3.myWallet,
-                      web3Context.state.web3.provider,
-                      item.order
-                    )
-                  }
+            <div className="flex gap-3 justify-between w-full">
+              {isAddedToCart ? (
+                <div
+                  onClick={() => handleRemoveFromCart(item.token_id)}
+                  className="flex justify-center gap-2 w-44 bg-red-200 h-10 pt-2 rounded-md"
                 >
-                  <i className="fa-1x">
-                    <FontAwesomeIcon icon={faBoltLightning} />
-                  </i>
-                  <div className="ml-4 hidden buy-now-text">Buy now</div>
-                </button>
-                {isAddedToCart ? (
-                  <button
-                    className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md"
-                    onClick={() => handleRemoveFromCart(item.token_id)}
-                  >
-                    Remove from cart
-                  </button>
-                ) : (
-                  <button
-                    className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md"
-                    onClick={() => handleAddToCart(item.token_id)}
-                  >
-                    Add to cart
-                  </button>
-                )}
-              </>
+                  <i
+                    className="pi pi-shopping-cart text-red-600"
+                    style={{ fontSize: "1.5rem" }}
+                  ></i>
+                  <div className="pl-1 text-red-600">Remove from cart</div>
+                </div>
+              ) : (
+                <div
+                  onClick={() => handleAddToCart(item.token_id)}
+                  className="flex justify-center gap-2 w-44 bg-red-200 h-10 pt-2 rounded-md"
+                >
+                  <i
+                    className="pi pi-cart-plus text-red-600"
+                    style={{ fontSize: "1.5rem" }}
+                  ></i>
+                  <div className="pl-1 text-red-600">Add to cart</div>
+                </div>
+              )}
+              <button
+                className="w-20 bg-red-500 text-white rounded-md"
+                onClick={() =>
+                  handleBuyToken(
+                    web3Context.state.web3.myWallet,
+                    web3Context.state.web3.provider,
+                    item.order
+                  )
+                }
+              >
+                Buy Now
+              </button>
             </div>
           )}
           {canSell(item) && (
-            <div className="w-full text-white font-bold text-center flex-row-reverse flex opacity-0 nft-collection-item-bottom">
+            <div>
               <button
-                className="bg-blue-500 mr-0.5 py-2 flex-1 px-4 add-to-cart-btn rounded-bl-md"
+                className="w-full bg-green-500 h-10 text-white rounded-md"
                 onClick={() => setVisible(true)}
               >
                 Sell
@@ -242,7 +255,7 @@ const NFTCollectionGridItem = ({
                     onValueChange={(e: any) => setPrice(e.value)}
                     minFractionDigits={2}
                     maxFractionDigits={5}
-                    min={0}
+                    min={0.00001}
                   />
                   <Dropdown
                     value={selectedUnit}
