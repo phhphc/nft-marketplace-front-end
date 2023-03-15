@@ -14,6 +14,7 @@ import { Order } from "@Interfaces/index";
 const { parseEther } = ethers.utils;
 
 export interface IsellNFTProps {
+  toast: any;
   provider: any;
   myAddress: string;
   myWallet: any;
@@ -33,6 +34,7 @@ export interface IGetOfferByTokenProps {
 }
 
 export interface IBuyTokenServiceProps {
+  toast: any;
   provider: any;
   myWallet: any;
   order: Order;
@@ -71,6 +73,7 @@ export const getOfferByToken = async ({
 };
 
 export const sellNFT = async ({
+  toast,
   provider,
   myAddress,
   myWallet,
@@ -176,6 +179,13 @@ export const sellNFT = async ({
         counter: orderComponents.counter,
       })
     );
+    toast.current &&
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Sell NFT successfully!",
+        life: 15000,
+      });
   } catch (err) {
     console.error(err);
   }
@@ -228,6 +238,7 @@ export const getNFTCollectionListInfoService = async ({
 };
 
 export const buyTokenService = async ({
+  toast,
   order,
   myWallet,
   provider,
@@ -262,6 +273,15 @@ export const buyTokenService = async ({
   );
   console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
   await tx.wait();
+
+  toast.current &&
+    toast.current.show({
+      severity: "success",
+      summary: "Success",
+      detail: "Buy NFT successfully!",
+      life: 3000,
+    });
+
   // } catch (err) {
   //   console.dir(err);
   // }

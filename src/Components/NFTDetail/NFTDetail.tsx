@@ -58,8 +58,31 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const toast = useRef<Toast>(null);
 
   const handleSellNFT = async (tokenId: number) => {
+    if (!web3Context.state.web3.provider) {
+      return (
+        toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please login your wallet!",
+          life: 3000,
+        })
+      );
+    }
+    if (price === 0) {
+      return (
+        toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "The price must be higher than 0!",
+          life: 3000,
+        })
+      );
+    }
     try {
       await sellNFT({
+        toast,
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
         myWallet: web3Context.state.web3.myWallet,
@@ -67,13 +90,6 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         price: price.toString(),
         unit: selectedUnit,
       });
-      toast.current &&
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Sell NFT successfully!",
-          life: 3000,
-        });
       router.push("/collection/collection-name-example");
     } catch (error) {
       toast.current &&
@@ -91,15 +107,19 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
     provider: any,
     order?: Order
   ) => {
-    try {
-      if (order) await buyTokenService({ order, myWallet, provider });
-      toast.current &&
+    if (!web3Context.state.web3.provider) {
+      return (
+        toast.current &&
         toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Buy NFT successfully!",
+          severity: "error",
+          summary: "Error",
+          detail: "Please login your wallet!",
           life: 3000,
-        });
+        })
+      );
+    }
+    try {
+      if (order) await buyTokenService({ toast, order, myWallet, provider });
     } catch (error) {
       console.log(error);
       toast.current &&
@@ -482,7 +502,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                   {isAddedToCart ? (
                     <div
                       onClick={() => handleRemoveFromCart(nftDetail.token_id)}
-                      className="flex justify-center gap-2 w-72 bg-red-100 h-16 pt-4 rounded-md"
+                      className="flex justify-center gap-2 w-72 bg-red-100 hover:bg-red-300 h-16 pt-4 rounded-md cursor-pointer"
                     >
                       <i
                         className="pi pi-shopping-cart text-red-600"
@@ -495,7 +515,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                   ) : (
                     <div
                       onClick={() => handleAddToCart(nftDetail.token_id)}
-                      className="flex justify-center gap-2 w-72 bg-red-100 h-16 pt-4 rounded-md"
+                      className="flex justify-center gap-2 w-72 bg-red-100 hover:bg-red-300 h-16 pt-4 rounded-md cursor-pointer"
                     >
                       <i
                         className="pi pi-cart-plus text-red-600"
@@ -507,7 +527,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     </div>
                   )}
                   <button
-                    className="w-48 bg-red-500 text-white h-16 rounded-md text-lg"
+                    className="w-48 bg-red-500 hover:bg-red-700 text-white h-16 rounded-md text-lg"
                     onClick={() =>
                       handleBuyToken(
                         web3Context.state.web3.myWallet,
@@ -519,7 +539,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     Buy Now
                   </button>
                 </div>
-                <button className="w-60 bg-sky-500 text-white h-16 rounded-md text-lg">
+                <button className="w-60 bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg">
                   <i className="pi pi-tag"></i>
                   <span className="pl-2">Make offer</span>
                 </button>
@@ -529,7 +549,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             {canSell(nftDetail) && (
               <div>
                 <button
-                  className="w-1/2 bg-green-500 h-16 text-white rounded-md text-xl"
+                  className="w-1/2 bg-green-500 hover:bg-green-700 h-16 text-white rounded-md text-xl"
                   onClick={() => setVisible(true)}
                 >
                   Sell
@@ -563,7 +583,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                       onValueChange={(e: any) => setPrice(e.value)}
                       minFractionDigits={2}
                       maxFractionDigits={5}
-                      min={0.00001}
+                      min={0}
                     />
                     <Dropdown
                       value={selectedUnit}

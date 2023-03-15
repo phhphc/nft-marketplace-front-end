@@ -21,7 +21,6 @@ export interface INFTCollectionGridItemProps {
 
 const NFTCollectionGridItem = ({
   item,
-  mode,
   viewType,
   setCountFetchNftCollectionList,
 }: INFTCollectionGridItemProps) => {
@@ -44,13 +43,32 @@ const NFTCollectionGridItem = ({
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
-  console.log(
-    "eb3Context.state.web3.myAddress",
-    web3Context.state.web3.myAddress.toLowerCase()
-  );
   const handleSellNFT = async (tokenId: number) => {
+    if (!web3Context.state.web3.provider) {
+      return (
+        toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please login your wallet!",
+          life: 3000,
+        })
+      );
+    }
+    if (price === 0) {
+      return (
+        toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "The price must be higher than 0!",
+          life: 3000,
+        })
+      );
+    }
     try {
       await sellNFT({
+        toast,
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
         myWallet: web3Context.state.web3.myWallet,
@@ -60,13 +78,6 @@ const NFTCollectionGridItem = ({
       });
       setCountFetchNftCollectionList((prev) => prev + 1);
       setVisible(false);
-      toast.current &&
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Sell NFT successfully!",
-          life: 15000,
-        });
     } catch (error) {
       toast.current &&
         toast.current.show({
@@ -84,14 +95,18 @@ const NFTCollectionGridItem = ({
     order?: Order
   ) => {
     // try {
-    if (order) await buyTokenService({ order, myWallet, provider });
-    toast.current &&
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Buy NFT successfully!",
-        life: 3000,
-      });
+    if (!web3Context.state.web3.provider) {
+      return (
+        toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please login your wallet!",
+          life: 3000,
+        })
+      );
+    }
+    if (order) await buyTokenService({ toast, order, myWallet, provider });
     setCountFetchNftCollectionList((prev) => prev + 1);
     // } catch (error) {
     //   console.log(error);
@@ -184,7 +199,7 @@ const NFTCollectionGridItem = ({
               {isAddedToCart ? (
                 <div
                   onClick={() => handleRemoveFromCart(item.token_id)}
-                  className="flex justify-center gap-2 w-44 bg-red-200 h-10 pt-2 rounded-md"
+                  className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
                 >
                   <i
                     className="pi pi-shopping-cart text-red-600"
@@ -195,7 +210,7 @@ const NFTCollectionGridItem = ({
               ) : (
                 <div
                   onClick={() => handleAddToCart(item.token_id)}
-                  className="flex justify-center gap-2 w-44 bg-red-200 h-10 pt-2 rounded-md"
+                  className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
                 >
                   <i
                     className="pi pi-cart-plus text-red-600"
@@ -205,7 +220,7 @@ const NFTCollectionGridItem = ({
                 </div>
               )}
               <button
-                className="w-20 bg-red-500 text-white rounded-md"
+                className="w-20 bg-red-500 hover:bg-red-700 text-white rounded-md"
                 onClick={() =>
                   handleBuyToken(
                     web3Context.state.web3.myWallet,
@@ -221,7 +236,7 @@ const NFTCollectionGridItem = ({
           {canSell(item) && (
             <div>
               <button
-                className="w-full bg-green-500 h-10 text-white rounded-md"
+                className="w-full bg-green-500 hover:bg-green-700 h-10 text-white rounded-md"
                 onClick={() => setVisible(true)}
               >
                 Sell
@@ -255,7 +270,7 @@ const NFTCollectionGridItem = ({
                     onValueChange={(e: any) => setPrice(e.value)}
                     minFractionDigits={2}
                     maxFractionDigits={5}
-                    min={0.00001}
+                    min={0}
                   />
                   <Dropdown
                     value={selectedUnit}
