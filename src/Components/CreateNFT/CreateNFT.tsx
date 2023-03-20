@@ -29,9 +29,8 @@ const CreateNFT = () => {
     { blockchainName: "Polygon", code: "polygon" },
   ];
 
-  const [featuredFile, setFeaturedFile] = useState("");
+  const [featuredFile, setFeaturedFile] = useState<string>("");
   function handleChangeFeatured(e: any) {
-    console.log(e.target.files);
     setFeaturedFile(URL.createObjectURL(e.target.files[0]));
   }
 
@@ -44,7 +43,12 @@ const CreateNFT = () => {
     useForm<IFormNewNFTInput>();
 
   const onSubmit = async (data: IFormNewNFTInput) => {
-    await createNFTService();
+    await createNFTService({
+      ...data,
+      featuredImage: data.featuredImage[0],
+      collection: data.collection.value,
+      blockchain: data.blockchain.value,
+    });
   };
 
   return (
@@ -81,7 +85,8 @@ const CreateNFT = () => {
               className="featuredImage"
               preview
             />
-            {featuredFile != "" && (
+
+            {featuredFile && (
               <div role="button" onClick={removeFeaturedImage}>
                 <i className="pi pi-times" />
               </div>
@@ -205,7 +210,7 @@ const CreateNFT = () => {
 
         {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
-          <Button label="Submit" onClick={() => createNFTService()} />
+          <Button label="Submit" />
         </div>
       </form>
     </div>
