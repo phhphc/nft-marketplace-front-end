@@ -33,19 +33,16 @@ const CreateCollection = () => {
 
   const [logoFile, setLogoFile] = useState("");
   function handleChangeLogo(e: any) {
-    console.log(e.target.files);
     setLogoFile(URL.createObjectURL(e.target.files[0]));
   }
 
   const [featuredFile, setFeaturedFile] = useState("");
   function handleChangeFeatured(e: any) {
-    console.log(e.target.files);
     setFeaturedFile(URL.createObjectURL(e.target.files[0]));
   }
 
   const [bannerFile, setBannerFile] = useState("");
   function handleChangeBanner(e: any) {
-    console.log(e.target.files);
     setBannerFile(URL.createObjectURL(e.target.files[0]));
   }
 
@@ -68,7 +65,11 @@ const CreateCollection = () => {
     useForm<IFormCollectionInput>();
 
   const onSubmit = async (data: IFormCollectionInput) => {
-    await createNFTCollectionService();
+    await createNFTCollectionService({
+      ...data,
+      category: data.category.value,
+      blockchain: data.blockchain.value,
+    });
   };
 
   return (
@@ -286,7 +287,7 @@ const CreateCollection = () => {
 
         {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
-          <Button label="Submit" onClick={() => createNFTCollectionService()} />
+          <Button label="Submit" />
         </div>
       </form>
     </div>
