@@ -28,6 +28,7 @@
       "@Containers/*": ["src/Containers/*"],
       "@Assets/*": ["src/Assets/*"],
       "@Utils/*": ["src/Utils/*"],
+      "@Hooks/*": ["src/Hooks/*"],
       "@Src/*": ["src/*"]
     }
   },

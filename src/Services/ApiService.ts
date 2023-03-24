@@ -12,6 +12,7 @@ import { CURRENCY } from "@Constants/index";
 import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
 import { Order } from "@Interfaces/index";
 import { cloneDeep } from "lodash";
+import { INFTCollectionItem } from "@Interfaces/index";
 
 const { parseEther } = ethers.utils;
 
@@ -210,58 +211,43 @@ export const sellNFT = async ({
   }
 };
 
-export const getNFTCollectionListInfoService = async ({
-  toast,
-  callback,
-}: IGetNFTCollectionListInfoServiceProps) => {
-  try {
-    const data = await getNFTCollectionListService();
-    if (data) {
-      const newData = await Promise.all(
-        data.nfts.map(async (item: any) => {
-          const orderParameters = await getOfferByToken({
-            tokenId: item.token_id,
-            tokenAddress: item.contract_addr,
-          });
+export const getNFTCollectionListInfoService = async (): Promise<
+  INFTCollectionItem[]
+> => {
+  console.log("run");
+  const data = await getNFTCollectionListService();
+  if (data) {
+    const newData = await Promise.all(
+      data.nfts.map(async (item: any) => {
+        const orderParameters = await getOfferByToken({
+          tokenId: item.token_id,
+          tokenAddress: item.contract_addr,
+        });
 
-          if (orderParameters?.length) {
-            const latestOrderParameter = cloneDeep(
-              orderParameters[orderParameters.length - 1]
-            );
-            console.log(
-              "🚀 ~ file: ApiService.ts:198 ~ data.nfts.map ~ orderParameters:",
-              orderParameters
-            );
-            const signature = latestOrderParameter.signature;
-            delete latestOrderParameter.signature;
-            delete latestOrderParameter.is_cancelled;
-            delete latestOrderParameter.is_validated;
-            return {
-              ...item,
-              order: {
-                parameters: {
-                  ...latestOrderParameter,
-                  totalOriginalConsiderationItems:
-                    latestOrderParameter.consideration.length,
-                },
-                signature,
+        if (orderParameters?.length) {
+          const latestOrderParameter = cloneDeep(
+            orderParameters[orderParameters.length - 1]
+          );
+          const signature = latestOrderParameter.signature;
+          delete latestOrderParameter.signature;
+          delete latestOrderParameter.is_cancelled;
+          delete latestOrderParameter.is_validated;
+          return {
+            ...item,
+            order: {
+              parameters: {
+                ...latestOrderParameter,
+                totalOriginalConsiderationItems:
+                  latestOrderParameter.consideration.length,
               },
-            };
-          } else return item;
-        })
-      );
-      console.log(newData);
-      callback(newData);
-    }
-  } catch (err) {
-    toast.current &&
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Fail to load collections",
-        life: 3000,
-      });
-  }
+              signature,
+            },
+          };
+        } else return item;
+      })
+    );
+    return newData;
+  } else return [];
 };
 
 export const buyTokenService = async ({

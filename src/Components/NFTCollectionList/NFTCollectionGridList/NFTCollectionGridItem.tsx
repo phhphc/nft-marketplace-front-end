@@ -11,19 +11,19 @@ import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { WEB3_ACTION_TYPES } from "@Store/index";
+import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem;
   viewType: COLLECTION_VIEW_TYPE;
   mode: NFT_COLLECTION_MODE;
-  setCountFetchNftCollectionList: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionGridItem = ({
   item,
   viewType,
-  setCountFetchNftCollectionList,
 }: INFTCollectionGridItemProps) => {
+  const { refetch } = useNFTCollectionList();
   const canBuy = (item: INFTCollectionItem) => {
     return (
       item.listing &&
@@ -76,7 +76,7 @@ const NFTCollectionGridItem = ({
         price: price.toString(),
         unit: selectedUnit,
       });
-      setCountFetchNftCollectionList((prev) => prev + 1);
+      refetch();
       setVisible(false);
     } catch (error) {
       toast.current &&
@@ -94,30 +94,32 @@ const NFTCollectionGridItem = ({
     provider: any,
     order?: Order
   ) => {
-    // try {
-    if (!web3Context.state.web3.provider) {
-      return (
-        toast.current &&
+    try {
+      if (!web3Context.state.web3.provider) {
+        return (
+          toast.current &&
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet!",
+            life: 3000,
+          })
+        );
+      }
+      if (order) {
+        await buyTokenService({ toast, order, myWallet, provider });
+        refetch();
+      }
+    } catch (error) {
+      console.log(error);
+      toast.current &&
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Please login your wallet!",
+          detail: "Fail to buy NFT!",
           life: 3000,
-        })
-      );
+        });
     }
-    if (order) await buyTokenService({ toast, order, myWallet, provider });
-    setCountFetchNftCollectionList((prev) => prev + 1);
-    // } catch (error) {
-    //   console.log(error);
-    //   toast.current &&
-    //     toast.current.show({
-    //       severity: "error",
-    //       summary: "Error",
-    //       detail: "Fail to buy NFT!",
-    //       life: 3000,
-    //     });
-    // }
   };
 
   const handleAddToCart = (tokenId: number, quantity: number = 1) => {

@@ -9,12 +9,10 @@ import { NFT_COLLECTION_MODE } from "@Constants/index";
 
 export interface INFTUserProfileTabsProps {
   nftCollectionList: INFTCollectionItem[];
-  setCountFetchNftCollectionList: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTUserProfileTabs = ({
   nftCollectionList,
-  setCountFetchNftCollectionList,
 }: INFTUserProfileTabsProps) => {
   const [currentTab, setCurrentTab] = useState(NFT_USER_PROFILE_TABS.COLLECTED);
 
@@ -45,7 +43,6 @@ const NFTUserProfileTabs = ({
           nftCollectionList={nftCollectionList}
           key={1}
           mode={NFT_COLLECTION_MODE.CAN_SELL}
-          setCountFetchNftCollectionList={setCountFetchNftCollectionList}
         />
       )}
       {currentTab === NFT_USER_PROFILE_TABS.CREATED && (
@@ -53,7 +50,6 @@ const NFTUserProfileTabs = ({
           nftCollectionList={nftCollectionList}
           key={2}
           mode={NFT_COLLECTION_MODE.CAN_SELL}
-          setCountFetchNftCollectionList={setCountFetchNftCollectionList}
         />
       )}
       {currentTab === NFT_USER_PROFILE_TABS.FAVORITED && (
@@ -61,7 +57,6 @@ const NFTUserProfileTabs = ({
           nftCollectionList={nftCollectionList}
           key={3}
           mode={NFT_COLLECTION_MODE.CAN_SELL}
-          setCountFetchNftCollectionList={setCountFetchNftCollectionList}
         />
       )}
     </div>
