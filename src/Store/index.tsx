@@ -13,6 +13,7 @@ export interface IWeb3 {
   myWallet: Wallet | Contract | null;
   chainId: number;
   cart: {};
+  isApprovedForAllNFTs: boolean;
 }
 
 export interface IWeb3Action {
@@ -25,7 +26,14 @@ export interface IState {
 }
 
 const initialState: IState = {
-  web3: { provider: null, myAddress: "", cart: {}, myWallet: null, chainId: 0 },
+  web3: {
+    provider: null,
+    myAddress: "",
+    cart: {},
+    myWallet: null,
+    chainId: 0,
+    isApprovedForAllNFTs: false,
+  },
 };
 
 const AppContext = createContext<{
