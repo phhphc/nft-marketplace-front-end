@@ -32,12 +32,14 @@ import { sellNFT, buyTokenService } from "@Services/ApiService";
 import { useRouter } from "next/router";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import { CURRENCY_UNITS } from "@Constants/index";
+import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem;
 }
 
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
+  const { refetch } = useNFTCollectionList();
   const canBuy = (item: INFTCollectionItem) => {
     return (
       item.listing &&
@@ -52,7 +54,6 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         web3Context.state.web3.myAddress.toLowerCase()
     );
   };
-  const router = useRouter();
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
@@ -90,7 +91,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         price: price.toString(),
         unit: selectedUnit,
       });
-      router.push("/collection/collection-name-example");
+      refetch();
     } catch (error) {
       toast.current &&
         toast.current.show({
@@ -119,9 +120,11 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
       );
     }
     try {
-      if (order) await buyTokenService({ toast, order, myWallet, provider });
+      if (order) {
+        await buyTokenService({ toast, order, myWallet, provider });
+        refetch();
+      }
     } catch (error) {
-      console.log(error);
       toast.current &&
         toast.current.show({
           severity: "error",

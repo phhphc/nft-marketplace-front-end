@@ -6,22 +6,15 @@ import { Tooltip } from "primereact/tooltip";
 import { Sidebar } from "primereact/sidebar";
 import Link from "next/link";
 import { AppContext } from "@Store/index";
-import { useContext, useEffect, useMemo, useState, useRef } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { ethers } from "ethers";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import avatar from "@Assets/avatar.png";
-import {
-  getNFTCollectionListInfoService,
-  getOfferByToken,
-} from "@Services/ApiService";
+import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { Toast } from "primereact/toast";
 
 const Header = () => {
-  const toast = useRef<Toast>(null);
   const web3Context = useContext(AppContext);
-  const [myAddress, setMyAddress] = useState(web3Context.state.web3.myAddress);
-  const [provider, setProvider] = useState(web3Context.state.web3.provider);
 
   // Wallet
   const [walletConnected, setWalletConnected] = useState(false);
@@ -61,8 +54,6 @@ const Header = () => {
   };
 
   useEffect(() => {
-    setMyAddress(web3Context.state.web3.myAddress);
-    setProvider(web3Context.state.web3.provider);
     if (web3Context.state.web3.provider !== null) {
       setWalletConnected(true);
       web3Context.state.web3.provider
@@ -85,6 +76,7 @@ const Header = () => {
   }, []);
 
   // Cart
+  const { nftCollectionList } = useNFTCollectionList();
   const [cartItemList, setCartItemList] = useState<INFTCollectionItem[]>([]);
   const [cartModalVisible, setCartModalVisible] = useState(false);
   const totalPrice = useMemo(() => {
@@ -136,7 +128,9 @@ const Header = () => {
 
   useEffect(() => {
     const cart = { ...web3Context.state.web3.cart };
-    getNFTCollectionListInfoService({ toast, callback: setCartItemList });
+    setCartItemList(
+      nftCollectionList.filter((item: any) => item.token_id in cart)
+    );
   }, [web3Context.state.web3.cart]);
 
   return (
@@ -166,7 +160,7 @@ const Header = () => {
             <>
               {/* Profile */}
               <Link
-                href={`/user-profile/${myAddress}`}
+                href={`/user-profile/${web3Context.state.web3.myAddress}`}
                 className="profile-btn relative"
               >
                 <Image
@@ -176,7 +170,7 @@ const Header = () => {
                 />
                 <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
                   <Link
-                    href={`/user-profile/${myAddress}`}
+                    href={`/user-profile/${web3Context.state.web3.myAddress}`}
                     className="py-3 w-full hover:bg-slate-200 rounded-t-lg border-b"
                   >
                     <span className="ml-4">Profile</span>
@@ -232,7 +226,7 @@ const Header = () => {
                       className="h-12 w-12 border-2 border-black rounded-full"
                     />
                     <span className="text-base w-32 overflow-hidden text-ellipsis">
-                      {myAddress}
+                      {web3Context.state.web3.myAddress}
                     </span>
                   </div>
                   <div className="border-b-2 w-full my-4"></div>

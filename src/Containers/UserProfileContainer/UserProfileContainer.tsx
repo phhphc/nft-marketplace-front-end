@@ -1,29 +1,16 @@
 import NFTUserProfileTabs from "@Components/NFTUserProfileTabs/NFTUserProfileTabs";
 import NFTImageUserProfile from "@Components/UserProfile/NFTImageUserProfile";
 import UserInfor from "@Components/UserProfile/UserInfor";
-import { getNFTCollectionListInfoService } from "@Services/ApiService";
-import { useState, useEffect, useContext, useRef } from "react";
-import { INFTCollectionItem } from "@Interfaces/index";
+import { useContext, useRef } from "react";
 import { AppContext } from "@Store/index";
 import { Toast } from "primereact/toast";
-import { useRouter } from "next/router";
+import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 
 const UserProfileContainer = () => {
-  const [nftCollectionList, setNftCollectionList] = useState<
-    INFTCollectionItem[]
-  >([]);
-
-  const router = useRouter();
-
-  const [countFetchNftCollectionList, setCountFetchNftCollectionList] =
-    useState<number>(0);
-
+  const { nftCollectionList } = useNFTCollectionList();
   const toast = useRef<Toast>(null);
 
   const web3Context = useContext(AppContext);
-  useEffect(() => {
-    getNFTCollectionListInfoService({ toast, callback: setNftCollectionList });
-  }, [countFetchNftCollectionList, web3Context.state.web3.myAddress, router]);
 
   return (
     <>
@@ -33,10 +20,7 @@ const UserProfileContainer = () => {
             <Toast ref={toast} position="top-center" />
             <NFTImageUserProfile></NFTImageUserProfile>
             <UserInfor></UserInfor>
-            <NFTUserProfileTabs
-              nftCollectionList={nftCollectionList}
-              setCountFetchNftCollectionList={setCountFetchNftCollectionList}
-            />
+            <NFTUserProfileTabs nftCollectionList={nftCollectionList} />
           </div>
         </>
       ) : (

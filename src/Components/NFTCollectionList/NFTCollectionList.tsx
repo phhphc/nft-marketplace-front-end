@@ -10,13 +10,11 @@ import { NFT_COLLECTION_MODE } from "@Constants/index";
 export interface INFTCollectionListProps {
   nftCollectionList: INFTCollectionItem[];
   mode: NFT_COLLECTION_MODE;
-  setCountFetchNftCollectionList: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionList = ({
   nftCollectionList,
   mode,
-  setCountFetchNftCollectionList,
 }: INFTCollectionListProps) => {
   const [viewType, setViewType] = useState<COLLECTION_VIEW_TYPE>(
     COLLECTION_VIEW_TYPE.LARGE_GRID
@@ -37,16 +35,12 @@ const NFTCollectionList = ({
         <NFTCollectionFilter />
         <div className="md:col-start-2 col-end-6 col-start-1">
           {viewType === COLLECTION_VIEW_TYPE.LIST ? (
-            <NFTCollectionTableList
-              nftCollectionList={nftCollectionList}
-              setCountFetchNftCollectionList={setCountFetchNftCollectionList}
-            />
+            <NFTCollectionTableList nftCollectionList={nftCollectionList} />
           ) : (
             <NFTCollectionGridList
               viewType={viewType}
               nftCollectionList={nftCollectionList}
               mode={mode}
-              setCountFetchNftCollectionList={setCountFetchNftCollectionList}
             />
           )}
         </div>

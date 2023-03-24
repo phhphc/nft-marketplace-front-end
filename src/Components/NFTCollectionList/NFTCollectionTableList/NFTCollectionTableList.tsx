@@ -6,12 +6,10 @@ import { INFTCollectionItem } from "@Interfaces/index";
 
 export interface INFTCollectionTableListProps {
   nftCollectionList: INFTCollectionItem[];
-  setCountFetchNftCollectionList: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionTableList = ({
   nftCollectionList,
-  setCountFetchNftCollectionList,
 }: INFTCollectionTableListProps) => {
   const [selectedNFTs, setSelectedNFTs] = useState<INFTCollectionItem[]>([]);
   const router = useRouter();
