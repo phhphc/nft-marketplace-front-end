@@ -24,6 +24,7 @@ interface ISellNFTProps {
   tokenId: number;
   price: string;
   unit: string;
+  isApprovedForAllNFTs?: boolean;
 }
 
 interface IGetOfferByTokenProps {
@@ -100,6 +101,7 @@ export const sellNFT = async ({
   tokenId,
   price,
   unit,
+  isApprovedForAllNFTs = false,
 }: ISellNFTProps) => {
   try {
     const erc721Address =
@@ -119,10 +121,12 @@ export const sellNFT = async ({
 
     const erc721ContractWithSigner = erc721Contract.connect(myWallet);
 
-    await erc721ContractWithSigner["setApprovalForAll(address,bool)"](
-      mkpAddress,
-      true
-    );
+    if (!isApprovedForAllNFTs) {
+      await erc721ContractWithSigner["setApprovalForAll(address,bool)"](
+        mkpAddress,
+        true
+      );
+    }
 
     const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 
@@ -292,6 +296,25 @@ export const buyTokenService = async ({
   // }
 };
 
+const handleUploadImageToPinata = async (image: any) => {
+  const imageFormData: any = new FormData();
+  const imageBlob = new Blob([image]);
+  imageFormData.append("file", imageBlob);
+
+  const uploadImageConfig = {
+    method: "post",
+    url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+    headers: {
+      "Content-Type": `multipart/form-data; boundary=${imageFormData._boundary}`,
+      Authorization: process.env.NEXT_PUBLIC_JWT_PINATA,
+    },
+    data: imageFormData,
+  };
+
+  const imageCid = await axios(uploadImageConfig);
+  return imageCid.data.IpfsHash;
+};
+
 export const createNFTService = async ({
   featuredImage,
   name,
@@ -301,32 +324,17 @@ export const createNFTService = async ({
   supply,
   blockchain,
 }: ICreateNFTServiceProps) => {
-  console.log(process.env.NEXT_PUBLIC_JWT_PINATA);
-  const featuredImageData: any = new FormData();
-  const featuredImageBlob = new Blob([featuredImage]);
-  featuredImageData.append("file", featuredImageBlob);
-
-  const uploadFeaturedImageConfig = {
-    method: "post",
-    url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
-    headers: {
-      "Content-Type": `multipart/form-data; boundary=${featuredImageData._boundary}`,
-      Authorization: process.env.NEXT_PUBLIC_JWT_PINATA,
-    },
-    data: featuredImageData,
-  };
-
-  const featuredImageCid = await axios(uploadFeaturedImageConfig);
+  const featuredImageCid = await handleUploadImageToPinata(featuredImage);
 
   const createNewNFTData = JSON.stringify({
     pinataOptions: {
       cidVersion: 1,
     },
     pinataMetadata: {
-      name: `${name} 1`,
+      name: `${name}`,
     },
     pinataContent: {
-      featuredImage: featuredImageCid.data.IpfsHash,
+      featuredImage: featuredImageCid,
       name,
       url,
       desc,
@@ -362,7 +370,43 @@ export const createNFTCollectionService = async ({
   link,
   blockchain,
 }: ICreateCollectionProps) => {
-  // todo: deploy contract and send data to BE, don't pin pinata
+  const featuredImageCid = await handleUploadImageToPinata(featuredImage);
+  const logoImageCid = await handleUploadImageToPinata(logoImage);
+  const bannerImageCid = await handleUploadImageToPinata(bannerImage);
+
+  const createNewCollectionData = JSON.stringify({
+    pinataOptions: {
+      cidVersion: 1,
+    },
+    pinataMetadata: {
+      name: `${name}`,
+    },
+    pinataContent: {
+      logoImage: logoImageCid,
+      featuredImage: featuredImageCid,
+      bannerImage: bannerImageCid,
+      name,
+      url,
+      desc,
+      category,
+      link,
+      blockchain,
+    },
+  });
+
+  const createCollectionConfig = {
+    method: "post",
+    url: "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: process.env.NEXT_PUBLIC_JWT_PINATA,
+    },
+    data: createNewCollectionData,
+  };
+
+  const res = await axios(createCollectionConfig);
+  console.log("🚀 ~ file: ApiService.ts:338 ~ res:", res.data);
+
   // const provider = new ethers.providers.Web3Provider(window.ethereum);
   // await provider.send("eth_requestAccounts", []);
   // const signer = provider.getSigner();

@@ -67,6 +67,9 @@ const CreateCollection = () => {
   const onSubmit = async (data: IFormCollectionInput) => {
     await createNFTCollectionService({
       ...data,
+      logoImage: data.logoImage[0],
+      featuredImage: data.featuredImage[0],
+      bannerImage: data.bannerImage[0],
       category: data.category.value,
       blockchain: data.blockchain.value,
     });
@@ -230,7 +233,7 @@ const CreateCollection = () => {
         <Controller
           render={({ field }) => (
             <div className="pt-4">
-              <label className="text-lg font-medium">ICategory</label>
+              <label className="text-lg font-medium">Category</label>
               <Dropdown
                 {...field}
                 options={categories}
