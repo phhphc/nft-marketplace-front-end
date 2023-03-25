@@ -82,7 +82,7 @@ const Header = () => {
   const totalPrice = useMemo(() => {
     return Math.round(
       (cartItemList
-        ? cartItemList.reduce((acc, cur) => acc + (cur.listing?.price || 0), 0)
+        ? cartItemList.reduce((acc, cur) => acc + (cur.listings?.price || 0), 0)
         : 0) / 1000000000000000000
     );
   }, [cartItemList]);
@@ -129,7 +129,7 @@ const Header = () => {
   useEffect(() => {
     const cart = { ...web3Context.state.web3.cart };
     setCartItemList(
-      nftCollectionList.filter((item: any) => item.token_id in cart)
+      nftCollectionList.filter((item: any) => item.identifier in cart)
     );
   }, [web3Context.state.web3.cart]);
 
@@ -336,11 +336,11 @@ const Header = () => {
               <div className="space-y-2">
                 {cartItemList.map((cartItem) => (
                   <div
-                    key={cartItem.token_id}
+                    key={cartItem.identifier}
                     className="cart-item flex justify-between items-center w-full py-2 px-4 rounded-lg hover:bg-gray-100"
                   >
                     <div className="flex justify-start space-x-2">
-                      <Link href={`/detail/${cartItem.token_id}`}>
+                      <Link href={`/detail/${cartItem.identifier}`}>
                         <img
                           src={cartItem.metadata?.image}
                           alt="cart-item"
@@ -355,14 +355,14 @@ const Header = () => {
                       </div>
                     </div>
                     <span className="price text-sm">
-                      {cartItem.listing?.price
-                        ? cartItem.listing.price / 1000000000000000000
+                      {cartItem.listings?.price
+                        ? cartItem.listings.price / 1000000000000000000
                         : 0}{" "}
                       ETH
                     </span>
                     <button
                       className="delete-cart-btn hidden hover:text-white"
-                      onClick={() => handleRemoveFromCart(cartItem.token_id)}
+                      onClick={() => handleRemoveFromCart(cartItem.identifier)}
                     >
                       <i className="pi pi-trash" />
                     </button>

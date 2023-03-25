@@ -21,7 +21,7 @@ interface ISellNFTProps {
   provider: any;
   myAddress: string;
   myWallet: any;
-  tokenId: number;
+  tokenId: string;
   price: string;
   unit: string;
   isApprovedForAllNFTs?: boolean;
@@ -36,7 +36,7 @@ interface IBuyTokenServiceProps {
   toast: any;
   provider: any;
   myWallet: any;
-  order: Order;
+  item: INFTCollectionItem;
 }
 
 interface IGetNFTCollectionListInfoServiceProps {
@@ -84,7 +84,7 @@ export const getOfferByToken = async ({
   tokenAddress,
 }: IGetOfferByTokenProps): Promise<any> => {
   return axios
-    .get("/api/v0.1/orders/offer", {
+    .get("/api/v0.1/order/offer", {
       params: transformDataRequestToSellNFT({ tokenId, tokenAddress }),
     })
     .then((response) => {
@@ -186,7 +186,7 @@ export const sellNFT = async ({
     );
 
     await axios.post(
-      "/api/v0.1/orders",
+      "/api/v0.1/order",
       transformDataRequestToSellNFT({
         orderHash,
         offerer: myAddress,
@@ -218,45 +218,50 @@ export const sellNFT = async ({
 export const getNFTCollectionListInfoService = async (): Promise<
   INFTCollectionItem[]
 > => {
-  console.log("run");
   const data = await getNFTCollectionListService();
-  if (data) {
-    const newData = await Promise.all(
-      data.nfts.map(async (item: any) => {
-        const orderParameters = await getOfferByToken({
-          tokenId: item.token_id,
-          tokenAddress: item.contract_addr,
-        });
+  console.log("🚀 ~ file: ApiService.ts:223 ~ data:", data);
+  // if (data) {
+  //   const newData = await Promise.all(
+  //     data.nfts.map(async (item: any) => {
+  //       const orderParameters = await getOfferByToken({
+  //         tokenId: item.identifier,
+  //         tokenAddress: item.token,
+  //       });
+  //       console.log(
+  //         "🚀 ~ file: ApiService.ts:230 ~ data.nfts.map ~ orderParameters:",
+  //         orderParameters
+  //       );
 
-        if (orderParameters?.length) {
-          const latestOrderParameter = cloneDeep(
-            orderParameters[orderParameters.length - 1]
-          );
-          const signature = latestOrderParameter.signature;
-          delete latestOrderParameter.signature;
-          delete latestOrderParameter.is_cancelled;
-          delete latestOrderParameter.is_validated;
-          return {
-            ...item,
-            order: {
-              parameters: {
-                ...latestOrderParameter,
-                totalOriginalConsiderationItems:
-                  latestOrderParameter.consideration.length,
-              },
-              signature,
-            },
-          };
-        } else return item;
-      })
-    );
-    return newData;
-  } else return [];
+  //       if (orderParameters?.length) {
+  //         const latestOrderParameter = cloneDeep(
+  //           orderParameters[orderParameters.length - 1]
+  //         );
+  //         const signature = latestOrderParameter.signature;
+  //         delete latestOrderParameter.signature;
+  //         delete latestOrderParameter.is_cancelled;
+  //         delete latestOrderParameter.is_validated;
+  //         return {
+  //           ...item,
+  //           order: {
+  //             parameters: {
+  //               ...latestOrderParameter,
+  //               totalOriginalConsiderationItems:
+  //                 latestOrderParameter.consideration.length,
+  //             },
+  //             signature,
+  //           },
+  //         };
+  //       } else return item;
+  //     })
+  //   );
+  console.log(data);
+  return data.nfts;
+  // } else return [];
 };
 
 export const buyTokenService = async ({
   toast,
-  order,
+  item,
   myWallet,
   provider,
 }: IBuyTokenServiceProps) => {
@@ -273,10 +278,42 @@ export const buyTokenService = async ({
 
   const mkpContractWithSigner = mkpContract.connect(myWallet);
 
+  const orderHashData = await axios.get("/api/v0.1/order/hash", {
+    params: {
+      offer_token: item.token,
+      offer_identifier: toBN(item.identifier)._hex,
+    },
+  });
+  console.log("🚀 ~ file: ApiService.ts:287 ~ orderHashData:", orderHashData);
+
+  const orderHash =
+    "0x21de1f62d2261c7f2a86f57cb2a5127cf0e0f2c8a12d6ae3375979c46d87da71";
+  console.log("🚀 ~ file: ApiService.ts:290 ~ orderHash:", orderHash);
+
+  const orderData = await axios.get("/api/v0.1/order", {
+    params: {
+      order_hash: orderHash,
+    },
+  });
+
+  const signature = orderData.data.data.signature;
+  orderData.data.data.totalOriginalConsiderationItems = 1;
+  delete orderData.data.data.signature;
+
+  console.log(
+    transformDataRequestToBuyNFT({
+      parameters: orderData.data.data,
+      signature,
+    })
+  );
+
   const tx = await mkpContractWithSigner[
     "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
   ](
-    transformDataRequestToBuyNFT(order),
+    transformDataRequestToBuyNFT({
+      parameters: orderData.data.data,
+      signature,
+    }),
 
     { value: toBN(parseEther("10")), gasLimit: 1000000 }
   );
