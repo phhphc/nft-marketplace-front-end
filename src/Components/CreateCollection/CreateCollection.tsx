@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { Image } from "primereact/image";
 import { InputText } from "primereact/inputtext";
@@ -11,24 +11,25 @@ import {
   IFormCollectionInput,
 } from "@Interfaces/index";
 import { createNFTCollectionService } from "@Services/ApiService";
+import { AppContext } from "@Store/index";
 
 const CreateCollection = () => {
   const categories: ICategory[] = [
-    { categoryName: "Art", code: "art" },
-    { categoryName: "Domain names", code: "domain" },
-    { categoryName: "Gaming", code: "gaming" },
-    { categoryName: "Memberships", code: "membership" },
-    { categoryName: "Music", code: "music" },
-    { categoryName: "PFPs", code: "pfp" },
-    { categoryName: "Photography", code: "photograph" },
-    { categoryName: "Sports Collectibles", code: "sport" },
-    { categoryName: "Virtual Worlds", code: "virtual" },
-    { categoryName: "No category", code: "no" },
+    { categoryName: "Art", value: "Art" },
+    { categoryName: "Domain names", value: "Domain" },
+    { categoryName: "Gaming", value: "Gaming" },
+    { categoryName: "Memberships", value: "Membership" },
+    { categoryName: "Music", value: "Music" },
+    { categoryName: "PFPs", value: "Pfp" },
+    { categoryName: "Photography", value: "Photograph" },
+    { categoryName: "Sports Collectibles", value: "Sport" },
+    { categoryName: "Virtual Worlds", value: "Virtual" },
+    { categoryName: "No category", value: "No" },
   ];
 
   const blockchains: IBlockchain[] = [
-    { blockchainName: "Ethereum", code: "ethereum" },
-    { blockchainName: "Polygon", code: "polygon" },
+    { blockchainName: "Ethereum", value: "ethereum" },
+    { blockchainName: "Polygon", value: "polygon" },
   ];
 
   const [logoFile, setLogoFile] = useState("");
@@ -61,6 +62,9 @@ const CreateCollection = () => {
     resetField("bannerImage");
   }
 
+  const web3Context = useContext(AppContext);
+  const owner = web3Context.state.web3.myAddress;
+
   const { register, resetField, control, handleSubmit } =
     useForm<IFormCollectionInput>();
 
@@ -70,8 +74,7 @@ const CreateCollection = () => {
       logoImage: data.logoImage[0],
       featuredImage: data.featuredImage[0],
       bannerImage: data.bannerImage[0],
-      category: data.category.value,
-      blockchain: data.blockchain.value,
+      owner,
     });
   };
 
