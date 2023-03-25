@@ -82,7 +82,10 @@ const Header = () => {
   const totalPrice = useMemo(() => {
     return Math.round(
       (cartItemList
-        ? cartItemList.reduce((acc, cur) => acc + (cur.listings?.price || 0), 0)
+        ? cartItemList.reduce(
+            (acc, cur) => acc + Number(cur.listings[0]?.start_price || 0),
+            0
+          )
         : 0) / 1000000000000000000
     );
   }, [cartItemList]);
@@ -100,7 +103,7 @@ const Header = () => {
     });
   };
 
-  const handleRemoveFromCart = (tokenId: number, quantity: number = 1) => {
+  const handleRemoveFromCart = (tokenId: string, quantity: number = 1) => {
     const currCart = web3Context.state.web3.cart;
     const newCart: any = { ...currCart };
     delete newCart[[tokenId].toString()];
@@ -342,21 +345,22 @@ const Header = () => {
                     <div className="flex justify-start space-x-2">
                       <Link href={`/detail/${cartItem.identifier}`}>
                         <img
-                          src={cartItem.metadata?.image}
+                          src={cartItem.image}
                           alt="cart-item"
                           className="h-16 w-16 rounded-lg"
                         />
                       </Link>
                       <div className="flex flex-col items-start justify-start text-sm">
                         <span className="font-medium">
-                          {cartItem.metadata?.name}
+                          {cartItem.identifier}
                         </span>
                         <span className="">{"Gemma"}</span>
                       </div>
                     </div>
                     <span className="price text-sm">
-                      {cartItem.listings?.price
-                        ? cartItem.listings.price / 1000000000000000000
+                      {Number(cartItem.listings[0]?.start_price || 0)
+                        ? Number(cartItem.listings[0]?.start_price || 0) /
+                          1000000000000000000
                         : 0}{" "}
                       ETH
                     </span>

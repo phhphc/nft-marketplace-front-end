@@ -21,6 +21,7 @@ import {
   DATA_MAPPING_CAMELIZE,
   TO_NUMBER_MAPPING,
   TO_NUMBER_MAPPING_WITH_ITEM_TYPE,
+  MAPPING_STRING_TO_BIG_NUMBER,
 } from "@Constants/index";
 
 const randomBytes = (n: number) => nodeRandomBytes(n).toString("hex");
@@ -85,10 +86,11 @@ export const getOfferOrConsiderationItem = <
   endAmount: BigNumberish = 1,
   recipient?: RecipientType
 ): RecipientType extends string ? ConsiderationItem : OfferItem => {
+  console.log(identifierOrCriteria, token);
   const offerItem: OfferItem = {
     itemType,
     token,
-    identifier: toBN(identifierOrCriteria),
+    identifier: identifierOrCriteria.toString(),
     startAmount: toBN(startAmount),
     endAmount: toBN(endAmount),
   };
@@ -102,14 +104,15 @@ export const getOfferOrConsiderationItem = <
 };
 
 export const getTestItem721 = (
-  identifier: BigNumberish,
+  identifier: BigNumberish = 0,
+
   startAmount: BigNumberish = 1,
   endAmount: BigNumberish = 1,
   recipient?: string,
-  token = process.env.NEXT_PUBLIC_ERC721_ADDRESS ??
-    "0xc9c7e04c41a01c9072c2d074e1258a1f56d0603a"
-) =>
-  getOfferOrConsiderationItem(
+  token = process.env.NEXT_PUBLIC_ERC721_ADDRESS
+) => {
+  console.log(identifier);
+  return getOfferOrConsiderationItem(
     2, // ERC721
     token,
     identifier,
@@ -117,6 +120,7 @@ export const getTestItem721 = (
     endAmount,
     recipient
   );
+};
 
 export const getItemETH = (
   startAmount: BigNumberish = 1,
@@ -476,6 +480,23 @@ export const toNumberWithItemType = (obj: any): any => {
   return obj;
 };
 
+export const stringToBigNumber = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map((v) => stringToBigNumber(v));
+  } else if (obj != null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => ({
+        ...result,
+        [key]: MAPPING_STRING_TO_BIG_NUMBER.includes(key)
+          ? toBN(Number(obj[key]))._hex
+          : stringToBigNumber(obj[key]),
+      }),
+      {}
+    );
+  }
+  return obj;
+};
+
 export const enhanceHexString = (str: string, index: number): string => {
   let res = str;
   if (str.length >= index && str?.[index] == "0") {
@@ -491,7 +512,9 @@ export const transformDataRequestToSellNFT = (obj: any): any => {
 export const transformDataRequestToBuyNFT = (obj: any): any => {
   return JSON.parse(
     JSON.stringify(
-      toNumberWithItemType(toNumber(toBigNumberHex(camelizeKeys(obj))))
+      toNumberWithItemType(
+        stringToBigNumber(toNumber(toBigNumberHex(camelizeKeys(obj))))
+      )
     )
   );
 };

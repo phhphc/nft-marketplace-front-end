@@ -111,8 +111,6 @@ export const NORMAL_STRING_MAPPING: string[] = [
   "item_type",
   "type_number",
   "order_type",
-  "startAmount",
-  "endAmount",
   "totalOriginalConsiderationItems",
 ];
 
@@ -122,12 +120,19 @@ export const TO_NUMBER_MAPPING: any = {
   order_type: 1,
   itemType: 1,
   orderType: 1,
+  startTime: 1,
 };
 
 export const TO_NUMBER_MAPPING_WITH_ITEM_TYPE: any = {
-  startAmount: 1,
-  endAmount: 1,
+  startAmount: "0x01",
+  endAmount: "0x01",
 };
+
+export const MAPPING_STRING_TO_BIG_NUMBER = [
+  "endTime",
+  "endAmount",
+  "startAmount",
+];
 
 export const CURRENCY = {
   ETHER: "Ether",
