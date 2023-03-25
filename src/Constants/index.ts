@@ -104,7 +104,6 @@ export const DATA_MAPPING_SNAKIZE: any = {};
 
 export const DATA_MAPPING_CAMELIZE: any = {
   type_number: "itemType",
-  identifier: "identifier",
   token_address: "token",
 };
 
@@ -118,11 +117,16 @@ export const NORMAL_STRING_MAPPING: string[] = [
 ];
 
 export const TO_NUMBER_MAPPING: any = {
-  startAmount: 1000000000000000000,
-  endAmount: 1000000000000000000,
   totalOriginalConsiderationItems: 1,
   item_type: 1,
   order_type: 1,
+  itemType: 1,
+  orderType: 1,
+};
+
+export const TO_NUMBER_MAPPING_WITH_ITEM_TYPE: any = {
+  startAmount: 1,
+  endAmount: 1,
 };
 
 export const CURRENCY = {

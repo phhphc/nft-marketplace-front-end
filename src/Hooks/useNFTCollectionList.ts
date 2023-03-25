@@ -8,7 +8,9 @@ const useNFTCollectionList = () => {
     staleTime: Infinity,
   });
   const nftCollectionList =
-    result.data?.filter((item) => item.identifier === "0") || [];
+    result.data?.filter(
+      (item) => item.token === "0x60b51e7358544e1C941638772B0D73Cd54c8b16B"
+    ) || [];
   return { ...result, nftCollectionList };
 };
 
