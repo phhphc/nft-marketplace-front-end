@@ -41,24 +41,16 @@ export interface INFTDetailProps {
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const { refetch } = useNFTCollectionList();
   const canBuy = (item: INFTCollectionItem) => {
-    return (
-      item.listings &&
-      item.listings.seller.toLowerCase() !==
-        web3Context.state.web3.myAddress.toLowerCase()
-    );
+    return !!item.listings[0];
   };
   const canSell = (item: INFTCollectionItem) => {
-    return (
-      !item.listings &&
-      item.owner.toLowerCase() ===
-        web3Context.state.web3.myAddress.toLowerCase()
-    );
+    return item.owner === web3Context.state.web3.myAddress;
   };
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
 
-  const handleSellNFT = async (tokenId: number) => {
+  const handleSellNFT = async (tokenId: string) => {
     if (!web3Context.state.web3.provider) {
       return (
         toast.current &&
@@ -142,7 +134,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
     }
   };
 
-  const handleAddToCart = (tokenId: number, quantity: number = 1) => {
+  const handleAddToCart = (tokenId: string, quantity: number = 1) => {
     const currCart = web3Context.state.web3.cart;
     const newCart = { ...currCart, [tokenId]: quantity };
     web3Context.dispatch({
@@ -155,7 +147,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
     });
   };
 
-  const handleRemoveFromCart = (tokenId: number, quantity: number = 1) => {
+  const handleRemoveFromCart = (tokenId: string, quantity: number = 1) => {
     const currCart = web3Context.state.web3.cart;
     const newCart: any = { ...currCart };
     delete newCart[[tokenId].toString()];
@@ -209,7 +201,11 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         </div>
         <img
           id="image"
-          src={nftDetail.metadata?.image}
+          src={
+            nftDetail.image != "<nil>"
+              ? nftDetail.image
+              : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
+          }
           alt="detail"
           className="nft-detail-img rounded-b-lg h-full w-full object-cover object-center lg:h-full lg:w-full"
         />
@@ -220,7 +216,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               <span>Description</span>
             </div>
             <div className="table-content p-5">
-              {nftDetail.metadata?.description}
+              {nftDetail.description != "<nil>" ? nftDetail.description : ""}
             </div>
           </div>
           <Accordion multiple>
@@ -299,8 +295,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="flex space-x-2">
                   <FontAwesomeIcon icon={faClipboard} />
                   <p>
-                    About {nftDetail.metadata?.name.toUpperCase()} BY{" "}
-                    {"AuthorName"}
+                    About {nftDetail.identifier.toUpperCase()} BY {"AuthorName"}
                   </p>
                 </div>
               }
@@ -308,7 +303,11 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               <div className="flex space-x-3">
                 <img
                   className="avatar w-6 h-6 rounded-3xl mt-2"
-                  src={nftDetail.metadata?.image}
+                  src={
+                    nftDetail.image != "<nil>"
+                      ? nftDetail.image
+                      : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
+                  }
                   alt=""
                 />
                 <span className="about-text">
@@ -403,7 +402,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             className="author h-12 flex items-center space-x-2 text-blue-500"
           >
             <span>
-              {nftDetail.metadata?.name.toUpperCase()} BY {"AuthorName"}
+              {nftDetail.identifier.toUpperCase()} BY {"AuthorName"}
             </span>
             <i>
               <FontAwesomeIcon icon={faCircleCheck} />
@@ -425,12 +424,12 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           </div>
         </div>
         <h1 className="name h-14 text-4xl flex items-center font-semibold mt-2 mb-1">
-          {nftDetail.metadata?.name.toUpperCase()}
+          {nftDetail.identifier.toUpperCase()}
         </h1>
         <h2 className="owner h-9 flex justify-start items-center space-x-1">
           <span>Owned by</span>
           <Link href="/" className="text-blue-500">
-            {nftDetail.listings ? nftDetail.listings.seller : nftDetail.owner}
+            {nftDetail.owner}
           </Link>
         </h2>
         <div className="flex flex-start space-x-8 pt-5 pb-8">
@@ -491,15 +490,23 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="price flex mb-3 space-x-2">
                   <span className="text-3xl font-bold space-x-1 my-1 ">
                     <span className="price-value">
-                      {(nftDetail?.listings?.price || 0) / 1000000000 <
-                      1000000000
-                        ? `${
-                            (nftDetail?.listings?.price || 0) / 1000000000
-                          } GWEI`
-                        : `${
-                            (nftDetail?.listings?.price || 0) /
-                            1000000000000000000
-                          } ETH`}
+                      {nftDetail.listings[0] && (
+                        <p className="text-sm font-medium text-gray-900 uppercase">
+                          {Number(nftDetail.listings[0]?.start_price || 0) /
+                            1000000000 <
+                          1000000000
+                            ? `${
+                                Number(
+                                  nftDetail.listings[0]?.start_price || 0
+                                ) / 1000000000
+                              } GWEI`
+                            : `${
+                                Number(
+                                  nftDetail.listings[0]?.start_price || 0
+                                ) / 1000000000000000000
+                              } ETH`}
+                        </p>
+                      )}
                     </span>
                   </span>
                 </div>

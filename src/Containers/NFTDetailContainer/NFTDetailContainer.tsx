@@ -12,7 +12,7 @@ const NFTDetailContainer = () => {
   const toast = useRef<Toast>(null);
 
   const router = useRouter();
-  const tokenID = router.query.identifier;
+  const tokenID = router.query.token_id;
 
   useEffect(() => {
     setNftDetail(

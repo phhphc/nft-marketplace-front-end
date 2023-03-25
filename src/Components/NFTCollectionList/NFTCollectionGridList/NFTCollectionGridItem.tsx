@@ -25,7 +25,7 @@ const NFTCollectionGridItem = ({
 }: INFTCollectionGridItemProps) => {
   const { refetch } = useNFTCollectionList();
   const canBuy = (item: INFTCollectionItem) => {
-    return true;
+    return !!item.listings[0];
   };
 
   const [price, setPrice] = useState<number>(0);
@@ -33,7 +33,7 @@ const NFTCollectionGridItem = ({
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
   const canSell = (item: INFTCollectionItem) => {
-    return true;
+    return item.owner === web3Context.state.web3.myAddress;
   };
   const handleSellNFT = async (tokenId: string) => {
     if (!web3Context.state.web3.provider) {
@@ -174,8 +174,9 @@ const NFTCollectionGridItem = ({
       >
         <img
           src={
-            item.metadata?.image ||
-            "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
+            item.image != "<nil>"
+              ? item.image
+              : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
           }
           alt="NFT Item"
           className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
@@ -189,9 +190,15 @@ const NFTCollectionGridItem = ({
             </h3>
             {item.listings && (
               <p className="text-sm font-medium text-gray-900 uppercase">
-                {(item?.listings?.price || 0) / 1000000000 < 1000000000
-                  ? `${(item?.listings?.price || 0) / 1000000000} GWEI`
-                  : `${(item?.listings?.price || 0) / 1000000000000000000} ETH`}
+                {Number(item.listings[0]?.start_price || 0) / 1000000000 <
+                1000000000
+                  ? `${
+                      Number(item.listings[0]?.start_price || 0) / 1000000000
+                    } GWEI`
+                  : `${
+                      Number(item.listings[0]?.start_price || 0) /
+                      1000000000000000000
+                    } ETH`}
               </p>
             )}
           </div>
