@@ -26,7 +26,7 @@ const NFTCollectionGridList = ({
         >
           {nftCollectionList.map((item) => (
             <NFTCollectionGridItem
-              key={item.token_id}
+              key={item.identifier}
               item={item}
               viewType={viewType}
               mode={mode}

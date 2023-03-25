@@ -466,7 +466,7 @@ export const enhanceHexString = (str: string, index: number): string => {
 };
 
 export const transformDataRequestToSellNFT = (obj: any): any => {
-  return JSON.parse(JSON.stringify(toBigNumberHex(snakizeKeys(obj))));
+  return JSON.parse(JSON.stringify(toNumber(toBigNumberHex(snakizeKeys(obj)))));
 };
 
 export const transformDataRequestToBuyNFT = (obj: any): any => {

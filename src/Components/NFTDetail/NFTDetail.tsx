@@ -42,14 +42,14 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const { refetch } = useNFTCollectionList();
   const canBuy = (item: INFTCollectionItem) => {
     return (
-      item.listing &&
-      item.listing.seller.toLowerCase() !==
+      item.listings &&
+      item.listings.seller.toLowerCase() !==
         web3Context.state.web3.myAddress.toLowerCase()
     );
   };
   const canSell = (item: INFTCollectionItem) => {
     return (
-      !item.listing &&
+      !item.listings &&
       item.owner.toLowerCase() ===
         web3Context.state.web3.myAddress.toLowerCase()
     );
@@ -113,7 +113,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const handleBuyToken = async (
     myWallet: any,
     provider: any,
-    order?: Order
+    item?: INFTCollectionItem
   ) => {
     if (!web3Context.state.web3.provider) {
       return (
@@ -127,8 +127,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
       );
     }
     try {
-      if (order) {
-        await buyTokenService({ toast, order, myWallet, provider });
+      if (item) {
+        await buyTokenService({ toast, item, myWallet, provider });
         refetch();
       }
     } catch (error) {
@@ -176,7 +176,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const [selectedUnit, setSelectedUnit] = useState<string>("");
 
   useEffect(() => {
-    if (nftDetail.token_id in web3Context.state.web3.cart) {
+    if (nftDetail.identifier in web3Context.state.web3.cart) {
       setIsAddedToCart(true);
     } else {
       setIsAddedToCart(false);
@@ -374,13 +374,13 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     className="text-blue-500 w-28 overflow-hidden text-ellipsis"
                     href=""
                   >
-                    <span>{nftDetail.contract_addr}</span>
+                    <span>{nftDetail.token}</span>
                   </Link>
                 </div>
                 <div className="w-full flex justify-between">
                   <span>Token ID</span>
                   <Link className="text-blue-500" href="">
-                    {nftDetail.token_id}
+                    {nftDetail.identifier}
                   </Link>
                 </div>
                 <div className="w-full flex justify-between">
@@ -430,7 +430,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         <h2 className="owner h-9 flex justify-start items-center space-x-1">
           <span>Owned by</span>
           <Link href="/" className="text-blue-500">
-            {nftDetail.listing ? nftDetail.listing.seller : nftDetail.owner}
+            {nftDetail.listings ? nftDetail.listings.seller : nftDetail.owner}
           </Link>
         </h2>
         <div className="flex flex-start space-x-8 pt-5 pb-8">
@@ -456,7 +456,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           </div>
         </div>
         <div className="boxes w-full border rounded-lg">
-          {nftDetail.listing && (
+          {nftDetail.listings && (
             <div className="time-box flex flex-col border-b p-5 text-lg">
               <div className="space-x-2 ">
                 <i>
@@ -485,19 +485,19 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             </div>
           )}
           <div className="buy-box flex flex-col p-5 ">
-            {!!nftDetail?.listing && (
+            {!!nftDetail?.listings && (
               <>
                 <span className="text-md text-gray-500">Current price</span>
                 <div className="price flex mb-3 space-x-2">
                   <span className="text-3xl font-bold space-x-1 my-1 ">
                     <span className="price-value">
-                      {(nftDetail?.listing?.price || 0) / 1000000000 <
+                      {(nftDetail?.listings?.price || 0) / 1000000000 <
                       1000000000
                         ? `${
-                            (nftDetail?.listing?.price || 0) / 1000000000
+                            (nftDetail?.listings?.price || 0) / 1000000000
                           } GWEI`
                         : `${
-                            (nftDetail?.listing?.price || 0) /
+                            (nftDetail?.listings?.price || 0) /
                             1000000000000000000
                           } ETH`}
                     </span>
@@ -511,7 +511,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="flex gap-3 justify-between">
                   {isAddedToCart ? (
                     <div
-                      onClick={() => handleRemoveFromCart(nftDetail.token_id)}
+                      onClick={() => handleRemoveFromCart(nftDetail.identifier)}
                       className="flex justify-center gap-2 w-72 bg-red-100 hover:bg-red-300 h-16 pt-4 rounded-md cursor-pointer"
                     >
                       <i
@@ -524,7 +524,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     </div>
                   ) : (
                     <div
-                      onClick={() => handleAddToCart(nftDetail.token_id)}
+                      onClick={() => handleAddToCart(nftDetail.identifier)}
                       className="flex justify-center gap-2 w-72 bg-red-100 hover:bg-red-300 h-16 pt-4 rounded-md cursor-pointer"
                     >
                       <i
@@ -542,7 +542,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                       handleBuyToken(
                         web3Context.state.web3.myWallet,
                         web3Context.state.web3.provider,
-                        nftDetail.order
+                        nftDetail
                       )
                     }
                   >
@@ -580,7 +580,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                       <Button
                         label="Sell"
                         icon="pi pi-check"
-                        onClick={() => handleSellNFT(nftDetail.token_id)}
+                        onClick={() => handleSellNFT(nftDetail.identifier)}
                         autoFocus
                       />
                     </div>

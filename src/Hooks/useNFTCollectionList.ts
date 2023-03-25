@@ -7,7 +7,8 @@ const useNFTCollectionList = () => {
     queryFn: getNFTCollectionListInfoService,
     staleTime: Infinity,
   });
-  const nftCollectionList = result.data || [];
+  const nftCollectionList =
+    result.data?.filter((item) => item.identifier === "0") || [];
   return { ...result, nftCollectionList };
 };
 

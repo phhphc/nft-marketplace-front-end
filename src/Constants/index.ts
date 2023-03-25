@@ -100,22 +100,18 @@ export const orderType = {
   ],
 };
 
-export const DATA_MAPPING_SNAKIZE: any = {
-  identifier: "token_id",
-  itemType: "type_number",
-  token: "token_address",
-};
+export const DATA_MAPPING_SNAKIZE: any = {};
 
 export const DATA_MAPPING_CAMELIZE: any = {
   type_number: "itemType",
-  token_id: "identifier",
+  identifier: "identifier",
   token_address: "token",
 };
 
 export const NORMAL_STRING_MAPPING: string[] = [
+  "item_type",
   "type_number",
   "order_type",
-  "salt",
   "startAmount",
   "endAmount",
   "totalOriginalConsiderationItems",
@@ -125,6 +121,8 @@ export const TO_NUMBER_MAPPING: any = {
   startAmount: 1000000000000000000,
   endAmount: 1000000000000000000,
   totalOriginalConsiderationItems: 1,
+  item_type: 1,
+  order_type: 1,
 };
 
 export const CURRENCY = {
