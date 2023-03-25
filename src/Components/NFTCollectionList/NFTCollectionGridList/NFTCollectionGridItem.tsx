@@ -27,14 +27,14 @@ const NFTCollectionGridItem = ({
   const canBuy = (item: INFTCollectionItem) => {
     return true;
   };
-  const canSell = (item: INFTCollectionItem) => {
-    return true;
-  };
 
   const [price, setPrice] = useState<number>(0);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
+  const canSell = (item: INFTCollectionItem) => {
+    return true;
+  };
   const handleSellNFT = async (tokenId: string) => {
     if (!web3Context.state.web3.provider) {
       return (
@@ -185,7 +185,7 @@ const NFTCollectionGridItem = ({
         <div>
           <div className="p-4 h-20">
             <h3 className="font-bold uppercase">
-              {item.metadata?.name || "Item name"}
+              {item.identifier || "Item name"}
             </h3>
             {item.listings && (
               <p className="text-sm font-medium text-gray-900 uppercase">

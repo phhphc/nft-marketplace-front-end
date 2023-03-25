@@ -265,6 +265,7 @@ export const buyTokenService = async ({
   myWallet,
   provider,
 }: IBuyTokenServiceProps) => {
+  console.log("🚀 ~ file: ApiService.ts:268 ~ item:", item);
   const erc721Address =
     process.env.NEXT_PUBLIC_ERC721_ADDRESS ??
     "0xc9c7e04c41a01c9072c2d074e1258a1f56d0603a";
@@ -280,14 +281,17 @@ export const buyTokenService = async ({
 
   const orderHashData = await axios.get("/api/v0.1/order/hash", {
     params: {
-      offer_token: item.token,
+      // offer_token: item.token,
       offer_identifier: toBN(item.identifier)._hex,
     },
   });
-  console.log("🚀 ~ file: ApiService.ts:287 ~ orderHashData:", orderHashData);
+  console.log(
+    "🚀 ~ file: ApiService.ts:287 ~ orderHashData:",
+    toBN(item.identifier)._hex,
+    orderHashData
+  );
 
-  const orderHash =
-    "0x21de1f62d2261c7f2a86f57cb2a5127cf0e0f2c8a12d6ae3375979c46d87da71";
+  const orderHash = orderHashData.data.data.order_hashes[0];
   console.log("🚀 ~ file: ApiService.ts:290 ~ orderHash:", orderHash);
 
   const orderData = await axios.get("/api/v0.1/order", {
@@ -295,9 +299,10 @@ export const buyTokenService = async ({
       order_hash: orderHash,
     },
   });
-
+  console.log("🚀 ~ file: ApiService.ts:298 ~ orderData:", orderData);
   const signature = orderData.data.data.signature;
   orderData.data.data.totalOriginalConsiderationItems = 1;
+  // delete orderData.data.data.order_hash;
   delete orderData.data.data.signature;
 
   console.log(
@@ -315,7 +320,7 @@ export const buyTokenService = async ({
       signature,
     }),
 
-    { value: toBN(parseEther("10")), gasLimit: 1000000 }
+    { value: toBN(parseEther("5")), gasLimit: 1000000 }
   );
   console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
   await tx.wait();
