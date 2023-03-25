@@ -4,7 +4,7 @@ module.exports = () => {
     return [
       {
         source: "/api/v0.1/nft",
-        destination: `${process.env.BACKEND_URL}/nft`,
+        destination: `${process.env.BACKEND_URL}/nft?limit=100&offset=0`,
       },
       {
         source: "/api/v0.1/collection",
