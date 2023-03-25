@@ -28,7 +28,7 @@ const NFTCollectionTableList = ({
   };
 
   const priceBodyTemplate = (rowData: INFTCollectionItem): number => {
-    return rowData?.listing?.price || 0;
+    return rowData?.listings?.price || 0;
   };
 
   const nameBodyTemplate = (rowData: INFTCollectionItem) => {

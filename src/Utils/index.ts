@@ -20,6 +20,7 @@ import {
   NORMAL_STRING_MAPPING,
   DATA_MAPPING_CAMELIZE,
   TO_NUMBER_MAPPING,
+  TO_NUMBER_MAPPING_WITH_ITEM_TYPE,
 } from "@Constants/index";
 
 const randomBytes = (n: number) => nodeRandomBytes(n).toString("hex");
@@ -430,7 +431,7 @@ export const toBigNumberHex = (obj: any): any => {
         [key]:
           typeof obj[key] == "number" || obj[key]._isBigNumber
             ? NORMAL_STRING_MAPPING.indexOf(key) == -1
-              ? enhanceHexString(toBN(obj[key])._hex, 2)
+              ? toBN(obj[key])._hex
               : obj[key].toString()
             : toBigNumberHex(obj[key]),
       }),
@@ -457,6 +458,24 @@ export const toNumber = (obj: any): any => {
   return obj;
 };
 
+export const toNumberWithItemType = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map((v) => toNumberWithItemType(v));
+  } else if (obj != null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => ({
+        ...result,
+        [key]:
+          TO_NUMBER_MAPPING_WITH_ITEM_TYPE[key] && Number(obj.itemType) === 2
+            ? TO_NUMBER_MAPPING_WITH_ITEM_TYPE[key]
+            : toNumberWithItemType(obj[key]),
+      }),
+      {}
+    );
+  }
+  return obj;
+};
+
 export const enhanceHexString = (str: string, index: number): string => {
   let res = str;
   if (str.length >= index && str?.[index] == "0") {
@@ -466,12 +485,14 @@ export const enhanceHexString = (str: string, index: number): string => {
 };
 
 export const transformDataRequestToSellNFT = (obj: any): any => {
-  return JSON.parse(JSON.stringify(toBigNumberHex(snakizeKeys(obj))));
+  return JSON.parse(JSON.stringify(toNumber(toBigNumberHex(snakizeKeys(obj)))));
 };
 
 export const transformDataRequestToBuyNFT = (obj: any): any => {
   return JSON.parse(
-    JSON.stringify(toNumber(toBigNumberHex(camelizeKeys(obj))))
+    JSON.stringify(
+      toNumberWithItemType(toNumber(toBigNumberHex(camelizeKeys(obj))))
+    )
   );
 };
 

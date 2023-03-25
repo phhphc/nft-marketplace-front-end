@@ -12,11 +12,11 @@ const NFTDetailContainer = () => {
   const toast = useRef<Toast>(null);
 
   const router = useRouter();
-  const tokenID = router.query.token_id;
+  const tokenID = router.query.identifier;
 
   useEffect(() => {
     setNftDetail(
-      nftCollectionList.filter((item: any) => item.token_id == tokenID)[0]
+      nftCollectionList.filter((item: any) => item.identifier == tokenID)[0]
     );
   }, [nftCollectionList]);
 

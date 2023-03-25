@@ -15,11 +15,14 @@ export interface IMetaData {
 }
 
 export interface INFTCollectionItem {
-  token_id: number;
+  identifier: string;
   owner: string;
-  contract_addr: string;
+  token: string;
+  name?: string;
+  description?: string;
+  image?: string;
   metadata?: IMetaData;
-  listing?: IListing;
+  listings?: any;
   order?: Order;
 }
 

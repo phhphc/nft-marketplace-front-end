@@ -25,25 +25,17 @@ const NFTCollectionGridItem = ({
 }: INFTCollectionGridItemProps) => {
   const { refetch } = useNFTCollectionList();
   const canBuy = (item: INFTCollectionItem) => {
-    return (
-      item.listing &&
-      item.listing.seller.toLowerCase() !==
-        web3Context.state.web3.myAddress.toLowerCase()
-    );
-  };
-  const canSell = (item: INFTCollectionItem) => {
-    return (
-      !item.listing &&
-      item.owner.toLowerCase() ===
-        web3Context.state.web3.myAddress.toLowerCase()
-    );
+    return true;
   };
 
   const [price, setPrice] = useState<number>(0);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
-  const handleSellNFT = async (tokenId: number) => {
+  const canSell = (item: INFTCollectionItem) => {
+    return true;
+  };
+  const handleSellNFT = async (tokenId: string) => {
     if (!web3Context.state.web3.provider) {
       return (
         toast.current &&
@@ -99,7 +91,7 @@ const NFTCollectionGridItem = ({
   const handleBuyToken = async (
     myWallet: any,
     provider: any,
-    order?: Order
+    item?: INFTCollectionItem
   ) => {
     try {
       if (!web3Context.state.web3.provider) {
@@ -113,8 +105,8 @@ const NFTCollectionGridItem = ({
           })
         );
       }
-      if (order) {
-        await buyTokenService({ toast, order, myWallet, provider });
+      if (item) {
+        await buyTokenService({ toast, item, myWallet, provider });
         refetch();
       }
     } catch (error) {
@@ -129,7 +121,7 @@ const NFTCollectionGridItem = ({
     }
   };
 
-  const handleAddToCart = (tokenId: number, quantity: number = 1) => {
+  const handleAddToCart = (tokenId: string, quantity: number = 1) => {
     const currCart = web3Context.state.web3.cart;
     const newCart = { ...currCart, [tokenId]: quantity };
     web3Context.dispatch({
@@ -142,7 +134,7 @@ const NFTCollectionGridItem = ({
     });
   };
 
-  const handleRemoveFromCart = (tokenId: number, quantity: number = 1) => {
+  const handleRemoveFromCart = (tokenId: string, quantity: number = 1) => {
     const currCart = web3Context.state.web3.cart;
     const newCart: any = { ...currCart };
     delete newCart[[tokenId].toString()];
@@ -161,7 +153,7 @@ const NFTCollectionGridItem = ({
   const [selectedUnit, setSelectedUnit] = useState<string>("");
 
   useEffect(() => {
-    if (item.token_id in web3Context.state.web3.cart) {
+    if (item.identifier in web3Context.state.web3.cart) {
       setIsAddedToCart(true);
     } else {
       setIsAddedToCart(false);
@@ -170,13 +162,13 @@ const NFTCollectionGridItem = ({
 
   return (
     <div
-      key={item.token_id}
+      key={item.identifier}
       className="relative nft-collection-item cursor-pointer"
     >
       <Toast ref={toast} position="top-center" />
       <Link
         href={{
-          pathname: `/detail/${item.token_id}`,
+          pathname: `/detail/${item.identifier}`,
         }}
         className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none"
       >
@@ -193,13 +185,13 @@ const NFTCollectionGridItem = ({
         <div>
           <div className="p-4 h-20">
             <h3 className="font-bold uppercase">
-              {item.metadata?.name || "Item name"}
+              {item.identifier || "Item name"}
             </h3>
-            {item.listing && (
+            {item.listings && (
               <p className="text-sm font-medium text-gray-900 uppercase">
-                {(item?.listing?.price || 0) / 1000000000 < 1000000000
-                  ? `${(item?.listing?.price || 0) / 1000000000} GWEI`
-                  : `${(item?.listing?.price || 0) / 1000000000000000000} ETH`}
+                {(item?.listings?.price || 0) / 1000000000 < 1000000000
+                  ? `${(item?.listings?.price || 0) / 1000000000} GWEI`
+                  : `${(item?.listings?.price || 0) / 1000000000000000000} ETH`}
               </p>
             )}
           </div>
@@ -207,7 +199,7 @@ const NFTCollectionGridItem = ({
             <div className="flex gap-3 justify-between w-full">
               {isAddedToCart ? (
                 <div
-                  onClick={() => handleRemoveFromCart(item.token_id)}
+                  onClick={() => handleRemoveFromCart(item.identifier)}
                   className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
                 >
                   <i
@@ -218,7 +210,7 @@ const NFTCollectionGridItem = ({
                 </div>
               ) : (
                 <div
-                  onClick={() => handleAddToCart(item.token_id)}
+                  onClick={() => handleAddToCart(item.identifier)}
                   className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
                 >
                   <i
@@ -234,7 +226,7 @@ const NFTCollectionGridItem = ({
                   handleBuyToken(
                     web3Context.state.web3.myWallet,
                     web3Context.state.web3.provider,
-                    item.order
+                    item
                   )
                 }
               >
@@ -266,7 +258,7 @@ const NFTCollectionGridItem = ({
                     <Button
                       label="Sell"
                       icon="pi pi-check"
-                      onClick={() => handleSellNFT(item.token_id)}
+                      onClick={() => handleSellNFT(item.identifier)}
                       autoFocus
                     />
                   </div>
