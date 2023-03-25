@@ -36,9 +36,9 @@ export interface IFormCollectionInput {
   name: string;
   url: string;
   desc: string;
-  category: { label: string; value: string };
+  category: string;
   link: string;
-  blockchain: { label: string; value: string };
+  blockchain: string;
 }
 
 export interface IFormNewNFTInput {
@@ -53,12 +53,12 @@ export interface IFormNewNFTInput {
 
 export interface ICategory {
   categoryName: string;
-  code: string;
+  value: string;
 }
 
 export interface IBlockchain {
   blockchainName: string;
-  code: string;
+  value: string;
 }
 
 export interface ICollection {
