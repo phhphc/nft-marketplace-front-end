@@ -50,7 +50,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
 
-  const handleSellNFT = async (tokenId: string) => {
+  const handleSellNFT = async (item: INFTCollectionItem) => {
     if (!web3Context.state.web3.provider) {
       return (
         toast.current &&
@@ -79,7 +79,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
         myWallet: web3Context.state.web3.myWallet,
-        tokenId,
+        item,
         price: price.toString(),
         unit: selectedUnit,
         isApprovedForAllNFTs: web3Context.state.web3.isApprovedForAllNFTs,
@@ -587,7 +587,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                       <Button
                         label="Sell"
                         icon="pi pi-check"
-                        onClick={() => handleSellNFT(nftDetail.identifier)}
+                        onClick={() => handleSellNFT(nftDetail)}
                         autoFocus
                       />
                     </div>

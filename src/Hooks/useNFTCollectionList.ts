@@ -6,6 +6,7 @@ const useNFTCollectionList = () => {
     queryKey: "NFTCollectionList",
     queryFn: getNFTCollectionListInfoService,
     staleTime: Infinity,
+    retry: true,
   });
   const nftCollectionList = result.data || [];
   return { ...result, nftCollectionList };

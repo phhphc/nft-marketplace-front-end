@@ -35,7 +35,7 @@ const NFTCollectionGridItem = ({
   const canSell = (item: INFTCollectionItem) => {
     return item.owner === web3Context.state.web3.myAddress;
   };
-  const handleSellNFT = async (tokenId: string) => {
+  const handleSellNFT = async (item: INFTCollectionItem) => {
     if (!web3Context.state.web3.provider) {
       return (
         toast.current &&
@@ -64,7 +64,7 @@ const NFTCollectionGridItem = ({
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
         myWallet: web3Context.state.web3.myWallet,
-        tokenId,
+        item,
         price: price.toString(),
         unit: selectedUnit,
         isApprovedForAllNFTs: web3Context.state.web3.isApprovedForAllNFTs,
@@ -265,7 +265,7 @@ const NFTCollectionGridItem = ({
                     <Button
                       label="Sell"
                       icon="pi pi-check"
-                      onClick={() => handleSellNFT(item.identifier)}
+                      onClick={() => handleSellNFT(item)}
                       autoFocus
                     />
                   </div>
