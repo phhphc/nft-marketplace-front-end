@@ -50,9 +50,9 @@ export interface IFormNewNFTInput {
   name: string;
   url: string;
   desc: string;
-  collection: { label: string; value: string };
+  collection: string;
   supply: string;
-  blockchain: { label: string; value: string };
+  blockchain: string;
 }
 
 export interface ICategory {
