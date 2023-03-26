@@ -18,8 +18,9 @@ const NFTCollectionTableList = ({
     return (
       <img
         src={
-          rowData.metadata?.image ||
-          "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
+          rowData.image != "<nil>"
+            ? rowData.image
+            : "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
         }
         alt="item image"
         className="product-image"
@@ -28,14 +29,14 @@ const NFTCollectionTableList = ({
   };
 
   const priceBodyTemplate = (rowData: INFTCollectionItem): number => {
-    return rowData?.listings?.price || 0;
+    return Number(rowData?.listings[0]?.start_price || 0);
   };
 
   const nameBodyTemplate = (rowData: INFTCollectionItem) => {
     return (
       <div>
         <a style={{ cursor: "pointer" }} onClick={() => router.push("/detail")}>
-          {rowData.metadata?.name || "Item name"}
+          {rowData.identifier || "Item name"}
         </a>
       </div>
     );

@@ -18,18 +18,19 @@ export interface INFTCollectionItem {
   identifier: string;
   owner: string;
   token: string;
-  name?: string;
-  description?: string;
-  image?: string;
-  metadata?: IMetaData;
-  listings?: any;
-  order?: Order;
+  name: string;
+  description: string;
+  image: string;
+  listings: IListing[];
 }
 
 export interface IListing {
-  listing_id: number;
-  price: number;
-  seller: string;
+  order_hash: string;
+  item_type: number;
+  start_price: string;
+  end_price: string;
+  start_time: string;
+  end_time: string;
 }
 
 export interface IFormCollectionInput {
@@ -118,7 +119,7 @@ export type BasicOrderParameters = {
 export type OfferItem = {
   itemType: number;
   token: string;
-  identifier: BigNumber;
+  identifier: BigNumber | string;
   startAmount: BigNumber;
   endAmount: BigNumber;
 };

@@ -18,7 +18,7 @@ const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
     return Math.round(
       (nftCollectionList
         ? nftCollectionList.reduce(
-            (acc, cur) => acc + (cur.listings?.price || 0),
+            (acc, cur) => acc + Number(cur.listings[0]?.start_price || 0),
             0
           )
         : 0) / 1000000000000000000
@@ -31,7 +31,7 @@ const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
         ? Math.min(
             ...(nftCollectionList
               .filter((item) => !!item.listings)
-              .map((item) => item.listings?.price) as any)
+              .map((item) => Number(item.listings[0]?.start_price)) as any)
           )
         : 0) / 1000000000000000000
     );
