@@ -11,7 +11,12 @@ import {
   toAddress,
 } from "@Utils/index";
 import { CURRENCY } from "@Constants/index";
-import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
+import {
+  parseGwei,
+  toBN,
+  transformDataRequestToBuyNFT,
+  stringHexToNumber,
+} from "@Utils/index";
 import { ICollectionItem, Order } from "@Interfaces/index";
 import { cloneDeep } from "lodash";
 import { INFTCollectionItem } from "@Interfaces/index";
@@ -136,8 +141,9 @@ export const sellNFT = async ({
     const mkpContractWithSigner = mkpContract.connect(myWallet);
 
     // await erc721ContractWithSigner["mint"](await signer.getAddress(), nftId, uri);
-    const offer = [getTestItem721(item.identifier, 1, 1)];
-    console.log("🚀 ~ file: ApiService.ts:136 ~ offer:", offer);
+    const offer = [
+      getTestItem721(item.identifier, 1, 1, undefined, item.token),
+    ];
     const consideration = [
       getItemETH(
         unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
@@ -178,7 +184,7 @@ export const sellNFT = async ({
         orderValue: value,
         startTime,
         endTime,
-        salt: Number(orderComponents.salt),
+        salt: orderComponents.salt,
         counter: orderComponents.counter,
       })
     );
@@ -197,7 +203,7 @@ export const sellNFT = async ({
         orderValue: value,
         startTime,
         endTime,
-        salt: Number(orderComponents.salt),
+        salt: orderComponents.salt,
         counter: orderComponents.counter,
       })
     );
@@ -277,7 +283,7 @@ export const buyTokenService = async ({
 
   const orderData = await axios.get("/api/v0.1/order", {
     params: {
-      order_hash: item.listings[item.listings.length - 1]?.order_hash,
+      order_hash: item.listings[0].order_hash,
     },
   });
 

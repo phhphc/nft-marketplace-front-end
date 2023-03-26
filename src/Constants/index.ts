@@ -112,6 +112,11 @@ export const NORMAL_STRING_MAPPING: string[] = [
   "type_number",
   "order_type",
   "totalOriginalConsiderationItems",
+  "startAmount",
+  "endAmount",
+  "identifier",
+  "startTime",
+  "endTime",
 ];
 
 export const TO_NUMBER_MAPPING: any = {
@@ -143,3 +148,9 @@ export const CURRENCY_UNITS = [
   { name: CURRENCY.ETHER, value: CURRENCY.ETHER },
   { name: CURRENCY.GWEI, value: CURRENCY.ETHER },
 ];
+
+export const STRING_HEX_TO_NUMBER = {
+  itemType: 1,
+  orderType: 1,
+  totalOriginalConsiderationItems: 1,
+};

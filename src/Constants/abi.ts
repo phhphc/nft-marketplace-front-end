@@ -1661,6 +1661,11 @@ export const mkpAbi = [
         name: "isCancelled",
         type: "bool",
       },
+      {
+        internalType: "bool",
+        name: "isFulFilled",
+        type: "bool",
+      },
     ],
     stateMutability: "view",
     type: "function",

@@ -22,6 +22,7 @@ import {
   TO_NUMBER_MAPPING,
   TO_NUMBER_MAPPING_WITH_ITEM_TYPE,
   MAPPING_STRING_TO_BIG_NUMBER,
+  STRING_HEX_TO_NUMBER,
 } from "@Constants/index";
 
 const randomBytes = (n: number) => nodeRandomBytes(n).toString("hex");
@@ -86,11 +87,13 @@ export const getOfferOrConsiderationItem = <
   endAmount: BigNumberish = 1,
   recipient?: RecipientType
 ): RecipientType extends string ? ConsiderationItem : OfferItem => {
-  console.log(identifierOrCriteria, token);
   const offerItem: OfferItem = {
     itemType,
     token,
-    identifier: identifierOrCriteria.toString(),
+    identifier:
+      Number(identifierOrCriteria) !== 0
+        ? identifierOrCriteria.toString()
+        : toBN(0),
     startAmount: toBN(startAmount),
     endAmount: toBN(endAmount),
   };
@@ -111,7 +114,6 @@ export const getTestItem721 = (
   recipient?: string,
   token = process.env.NEXT_PUBLIC_ERC721_ADDRESS
 ) => {
-  console.log(identifier);
   return getOfferOrConsiderationItem(
     2, // ERC721
     token,
@@ -235,9 +237,7 @@ export const getAndVerifyOrderHash = async (
   marketplace: Contract,
   orderComponents: OrderComponents
 ) => {
-  const orderHash = await marketplace[
-    "getOrderHash((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256))"
-  ](orderComponents);
+  const orderHash = await marketplace.getOrderHash(orderComponents);
   const derivedOrderHash = calculateOrderHash(orderComponents);
   return orderHash;
 };
@@ -299,19 +299,21 @@ export const createOrder = async (
     timeFlag !== "NOT_STARTED" ? 0 : toBN("0xee00000000000000000000000000");
   const endTime =
     timeFlag !== "EXPIRED" ? toBN("0xff00000000000000000000000000") : 1;
-  const orderParameters = {
-    offerer: await offerer.getAddress(),
-    zone: await offerer.getAddress(),
-    offer,
-    consideration,
-    totalOriginalConsiderationItems: consideration.length,
-    orderType,
-    zoneHash,
-    salt,
-    conduitKey,
-    startTime,
-    endTime,
-  };
+  const orderParameters = stringHexToNumber(
+    toBigNumberHex({
+      offerer: await offerer.getAddress(),
+      zone: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      offer,
+      consideration,
+      totalOriginalConsiderationItems: consideration.length,
+      orderType,
+      zoneHash,
+      salt,
+
+      startTime,
+      endTime,
+    })
+  );
   const orderComponents = {
     ...orderParameters,
     counter,
@@ -324,7 +326,6 @@ export const createOrder = async (
     isValidated,
     isCancelled,
   };
-  console.log(marketplace, chainId, orderComponents, signer ?? offerer);
   const flatSig = await signOrder(
     marketplace,
     chainId,
@@ -333,7 +334,7 @@ export const createOrder = async (
   );
   const order = {
     parameters: orderParameters,
-    signature: convertSignatureToEIP2098(flatSig),
+    signature: flatSig,
   };
   // if (useBulkSignature) {
   //     order.signature = await signBulkOrder(
@@ -387,7 +388,7 @@ export const createOrder = async (
     orderComponents,
     startTime,
     endTime,
-    signature: convertSignatureToEIP2098(flatSig),
+    signature: flatSig,
   };
 };
 
@@ -462,6 +463,25 @@ export const toNumber = (obj: any): any => {
   return obj;
 };
 
+export const stringHexToNumber = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map((v) => stringHexToNumber(v));
+  } else if (obj != null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => ({
+        ...result,
+        [key]: STRING_HEX_TO_NUMBER[key]
+          ? obj[key].length >= 2 && obj[key][1] === "x"
+            ? parseInt(obj[key], 16) / STRING_HEX_TO_NUMBER[key]
+            : Number(obj[key]) / STRING_HEX_TO_NUMBER[key]
+          : stringHexToNumber(obj[key]),
+      }),
+      {}
+    );
+  }
+  return obj;
+};
+
 export const toNumberWithItemType = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map((v) => toNumberWithItemType(v));
@@ -495,14 +515,6 @@ export const stringToBigNumber = (obj: any): any => {
     );
   }
   return obj;
-};
-
-export const enhanceHexString = (str: string, index: number): string => {
-  let res = str;
-  if (str.length >= index && str?.[index] == "0") {
-    res = str.substring(0, index) + str.substring(index + 1);
-  }
-  return res;
 };
 
 export const transformDataRequestToSellNFT = (obj: any): any => {
