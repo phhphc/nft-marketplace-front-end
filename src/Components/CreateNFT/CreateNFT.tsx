@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext } from "react";
+import React, { useRef, useState, useContext, useEffect } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { Image } from "primereact/image";
 import { InputText } from "primereact/inputtext";
@@ -8,25 +8,35 @@ import { Button } from "primereact/button";
 import { IBlockchain, ICollection, IFormNewNFTInput } from "@Interfaces/index";
 import { createNFTService } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
+import { ICollectionItem } from "@Interfaces/index";
 
-const CreateNFT = () => {
+export interface ICreateNFTProps {
+  allCollectionList: ICollectionItem[];
+}
+
+const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
   const web3Context = useContext(AppContext);
-  const collections: ICollection[] = [
-    { collectionName: "Art", code: "art" },
-    { collectionName: "Domain names", code: "domain" },
-    { collectionName: "Gaming", code: "gaming" },
-    { collectionName: "Memberships", code: "membership" },
-    { collectionName: "Music", code: "music" },
-    { collectionName: "PFPs", code: "pfp" },
-    { collectionName: "Photography", code: "photograph" },
-    { collectionName: "Sports Collectibles", code: "sport" },
-    { collectionName: "Virtual Worlds", code: "virtual" },
-    { collectionName: "No category", code: "no" },
-  ];
+  const [myCollections, setMyCollections] = useState<ICollectionItem[]>();
+  useEffect(() => {
+    setMyCollections(
+      allCollectionList.filter(
+        (item: any) => item.owner == web3Context.state.web3.myAddress
+      )
+    );
+  }, [allCollectionList]);
+
+  console.log("myCollections", myCollections);
+
+  let collections: ICollectionItem[];
+  if (myCollections) {
+    collections = myCollections?.map((collection: ICollectionItem) => {
+      return { ...collection, value: collection.token };
+    });
+  }
 
   const blockchains: IBlockchain[] = [
-    { blockchainName: "Ethereum", code: "ethereum" },
-    { blockchainName: "Polygon", code: "polygon" },
+    { blockchainName: "Ethereum", value: "ethereum" },
+    { blockchainName: "Polygon", value: "polygon" },
   ];
 
   const [featuredFile, setFeaturedFile] = useState<string>("");
@@ -46,8 +56,8 @@ const CreateNFT = () => {
     await createNFTService({
       ...data,
       featuredImage: data.featuredImage[0],
-      collection: data.collection.value,
-      blockchain: data.blockchain.value,
+      provider: web3Context.state.web3.provider,
+      myWallet: web3Context.state.web3.myWallet,
     });
   };
 
@@ -159,7 +169,7 @@ const CreateNFT = () => {
               <Dropdown
                 {...field}
                 options={collections}
-                optionLabel="collectionName"
+                optionLabel="name"
                 placeholder="Select a collection"
                 className="w-full md:w-14rem"
               />

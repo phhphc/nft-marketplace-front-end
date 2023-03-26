@@ -149,7 +149,7 @@ export const CURRENCY_UNITS = [
   { name: CURRENCY.GWEI, value: CURRENCY.ETHER },
 ];
 
-export const STRING_HEX_TO_NUMBER = {
+export const STRING_HEX_TO_NUMBER: any = {
   itemType: 1,
   orderType: 1,
   totalOriginalConsiderationItems: 1,

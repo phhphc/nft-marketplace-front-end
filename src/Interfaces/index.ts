@@ -40,9 +40,9 @@ export interface IFormCollectionInput {
   name: string;
   url: string;
   desc: string;
-  category: { label: string; value: string };
+  category: string;
   link: string;
-  blockchain: { label: string; value: string };
+  blockchain: string;
 }
 
 export interface IFormNewNFTInput {
@@ -50,24 +50,24 @@ export interface IFormNewNFTInput {
   name: string;
   url: string;
   desc: string;
-  collection: { label: string; value: string };
+  collection: string;
   supply: string;
-  blockchain: { label: string; value: string };
+  blockchain: string;
 }
 
 export interface ICategory {
   categoryName: string;
-  code: string;
+  value: string;
 }
 
 export interface IBlockchain {
   blockchainName: string;
-  code: string;
+  value: string;
 }
 
 export interface ICollection {
   collectionName: string;
-  code: string;
+  value: string;
 }
 
 import type { BigNumber } from "ethers";
@@ -176,3 +176,12 @@ export type Domain = {
   chainId: number;
   verifyingContract: string;
 };
+
+export interface ICollectionItem {
+  token: string;
+  owner: string;
+  name: string;
+  description: string;
+  category: string;
+  created_at: Date;
+}

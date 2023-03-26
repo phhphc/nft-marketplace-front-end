@@ -7,6 +7,10 @@ module.exports = () => {
         destination: `${process.env.BACKEND_URL}/nft?limit=100&offset=0`,
       },
       {
+        source: "/api/v0.1/collection",
+        destination: `${process.env.BACKEND_URL}/collection`,
+      },
+      {
         source: "/api/v0.1/order",
         destination: `${process.env.BACKEND_URL}/order`,
       },
