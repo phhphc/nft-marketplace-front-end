@@ -25,7 +25,7 @@ const NFTCollectionGridItem = ({
 }: INFTCollectionGridItemProps) => {
   const { refetch } = useNFTCollectionList();
   const canBuy = (item: INFTCollectionItem) => {
-    return true;
+    return !item.listings[0];
   };
 
   const [price, setPrice] = useState<number>(0);
