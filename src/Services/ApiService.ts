@@ -21,7 +21,7 @@ interface ISellNFTProps {
   provider: any;
   myAddress: string;
   myWallet: any;
-  tokenId: string;
+  item: INFTCollectionItem;
   price: string;
   unit: string;
   isApprovedForAllNFTs?: boolean;
@@ -99,16 +99,13 @@ export const sellNFT = async ({
   provider,
   myAddress,
   myWallet,
-  tokenId,
+  item,
   price,
   unit,
   isApprovedForAllNFTs = false,
 }: ISellNFTProps) => {
-  console.log("🚀 ~ file: ApiService.ts:106 ~ tokenId:", tokenId);
   try {
-    const erc721Address =
-      process.env.NEXT_PUBLIC_ERC721_ADDRESS ||
-      "0x60b51e7358544e1C941638772B0D73Cd54c8b16B";
+    const erc721Address = item.token;
     const mkpAddress =
       process.env.NEXT_PUBLIC_MKP_ADDRESS ??
       "0x5300EEEeA4751fDF9f32647B965599e8Ef7656DC";
@@ -135,7 +132,7 @@ export const sellNFT = async ({
     const mkpContractWithSigner = mkpContract.connect(myWallet);
 
     // await erc721ContractWithSigner["mint"](await signer.getAddress(), nftId, uri);
-    const offer = [getTestItem721(tokenId, 1, 1)];
+    const offer = [getTestItem721(item.identifier, 1, 1)];
     console.log("🚀 ~ file: ApiService.ts:136 ~ offer:", offer);
     const consideration = [
       getItemETH(
@@ -263,7 +260,7 @@ export const buyTokenService = async ({
   provider,
 }: IBuyTokenServiceProps) => {
   console.log("🚀 ~ file: ApiService.ts:268 ~ item:", item);
-  const erc721Address = process.env.NEXT_PUBLIC_ERC721_ADDRESS;
+  const erc721Address = item.token;
   const mkpAddress =
     process.env.NEXT_PUBLIC_MKP_ADDRESS ??
     "0x5300EEEeA4751fDF9f32647B965599e8Ef7656DC";
@@ -276,7 +273,7 @@ export const buyTokenService = async ({
 
   const orderData = await axios.get("/api/v0.1/order", {
     params: {
-      order_hash: item.listings[0]?.order_hash,
+      order_hash: item.listings[item.listings.length - 1]?.order_hash,
     },
   });
 
