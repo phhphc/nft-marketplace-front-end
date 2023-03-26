@@ -56,6 +56,8 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
     await createNFTService({
       ...data,
       featuredImage: data.featuredImage[0],
+      provider: web3Context.state.web3.provider,
+      myWallet: web3Context.state.web3.myWallet,
     });
   };
 
