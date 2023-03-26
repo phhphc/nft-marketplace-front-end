@@ -1,9 +1,11 @@
 import CreateNFT from "@Components/CreateNFT/CreateNFT";
+import useAllCollectionList from "@Hooks/useAllCollectionList";
 
 const CreateNFTContainer = () => {
+  const { allCollectionList } = useAllCollectionList();
   return (
     <>
-      <CreateNFT></CreateNFT>
+      <CreateNFT allCollectionList={allCollectionList}></CreateNFT>
     </>
   );
 };

@@ -10,7 +10,7 @@ import {
 } from "@Utils/index";
 import { CURRENCY } from "@Constants/index";
 import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
-import { Order } from "@Interfaces/index";
+import { ICollectionItem, Order } from "@Interfaces/index";
 import { cloneDeep } from "lodash";
 import { INFTCollectionItem } from "@Interfaces/index";
 
@@ -446,20 +446,16 @@ export const createNFTCollectionService = async ({
     token: contract.address,
     owner: owner,
     name: name,
-    desctiption: desc,
+    description: desc,
     category: category,
+    url: url,
+    featured_image_cid: featuredImageCid,
+    logo_image_cid: logoImageCid,
+    banner_image_cid: bannerImageCid,
+    external_link: link,
   });
 
   console.log("params", params);
-
-  // const postCollectionConfig = {
-  //   method: "post",
-  //   url: "api/v0.1/collection",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   data: params,
-  // };
 
   axios
     .post("api/v0.1/collection", params, {
@@ -473,4 +469,13 @@ export const createNFTCollectionService = async ({
     .catch(function (error) {
       console.log(error);
     });
+};
+
+export const getAllCollectionListService = async (): Promise<ICollectionItem[]> => {
+  return axios
+    .get("/api/v0.1/collection")
+    .then((response) => {
+      return response.data.data.collections || [];
+    })
+    .catch((err) => {});
 };

@@ -67,7 +67,7 @@ export interface IBlockchain {
 
 export interface ICollection {
   collectionName: string;
-  code: string;
+  value: string;
 }
 
 import type { BigNumber } from "ethers";
@@ -176,3 +176,12 @@ export type Domain = {
   chainId: number;
   verifyingContract: string;
 };
+
+export interface ICollectionItem {
+  token: string;
+  owner: string;
+  name: string;
+  description: string;
+  category: string;
+  created_at: Date;
+}
