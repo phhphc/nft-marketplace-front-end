@@ -182,19 +182,13 @@ const Header = () => {
                     href={`/user-profile/collection`}
                     className="py-3 w-full hover:bg-slate-200 border-b"
                   >
-                    <span className="ml-4">Collection</span>
-                  </Link>
-                  <Link
-                    href={`/user-profile/favorite`}
-                    className="py-3 w-full hover:bg-slate-200 border-b"
-                  >
-                    <span className="ml-4">Favorite</span>
+                    <span className="ml-4">My Collection</span>
                   </Link>
                   <Link
                     href={`/create-collection`}
                     className="py-3 w-full hover:bg-slate-200 border-b"
                   >
-                    <span className="ml-4">New Collection</span>
+                    <span className="ml-4">Create Collection</span>
                   </Link>
                   <Link
                     href={`/create-nft`}

@@ -202,9 +202,9 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         <img
           id="image"
           src={
-            nftDetail.image != "<nil>"
+            nftDetail.image != ""
               ? nftDetail.image
-              : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
+              : "https://cipershop.com/public/userfiles/images/do-choi-mo-hinh/lol/yasuo-default/mo-hinh-yasuo.jpg"
           }
           alt="detail"
           className="nft-detail-img rounded-b-lg h-full w-full object-cover object-center lg:h-full lg:w-full"
@@ -216,7 +216,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               <span>Description</span>
             </div>
             <div className="table-content p-5">
-              {nftDetail.description != "<nil>" ? nftDetail.description : ""}
+              {nftDetail.description != "" ? nftDetail.description : ""}
             </div>
           </div>
           <Accordion multiple>
@@ -304,9 +304,9 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <img
                   className="avatar w-6 h-6 rounded-3xl mt-2"
                   src={
-                    nftDetail.image != "<nil>"
+                    nftDetail.image != ""
                       ? nftDetail.image
-                      : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
+                      : "https://cipershop.com/public/userfiles/images/do-choi-mo-hinh/lol/yasuo-default/mo-hinh-yasuo.jpg"
                   }
                   alt=""
                 />

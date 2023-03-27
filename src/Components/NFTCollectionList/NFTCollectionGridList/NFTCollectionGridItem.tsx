@@ -174,9 +174,9 @@ const NFTCollectionGridItem = ({
       >
         <img
           src={
-            item.image != "<nil>"
+            item.image != ""
               ? item.image
-              : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
+              : "https://cipershop.com/public/userfiles/images/do-choi-mo-hinh/lol/yasuo-default/mo-hinh-yasuo.jpg"
           }
           alt="NFT Item"
           className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
@@ -184,22 +184,25 @@ const NFTCollectionGridItem = ({
       </Link>
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
-          <div className="p-4 h-20">
-            <h3 className="font-bold uppercase">
+          <div className="p-3 h-20">
+            <div className="font-bold uppercase break-words text-sm">
               {item.identifier || "Item name"}
-            </h3>
-            {item.listings && (
-              <p className="text-sm font-medium text-gray-900 uppercase">
-                {Number(item.listings[0]?.start_price || 0) / 1000000000 <
-                1000000000
-                  ? `${
-                      Number(item.listings[0]?.start_price || 0) / 1000000000
-                    } GWEI`
-                  : `${
-                      Number(item.listings[0]?.start_price || 0) /
-                      1000000000000000000
-                    } ETH`}
-              </p>
+            </div>
+            {canBuy(item) && (
+              <div className="flex gap-1 text-sm font-medium text-gray-900">
+                <div>Price:</div>
+                <div className="upercase">
+                  {Number(item.listings[0]?.start_price || 0) / 1000000000 <
+                  1000000000
+                    ? `${
+                        Number(item.listings[0]?.start_price || 0) / 1000000000
+                      } GWEI`
+                    : `${
+                        Number(item.listings[0]?.start_price || 0) /
+                        1000000000000000000
+                      } ETH`}
+                </div>
+              </div>
             )}
           </div>
           {canBuy(item) && (

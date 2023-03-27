@@ -15,7 +15,7 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
     <div id="nft-profile">
       <img
         src={`${
-          nftCollectionList?.[0]?.image == "<nil>" ||
+          nftCollectionList?.[0]?.image == "" ||
           !nftCollectionList?.[0]?.image
             ? "https://i.seadn.io/gae/mmyoMHBLnHMfHyb3r2T1050yScZqfx2G48kXmP6WruMNpJNnVYsD79tpczbCrAilRLCAkUh3qRTRdpHYx5z9QPnLG3tdXoTU_Hc9?auto=format&w=1920"
             : nftCollectionList?.[0]?.image
@@ -27,7 +27,7 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
         <img
           onClick={handleShowDialog}
           src={`${
-            nftCollectionList?.[0]?.image == "<nil>" ||
+            nftCollectionList?.[0]?.image == "" ||
             !nftCollectionList?.[0]?.image
               ? "https://i.seadn.io/gae/mmyoMHBLnHMfHyb3r2T1050yScZqfx2G48kXmP6WruMNpJNnVYsD79tpczbCrAilRLCAkUh3qRTRdpHYx5z9QPnLG3tdXoTU_Hc9?auto=format&w=1920"
               : nftCollectionList?.[0]?.image
@@ -49,7 +49,7 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
           src={
             isOpen
               ? `${
-                  nftCollectionList?.[0]?.image == "<nil>" ||
+                  nftCollectionList?.[0]?.image == "" ||
                   !nftCollectionList?.[0]?.image
                     ? "https://i.seadn.io/gae/mmyoMHBLnHMfHyb3r2T1050yScZqfx2G48kXmP6WruMNpJNnVYsD79tpczbCrAilRLCAkUh3qRTRdpHYx5z9QPnLG3tdXoTU_Hc9?auto=format&w=1920"
                     : nftCollectionList?.[0]?.image

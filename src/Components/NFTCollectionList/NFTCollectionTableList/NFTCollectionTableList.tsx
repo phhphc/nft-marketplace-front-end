@@ -18,7 +18,7 @@ const NFTCollectionTableList = ({
     return (
       <img
         src={
-          rowData.image != "<nil>"
+          rowData.image != ""
             ? rowData.image
             : "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
         }

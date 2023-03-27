@@ -5,6 +5,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
 import {
   ICategory,
   IBlockchain,
@@ -65,6 +66,8 @@ const CreateCollection = () => {
   const web3Context = useContext(AppContext);
   const owner = web3Context.state.web3.myAddress;
 
+  const toast = useRef<Toast>(null);
+
   const { register, resetField, control, handleSubmit } =
     useForm<IFormCollectionInput>();
 
@@ -72,9 +75,10 @@ const CreateCollection = () => {
     await createNFTCollectionService({
       ...data,
       logoImage: data.logoImage[0],
-      featuredImage: data.featuredImage[0],
+      // featuredImage: data.featuredImage[0],
       bannerImage: data.bannerImage[0],
       owner,
+      toast
     });
   };
 
@@ -112,7 +116,7 @@ const CreateCollection = () => {
           </div>
         </div>
 
-        <div className="pt-4">
+        {/* <div className="pt-4">
           <label className="text-lg font-medium">Featured image</label>
           <p>
             This image will be used for featuring your collection on the
@@ -144,7 +148,7 @@ const CreateCollection = () => {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
 
         <div className="pt-4">
           <label className="text-lg font-medium">Banner image</label>
@@ -201,7 +205,7 @@ const CreateCollection = () => {
           control={control}
         />
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">URL</label>
@@ -218,7 +222,7 @@ const CreateCollection = () => {
           )}
           name="url"
           control={control}
-        />
+        /> */}
 
         <Controller
           render={({ field }) => (
@@ -250,7 +254,7 @@ const CreateCollection = () => {
           control={control}
         />
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">Link</label>
@@ -268,9 +272,9 @@ const CreateCollection = () => {
           )}
           name="link"
           control={control}
-        />
+        /> */}
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">Blockchain</label>
@@ -289,9 +293,8 @@ const CreateCollection = () => {
           )}
           name="blockchain"
           control={control}
-        />
+        /> */}
 
-        {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
           <Button label="Submit" />
         </div>

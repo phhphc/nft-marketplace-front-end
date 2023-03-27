@@ -9,6 +9,7 @@ import { IBlockchain, ICollection, IFormNewNFTInput } from "@Interfaces/index";
 import { createNFTService } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { ICollectionItem } from "@Interfaces/index";
+import { Toast } from "primereact/toast";
 
 export interface ICreateNFTProps {
   allCollectionList: ICollectionItem[];
@@ -49,6 +50,8 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
     resetField("featuredImage");
   }
 
+  const toast = useRef<Toast>(null);
+
   const { register, resetField, control, handleSubmit } =
     useForm<IFormNewNFTInput>();
 
@@ -58,6 +61,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
       featuredImage: data.featuredImage[0],
       provider: web3Context.state.web3.provider,
       myWallet: web3Context.state.web3.myWallet,
+      toast
     });
   };
 
@@ -121,7 +125,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
           control={control}
         />
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">External link</label>
@@ -139,7 +143,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
           )}
           name="url"
           control={control}
-        />
+        /> */}
 
         <Controller
           render={({ field }) => (
@@ -197,7 +201,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
           control={control}
         />
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">Blockchain</label>
@@ -216,9 +220,8 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
           )}
           name="blockchain"
           control={control}
-        />
+        /> */}
 
-        {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
           <Button label="Submit" />
         </div>
