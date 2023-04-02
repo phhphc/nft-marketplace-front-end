@@ -14,6 +14,10 @@ const NFTCollectionGridList = ({
   viewType,
   mode,
 }: INFTCollectionGridListProps) => {
+  console.log(
+    "🚀 ~ file: NFTCollectionGridList.tsx:17 ~ nftCollectionList:",
+    nftCollectionList
+  );
   return (
     <>
       {nftCollectionList?.length > 0 ? (
