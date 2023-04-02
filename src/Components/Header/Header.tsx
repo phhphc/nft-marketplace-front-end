@@ -77,13 +77,13 @@ const Header = () => {
 
   // Cart
   const { nftCollectionList } = useNFTCollectionList();
-  const [cartItemList, setCartItemList] = useState<INFTCollectionItem[]>([]);
+  const [cartItemList, setCartItemList] = useState<INFTCollectionItem[][]>([]);
   const [cartModalVisible, setCartModalVisible] = useState(false);
   const totalPrice = useMemo(() => {
     return Math.round(
       (cartItemList
         ? cartItemList.reduce(
-            (acc, cur) => acc + Number(cur.listings[0]?.start_price || 0),
+            (acc, cur) => acc + Number(cur[0].listings[0]?.start_price || 0),
             0
           )
         : 0) / 1000000000000000000
@@ -132,7 +132,7 @@ const Header = () => {
   useEffect(() => {
     const cart = { ...web3Context.state.web3.cart };
     setCartItemList(
-      nftCollectionList.filter((item: any) => item.identifier in cart)
+      nftCollectionList.filter((item: any) => item[0].identifier in cart)
     );
   }, [web3Context.state.web3.cart]);
 
@@ -339,34 +339,36 @@ const Header = () => {
               <div className="space-y-2">
                 {cartItemList.map((cartItem) => (
                   <div
-                    key={cartItem.identifier}
+                    key={cartItem[0].identifier}
                     className="cart-item flex justify-between items-center w-full py-2 px-4 rounded-lg hover:bg-gray-100"
                   >
                     <div className="flex justify-start space-x-2">
-                      <Link href={`/detail/${cartItem.identifier}`}>
+                      <Link href={`/detail/${cartItem[0].identifier}`}>
                         <img
-                          src={cartItem.image}
+                          src={cartItem[0].image}
                           alt="cart-item"
                           className="h-16 w-16 rounded-lg"
                         />
                       </Link>
                       <div className="flex flex-col items-start justify-start text-sm">
                         <span className="font-medium">
-                          {cartItem.identifier}
+                          {cartItem[0].identifier}
                         </span>
                         <span className="">{"Gemma"}</span>
                       </div>
                     </div>
                     <span className="price text-sm">
-                      {Number(cartItem.listings[0]?.start_price || 0)
-                        ? Number(cartItem.listings[0]?.start_price || 0) /
+                      {Number(cartItem[0].listings[0]?.start_price || 0)
+                        ? Number(cartItem[0].listings[0]?.start_price || 0) /
                           1000000000000000000
                         : 0}{" "}
                       ETH
                     </span>
                     <button
                       className="delete-cart-btn hidden hover:text-white"
-                      onClick={() => handleRemoveFromCart(cartItem.identifier)}
+                      onClick={() =>
+                        handleRemoveFromCart(cartItem[0].identifier)
+                      }
                     >
                       <i className="pi pi-trash" />
                     </button>

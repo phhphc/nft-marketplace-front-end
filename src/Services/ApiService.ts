@@ -220,46 +220,26 @@ export const sellNFT = async ({
 };
 
 export const getNFTCollectionListInfoService = async (): Promise<
-  INFTCollectionItem[]
+  INFTCollectionItem[][]
 > => {
   const data = await getNFTCollectionListService();
-  console.log("🚀 ~ file: ApiService.ts:223 ~ data:", data);
-  // if (data) {
-  //   const newData = await Promise.all(
-  //     data.nfts.map(async (item: any) => {
-  //       const orderParameters = await getOfferByToken({
-  //         tokenId: item.identifier,
-  //         tokenAddress: item.token,
-  //       });
-  //       console.log(
-  //         "🚀 ~ file: ApiService.ts:230 ~ data.nfts.map ~ orderParameters:",
-  //         orderParameters
-  //       );
 
-  //       if (orderParameters?.length) {
-  //         const latestOrderParameter = cloneDeep(
-  //           orderParameters[orderParameters.length - 1]
-  //         );
-  //         const signature = latestOrderParameter.signature;
-  //         delete latestOrderParameter.signature;
-  //         delete latestOrderParameter.is_cancelled;
-  //         delete latestOrderParameter.is_validated;
-  //         return {
-  //           ...item,
-  //           order: {
-  //             parameters: {
-  //               ...latestOrderParameter,
-  //               totalOriginalConsiderationItems:
-  //                 latestOrderParameter.consideration.length,
-  //             },
-  //             signature,
-  //           },
-  //         };
-  //       } else return item;
-  //     })
-  //   );
-  console.log(data);
-  return data.nfts;
+  return (
+    data.nfts?.reduce((acc: any, cur: INFTCollectionItem) => {
+      const indexOfExistOrderHash = acc.indexOf(
+        (item: INFTCollectionItem) =>
+          item.listings?.[0].order_hash === cur.listings?.[0].order_hash
+      );
+
+      if (indexOfExistOrderHash === -1) {
+        acc.push([cur]);
+        return acc;
+      } else {
+        acc[indexOfExistOrderHash].push(cur);
+        return acc;
+      }
+    }, []) || []
+  );
   // } else return [];
 };
 
