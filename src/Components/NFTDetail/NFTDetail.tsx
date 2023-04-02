@@ -35,22 +35,23 @@ import { CURRENCY_UNITS } from "@Constants/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 
 export interface INFTDetailProps {
-  nftDetail: INFTCollectionItem;
+  nftDetail: INFTCollectionItem[];
 }
 
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
+  // to do: show UI in bundle mode
   const { refetch } = useNFTCollectionList();
-  const canBuy = (item: INFTCollectionItem) => {
-    return !!item.listings[0];
+  const canBuy = (item: INFTCollectionItem[]) => {
+    return !!item[0].listings[0];
   };
-  const canSell = (item: INFTCollectionItem) => {
-    return item.owner === web3Context.state.web3.myAddress;
+  const canSell = (item: INFTCollectionItem[]) => {
+    return item[0].owner === web3Context.state.web3.myAddress;
   };
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
 
-  const handleSellNFT = async (item: INFTCollectionItem) => {
+  const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (!web3Context.state.web3.provider) {
       return (
         toast.current &&
@@ -105,7 +106,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const handleBuyToken = async (
     myWallet: any,
     provider: any,
-    item?: INFTCollectionItem
+    item?: INFTCollectionItem[]
   ) => {
     if (!web3Context.state.web3.provider) {
       return (
@@ -168,7 +169,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const [selectedUnit, setSelectedUnit] = useState<string>("");
 
   useEffect(() => {
-    if (nftDetail.identifier in web3Context.state.web3.cart) {
+    if (nftDetail[0].identifier in web3Context.state.web3.cart) {
       setIsAddedToCart(true);
     } else {
       setIsAddedToCart(false);
@@ -202,8 +203,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         <img
           id="image"
           src={
-            nftDetail.image != "<nil>"
-              ? nftDetail.image
+            nftDetail[0].image != "<nil>" && nftDetail[0].image != ""
+              ? nftDetail[0].image
               : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
           }
           alt="detail"
@@ -216,7 +217,9 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
               <span>Description</span>
             </div>
             <div className="table-content p-5">
-              {nftDetail.description != "<nil>" ? nftDetail.description : ""}
+              {nftDetail[0].description != "<nil>"
+                ? nftDetail[0].description
+                : ""}
             </div>
           </div>
           <Accordion multiple>
@@ -295,7 +298,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="flex space-x-2">
                   <FontAwesomeIcon icon={faClipboard} />
                   <p>
-                    About {nftDetail.identifier.toUpperCase()} BY {"AuthorName"}
+                    About {nftDetail[0].identifier.toUpperCase()} BY{" "}
+                    {"AuthorName"}
                   </p>
                 </div>
               }
@@ -304,8 +308,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <img
                   className="avatar w-6 h-6 rounded-3xl mt-2"
                   src={
-                    nftDetail.image != "<nil>"
-                      ? nftDetail.image
+                    nftDetail[0].image != "<nil>"
+                      ? nftDetail[0].image
                       : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
                   }
                   alt=""
@@ -373,13 +377,13 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     className="text-blue-500 w-28 overflow-hidden text-ellipsis"
                     href=""
                   >
-                    <span>{nftDetail.token}</span>
+                    <span>{nftDetail[0].token}</span>
                   </Link>
                 </div>
                 <div className="w-full flex justify-between">
                   <span>Token ID</span>
                   <Link className="text-blue-500" href="">
-                    {nftDetail.identifier}
+                    {nftDetail[0].identifier}
                   </Link>
                 </div>
                 <div className="w-full flex justify-between">
@@ -402,7 +406,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             className="author h-12 flex items-center space-x-2 text-blue-500"
           >
             <span>
-              {nftDetail.identifier.toUpperCase()} BY {"AuthorName"}
+              {nftDetail[0].identifier.toUpperCase()} BY {"AuthorName"}
             </span>
             <i>
               <FontAwesomeIcon icon={faCircleCheck} />
@@ -424,12 +428,12 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           </div>
         </div>
         <h1 className="name h-14 text-4xl flex items-center font-semibold mt-2 mb-1">
-          {nftDetail.identifier.toUpperCase()}
+          {nftDetail[0].identifier.toUpperCase()}
         </h1>
         <h2 className="owner h-9 flex justify-start items-center space-x-1">
           <span>Owned by</span>
           <Link href="/" className="text-blue-500">
-            {nftDetail.owner}
+            {nftDetail[0].owner}
           </Link>
         </h2>
         <div className="flex flex-start space-x-8 pt-5 pb-8">
@@ -455,7 +459,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           </div>
         </div>
         <div className="boxes w-full border rounded-lg">
-          {nftDetail.listings && (
+          {nftDetail[0].listings && (
             <div className="time-box flex flex-col border-b p-5 text-lg">
               <div className="space-x-2 ">
                 <i>
@@ -484,25 +488,25 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             </div>
           )}
           <div className="buy-box flex flex-col p-5 ">
-            {!!nftDetail?.listings && (
+            {!!nftDetail[0]?.listings && (
               <>
                 <span className="text-md text-gray-500">Current price</span>
                 <div className="price flex mb-3 space-x-2">
                   <span className="text-3xl font-bold space-x-1 my-1 ">
                     <span className="price-value">
-                      {nftDetail.listings[0] && (
+                      {nftDetail[0].listings[0] && (
                         <p className="text-sm font-medium text-gray-900 uppercase">
-                          {Number(nftDetail.listings[0]?.start_price || 0) /
+                          {Number(nftDetail[0].listings[0]?.start_price || 0) /
                             1000000000 <
                           1000000000
                             ? `${
                                 Number(
-                                  nftDetail.listings[0]?.start_price || 0
+                                  nftDetail[0].listings[0]?.start_price || 0
                                 ) / 1000000000
                               } GWEI`
                             : `${
                                 Number(
-                                  nftDetail.listings[0]?.start_price || 0
+                                  nftDetail[0].listings[0]?.start_price || 0
                                 ) / 1000000000000000000
                               } ETH`}
                         </p>
@@ -518,7 +522,9 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="flex gap-3 justify-between">
                   {isAddedToCart ? (
                     <div
-                      onClick={() => handleRemoveFromCart(nftDetail.identifier)}
+                      onClick={() =>
+                        handleRemoveFromCart(nftDetail[0].identifier)
+                      }
                       className="flex justify-center gap-2 w-72 bg-red-100 hover:bg-red-300 h-16 pt-4 rounded-md cursor-pointer"
                     >
                       <i
@@ -531,7 +537,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     </div>
                   ) : (
                     <div
-                      onClick={() => handleAddToCart(nftDetail.identifier)}
+                      onClick={() => handleAddToCart(nftDetail[0].identifier)}
                       className="flex justify-center gap-2 w-72 bg-red-100 hover:bg-red-300 h-16 pt-4 rounded-md cursor-pointer"
                     >
                       <i

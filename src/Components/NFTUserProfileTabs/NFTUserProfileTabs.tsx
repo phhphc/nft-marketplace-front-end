@@ -8,7 +8,7 @@ import { INFTCollectionItem } from "@Interfaces/index";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
 
 export interface INFTUserProfileTabsProps {
-  nftCollectionList: INFTCollectionItem[];
+  nftCollectionList: INFTCollectionItem[][];
 }
 
 const NFTUserProfileTabs = ({

@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { INFTCollectionItem } from "@Interfaces/index";
 
 export interface INFTCollectionTableListProps {
-  nftCollectionList: INFTCollectionItem[];
+  nftCollectionList: INFTCollectionItem[][];
 }
 
 const NFTCollectionTableList = ({
@@ -14,12 +14,12 @@ const NFTCollectionTableList = ({
   const [selectedNFTs, setSelectedNFTs] = useState<INFTCollectionItem[]>([]);
   const router = useRouter();
 
-  const imageBodyTemplate = (rowData: INFTCollectionItem) => {
+  const imageBodyTemplate = (rowData: INFTCollectionItem[]) => {
     return (
       <img
         src={
-          rowData.image != "<nil>"
-            ? rowData.image
+          rowData[0]?.image != "<nil>" && rowData[0]?.image != ""
+            ? rowData[0].image
             : "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
         }
         alt="item image"
@@ -28,15 +28,15 @@ const NFTCollectionTableList = ({
     );
   };
 
-  const priceBodyTemplate = (rowData: INFTCollectionItem): number => {
-    return Number(rowData?.listings[0]?.start_price || 0);
+  const priceBodyTemplate = (rowData: INFTCollectionItem[]): number => {
+    return Number(rowData[0]?.listings[0]?.start_price || 0);
   };
 
-  const nameBodyTemplate = (rowData: INFTCollectionItem) => {
+  const nameBodyTemplate = (rowData: INFTCollectionItem[]) => {
     return (
       <div>
         <a style={{ cursor: "pointer" }} onClick={() => router.push("/detail")}>
-          {rowData.identifier || "Item name"}
+          {rowData[0].identifier || "Item name"}
         </a>
       </div>
     );

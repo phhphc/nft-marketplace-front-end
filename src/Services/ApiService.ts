@@ -28,7 +28,7 @@ interface ISellNFTProps {
   provider: any;
   myAddress: string;
   myWallet: any;
-  item: INFTCollectionItem;
+  item: INFTCollectionItem[];
   price: string;
   unit: string;
   isApprovedForAllNFTs?: boolean;
@@ -43,7 +43,7 @@ interface IBuyTokenServiceProps {
   toast: any;
   provider: any;
   myWallet: any;
-  item: INFTCollectionItem;
+  item: INFTCollectionItem[];
 }
 
 interface IGetNFTCollectionListInfoServiceProps {
@@ -114,7 +114,7 @@ export const sellNFT = async ({
   isApprovedForAllNFTs = false,
 }: ISellNFTProps) => {
   try {
-    const erc721Address = item.token;
+    const erc721Address = item[0].token;
     const mkpAddress =
       process.env.NEXT_PUBLIC_MKP_ADDRESS ??
       "0x5300EEEeA4751fDF9f32647B965599e8Ef7656DC";
@@ -141,9 +141,9 @@ export const sellNFT = async ({
     const mkpContractWithSigner = mkpContract.connect(myWallet);
 
     // await erc721ContractWithSigner["mint"](await signer.getAddress(), nftId, uri);
-    const offer = [
-      getTestItem721(item.identifier, 1, 1, undefined, item.token),
-    ];
+    const offer = item.map((nft) =>
+      getTestItem721(nft.identifier, 1, 1, undefined, nft.token)
+    );
     const consideration = [
       getItemETH(
         unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
@@ -270,7 +270,7 @@ export const buyTokenService = async ({
   provider,
 }: IBuyTokenServiceProps) => {
   console.log("🚀 ~ file: ApiService.ts:268 ~ item:", item);
-  const erc721Address = item.token;
+  const erc721Address = item[0].token;
   const mkpAddress =
     process.env.NEXT_PUBLIC_MKP_ADDRESS ??
     "0x5300EEEeA4751fDF9f32647B965599e8Ef7656DC";
@@ -283,7 +283,7 @@ export const buyTokenService = async ({
 
   const orderData = await axios.get("/api/v0.1/order", {
     params: {
-      order_hash: item.listings[0].order_hash,
+      order_hash: item[0].listings[0].order_hash,
     },
   });
 
@@ -323,6 +323,7 @@ export const buyTokenService = async ({
   // } catch (err) {
   //   console.dir(err);
   // }
+  //  todo: buy cart
 };
 
 const handleUploadImageToPinata = async (image: any) => {
@@ -415,10 +416,15 @@ export const createNFTService = async ({
   console.log("tokenUri", tokenUri);
 
   const nftId = randomBN();
-  console.log('nftId', nftId);
-  await myNftContractWithSigner.mint(await myWallet.getAddress(), nftId, tokenUri, {
-    gasLimit: 1000000,
-  });
+  console.log("nftId", nftId);
+  await myNftContractWithSigner.mint(
+    await myWallet.getAddress(),
+    nftId,
+    tokenUri,
+    {
+      gasLimit: 1000000,
+    }
+  );
 
   // const mintNFT = async () => {
   //   const nftId = randomBN();

@@ -4,7 +4,7 @@ import { INFTCollectionItem } from "@Interfaces/index";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
 
 export interface INFTCollectionGridListProps {
-  nftCollectionList: INFTCollectionItem[];
+  nftCollectionList: INFTCollectionItem[][];
   viewType: COLLECTION_VIEW_TYPE;
   mode: NFT_COLLECTION_MODE;
 }
@@ -26,7 +26,7 @@ const NFTCollectionGridList = ({
         >
           {nftCollectionList.map((item) => (
             <NFTCollectionGridItem
-              key={item.identifier}
+              key={item[0].identifier}
               item={item}
               viewType={viewType}
               mode={mode}

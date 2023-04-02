@@ -2,10 +2,11 @@ import { useState } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
 
 export interface IImageProfileProps {
-  nftCollectionList: INFTCollectionItem[];
+  nftCollectionList: INFTCollectionItem[][];
 }
 
 const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
+  const firstNFT = nftCollectionList?.[0]?.[0];
   const [isOpen, setIsOpen] = useState(false);
   const handleShowDialog = () => {
     setIsOpen(!isOpen);
@@ -15,10 +16,9 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
     <div id="nft-profile">
       <img
         src={`${
-          nftCollectionList?.[0]?.image == "<nil>" ||
-          !nftCollectionList?.[0]?.image
+          firstNFT?.image == "<nil>" || firstNFT?.image || firstNFT?.image == ""
             ? "https://i.seadn.io/gae/mmyoMHBLnHMfHyb3r2T1050yScZqfx2G48kXmP6WruMNpJNnVYsD79tpczbCrAilRLCAkUh3qRTRdpHYx5z9QPnLG3tdXoTU_Hc9?auto=format&w=1920"
-            : nftCollectionList?.[0]?.image
+            : firstNFT?.image
         }`}
         alt=""
         className="cover-image"
@@ -27,10 +27,11 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
         <img
           onClick={handleShowDialog}
           src={`${
-            nftCollectionList?.[0]?.image == "<nil>" ||
-            !nftCollectionList?.[0]?.image
+            firstNFT?.image == "<nil>" ||
+            !firstNFT?.image ||
+            firstNFT?.image == ""
               ? "https://i.seadn.io/gae/mmyoMHBLnHMfHyb3r2T1050yScZqfx2G48kXmP6WruMNpJNnVYsD79tpczbCrAilRLCAkUh3qRTRdpHYx5z9QPnLG3tdXoTU_Hc9?auto=format&w=1920"
-              : nftCollectionList?.[0]?.image
+              : firstNFT?.image
           }`}
           alt=""
           className="shadow-2xl avt-image"
@@ -49,10 +50,11 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
           src={
             isOpen
               ? `${
-                  nftCollectionList?.[0]?.image == "<nil>" ||
-                  !nftCollectionList?.[0]?.image
+                  firstNFT?.image == "<nil>" ||
+                  !firstNFT?.image ||
+                  firstNFT?.image == ""
                     ? "https://i.seadn.io/gae/mmyoMHBLnHMfHyb3r2T1050yScZqfx2G48kXmP6WruMNpJNnVYsD79tpczbCrAilRLCAkUh3qRTRdpHYx5z9QPnLG3tdXoTU_Hc9?auto=format&w=1920"
-                    : nftCollectionList?.[0]?.image
+                    : firstNFT?.image
                 }`
               : ""
           }

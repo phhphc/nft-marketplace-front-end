@@ -154,3 +154,5 @@ export const STRING_HEX_TO_NUMBER: any = {
   orderType: 1,
   totalOriginalConsiderationItems: 1,
 };
+
+export const NOT_ON_SALE = "NOT_ON_SALE";

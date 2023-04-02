@@ -5,7 +5,7 @@ import { INFTCollectionItem } from "@Interfaces/index";
 import { useMemo } from "react";
 
 export interface INFTInforProps {
-  nftCollectionList: INFTCollectionItem[];
+  nftCollectionList: INFTCollectionItem[][];
 }
 
 const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
@@ -18,7 +18,7 @@ const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
     return Math.round(
       (nftCollectionList
         ? nftCollectionList.reduce(
-            (acc, cur) => acc + Number(cur.listings[0]?.start_price || 0),
+            (acc, cur) => acc + Number(cur[0].listings[0]?.start_price || 0),
             0
           )
         : 0) / 1000000000000000000
@@ -30,8 +30,8 @@ const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
       (nftCollectionList
         ? Math.min(
             ...(nftCollectionList
-              .filter((item) => !!item.listings)
-              .map((item) => Number(item.listings[0]?.start_price)) as any)
+              .filter((item) => !!item[0].listings)
+              .map((item) => Number(item[0].listings[0]?.start_price)) as any)
           )
         : 0) / 1000000000000000000
     );

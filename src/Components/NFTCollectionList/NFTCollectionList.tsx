@@ -8,7 +8,7 @@ import { INFTCollectionItem } from "@Interfaces/index";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
 
 export interface INFTCollectionListProps {
-  nftCollectionList: INFTCollectionItem[];
+  nftCollectionList: INFTCollectionItem[][];
   mode: NFT_COLLECTION_MODE;
 }
 
