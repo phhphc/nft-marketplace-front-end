@@ -12,6 +12,7 @@ import { WEB3_ACTION_TYPES } from "@Store/index";
 import avatar from "@Assets/avatar.png";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
+import { handleRemoveFromCart } from "@Utils/index";
 
 const Header = () => {
   const web3Context = useContext(AppContext);
@@ -90,33 +91,6 @@ const Header = () => {
     );
   }, [cartItemList]);
 
-  const handleAddToCart = (tokenId: number, quantity: number = 1) => {
-    const currCart = web3Context.state.web3.cart;
-    const newCart = { ...currCart, [tokenId]: quantity };
-    web3Context.dispatch({
-      type: WEB3_ACTION_TYPES.CHANGE,
-      payload: {
-        provider: web3Context.state.web3.provider,
-        myAddress: web3Context.state.web3.myAddress,
-        cart: newCart,
-      },
-    });
-  };
-
-  const handleRemoveFromCart = (tokenId: string, quantity: number = 1) => {
-    const currCart = web3Context.state.web3.cart;
-    const newCart: any = { ...currCart };
-    delete newCart[[tokenId].toString()];
-    web3Context.dispatch({
-      type: WEB3_ACTION_TYPES.CHANGE,
-      payload: {
-        provider: web3Context.state.web3.provider,
-        myAddress: web3Context.state.web3.myAddress,
-        cart: newCart,
-      },
-    });
-  };
-
   const handleRemoveAllFromCart = () => {
     setCartItemList([]);
     web3Context.dispatch({
@@ -132,7 +106,9 @@ const Header = () => {
   useEffect(() => {
     const cart = { ...web3Context.state.web3.cart };
     setCartItemList(
-      nftCollectionList.filter((item: any) => item[0].identifier in cart)
+      nftCollectionList.filter(
+        (item: INFTCollectionItem[]) => item[0].listings[0]?.order_hash in cart
+      )
     );
   }, [web3Context.state.web3.cart]);
 
@@ -367,7 +343,10 @@ const Header = () => {
                     <button
                       className="delete-cart-btn hidden hover:text-white"
                       onClick={() =>
-                        handleRemoveFromCart(cartItem[0].identifier)
+                        handleRemoveFromCart(
+                          web3Context,
+                          cartItem[0].listings[0].order_hash
+                        )
                       }
                     >
                       <i className="pi pi-trash" />

@@ -24,6 +24,7 @@ import {
   MAPPING_STRING_TO_BIG_NUMBER,
   STRING_HEX_TO_NUMBER,
 } from "@Constants/index";
+import { IWeb3Context, WEB3_ACTION_TYPES } from "@Store/index";
 
 const randomBytes = (n: number) => nodeRandomBytes(n).toString("hex");
 
@@ -533,4 +534,39 @@ export const transformDataRequestToBuyNFT = (obj: any): any => {
 
 export const parseGwei = (str: string) => {
   return utils.parseUnits(str, "gwei");
+};
+
+export const handleAddToCart = (
+  web3Context: IWeb3Context,
+  orderHash: string,
+  quantity: number = 1
+) => {
+  const currCart = web3Context.state.web3.cart;
+  const newCart = { ...currCart, [orderHash]: quantity };
+  web3Context.dispatch({
+    type: WEB3_ACTION_TYPES.CHANGE,
+    payload: {
+      provider: web3Context.state.web3.provider,
+      myAddress: web3Context.state.web3.myAddress,
+      cart: newCart,
+    },
+  });
+};
+
+export const handleRemoveFromCart = (
+  web3Context: IWeb3Context,
+  orderHash: string,
+  quantity: number = 1
+) => {
+  const currCart = web3Context.state.web3.cart;
+  const newCart: any = { ...currCart };
+  delete newCart[orderHash];
+  web3Context.dispatch({
+    type: WEB3_ACTION_TYPES.CHANGE,
+    payload: {
+      provider: web3Context.state.web3.provider,
+      myAddress: web3Context.state.web3.myAddress,
+      cart: newCart,
+    },
+  });
 };

@@ -12,6 +12,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
+import { handleAddToCart, handleRemoveFromCart } from "@Utils/index";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
@@ -126,39 +127,12 @@ const NFTCollectionGridItem = ({
     }
   };
 
-  const handleAddToCart = (tokenId: string, quantity: number = 1) => {
-    const currCart = web3Context.state.web3.cart;
-    const newCart = { ...currCart, [tokenId]: quantity };
-    web3Context.dispatch({
-      type: WEB3_ACTION_TYPES.CHANGE,
-      payload: {
-        provider: web3Context.state.web3.provider,
-        myAddress: web3Context.state.web3.myAddress,
-        cart: newCart,
-      },
-    });
-  };
-
-  const handleRemoveFromCart = (tokenId: string, quantity: number = 1) => {
-    const currCart = web3Context.state.web3.cart;
-    const newCart: any = { ...currCart };
-    delete newCart[[tokenId].toString()];
-    web3Context.dispatch({
-      type: WEB3_ACTION_TYPES.CHANGE,
-      payload: {
-        provider: web3Context.state.web3.provider,
-        myAddress: web3Context.state.web3.myAddress,
-        cart: newCart,
-      },
-    });
-  };
-
   const [visible, setVisible] = useState(false);
 
   const [selectedUnit, setSelectedUnit] = useState<string>("");
 
   useEffect(() => {
-    if (item[0].identifier in web3Context.state.web3.cart) {
+    if (item[0].listings[0]?.order_hash in web3Context.state.web3.cart) {
       setIsAddedToCart(true);
     } else {
       setIsAddedToCart(false);
@@ -211,7 +185,12 @@ const NFTCollectionGridItem = ({
             <div className="flex gap-3 justify-between w-full">
               {isAddedToCart ? (
                 <div
-                  onClick={() => handleRemoveFromCart(item[0].identifier)}
+                  onClick={() =>
+                    handleRemoveFromCart(
+                      web3Context,
+                      item[0].listings[0].order_hash
+                    )
+                  }
                   className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
                 >
                   <i
@@ -222,7 +201,9 @@ const NFTCollectionGridItem = ({
                 </div>
               ) : (
                 <div
-                  onClick={() => handleAddToCart(item[0].identifier)}
+                  onClick={() =>
+                    handleAddToCart(web3Context, item[0].listings[0].order_hash)
+                  }
                   className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
                 >
                   <i
