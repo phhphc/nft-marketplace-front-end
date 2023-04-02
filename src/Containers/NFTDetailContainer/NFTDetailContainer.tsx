@@ -7,7 +7,7 @@ import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 
 const NFTDetailContainer = () => {
   const { nftCollectionList } = useNFTCollectionList();
-  const [nftDetail, setNftDetail] = useState<INFTCollectionItem>();
+  const [nftDetail, setNftDetail] = useState<INFTCollectionItem[]>();
 
   const toast = useRef<Toast>(null);
 
