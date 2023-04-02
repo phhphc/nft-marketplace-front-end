@@ -29,10 +29,10 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { useContext, useState, useEffect, useRef } from "react";
 import { sellNFT, buyTokenService } from "@Services/ApiService";
-import { useRouter } from "next/router";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import { CURRENCY_UNITS } from "@Constants/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
+import { handleAddToCart, handleRemoveFromCart } from "@Utils/index";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem[];
@@ -140,33 +140,6 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
     }
   };
 
-  const handleAddToCart = (tokenId: string, quantity: number = 1) => {
-    const currCart = web3Context.state.web3.cart;
-    const newCart = { ...currCart, [tokenId]: quantity };
-    web3Context.dispatch({
-      type: WEB3_ACTION_TYPES.CHANGE,
-      payload: {
-        provider: web3Context.state.web3.provider,
-        myAddress: web3Context.state.web3.myAddress,
-        cart: newCart,
-      },
-    });
-  };
-
-  const handleRemoveFromCart = (tokenId: string, quantity: number = 1) => {
-    const currCart = web3Context.state.web3.cart;
-    const newCart: any = { ...currCart };
-    delete newCart[[tokenId].toString()];
-    web3Context.dispatch({
-      type: WEB3_ACTION_TYPES.CHANGE,
-      payload: {
-        provider: web3Context.state.web3.provider,
-        myAddress: web3Context.state.web3.myAddress,
-        cart: newCart,
-      },
-    });
-  };
-
   const [visible, setVisible] = useState(false);
 
   const [price, setPrice] = useState<number>(0);
@@ -174,7 +147,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const [selectedUnit, setSelectedUnit] = useState<string>("");
 
   useEffect(() => {
-    if (nftDetail[0].identifier in web3Context.state.web3.cart) {
+    if (item[0].listings[0]?.order_hash in web3Context.state.web3.cart) {
       setIsAddedToCart(true);
     } else {
       setIsAddedToCart(false);
@@ -528,7 +501,10 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                   {isAddedToCart ? (
                     <div
                       onClick={() =>
-                        handleRemoveFromCart(nftDetail[0].identifier)
+                        handleRemoveFromCart(
+                          web3Context,
+                          nftDetail[0].listings[0].order_hash
+                        )
                       }
                       className="flex justify-center gap-2 w-72 bg-red-100 hover:bg-red-300 h-16 pt-4 rounded-md cursor-pointer"
                     >
@@ -542,7 +518,12 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     </div>
                   ) : (
                     <div
-                      onClick={() => handleAddToCart(nftDetail[0].identifier)}
+                      onClick={() =>
+                        handleAddToCart(
+                          web3Context,
+                          nftDetail[0].listings[0].order_hash
+                        )
+                      }
                       className="flex justify-center gap-2 w-72 bg-red-100 hover:bg-red-300 h-16 pt-4 rounded-md cursor-pointer"
                     >
                       <i

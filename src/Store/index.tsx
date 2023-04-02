@@ -36,10 +36,12 @@ const initialState: IState = {
   },
 };
 
-const AppContext = createContext<{
+export interface IWeb3Context {
   state: IState;
   dispatch: Dispatch<IWeb3Action>;
-}>({
+}
+
+const AppContext = createContext<IWeb3Context>({
   state: initialState,
   dispatch: () => null,
 });
