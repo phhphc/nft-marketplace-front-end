@@ -147,7 +147,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const [selectedUnit, setSelectedUnit] = useState<string>("");
 
   useEffect(() => {
-    if (item[0].listings[0]?.order_hash in web3Context.state.web3.cart) {
+    if (nftDetail[0].listings[0]?.order_hash in web3Context.state.web3.cart) {
       setIsAddedToCart(true);
     } else {
       setIsAddedToCart(false);
