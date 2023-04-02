@@ -106,7 +106,12 @@ const NFTCollectionGridItem = ({
         );
       }
       if (item) {
-        await buyTokenService({ toast, item, myWallet, provider });
+        await buyTokenService({
+          toast,
+          orderHashes: [item[0].listings[0].order_hash],
+          myWallet,
+          provider,
+        });
         refetch();
       }
     } catch (error) {

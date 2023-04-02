@@ -43,7 +43,7 @@ interface IBuyTokenServiceProps {
   toast: any;
   provider: any;
   myWallet: any;
-  item: INFTCollectionItem[];
+  orderHashes: string[];
 }
 
 interface IGetNFTCollectionListInfoServiceProps {
@@ -245,12 +245,10 @@ export const getNFTCollectionListInfoService = async (): Promise<
 
 export const buyTokenService = async ({
   toast,
-  item,
+  orderHashes,
   myWallet,
   provider,
 }: IBuyTokenServiceProps) => {
-  console.log("🚀 ~ file: ApiService.ts:268 ~ item:", item);
-  const erc721Address = item[0].token;
   const mkpAddress =
     process.env.NEXT_PUBLIC_MKP_ADDRESS ??
     "0x5300EEEeA4751fDF9f32647B965599e8Ef7656DC";
@@ -263,7 +261,7 @@ export const buyTokenService = async ({
 
   const orderData = await axios.get("/api/v0.1/order", {
     params: {
-      order_hash: item[0].listings[0].order_hash,
+      order_hash: orderHashes[0],
     },
   });
 
