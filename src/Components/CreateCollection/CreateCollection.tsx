@@ -16,15 +16,15 @@ import { AppContext } from "@Store/index";
 const CreateCollection = () => {
   const categories: ICategory[] = [
     { categoryName: "Art", value: "Art" },
-    { categoryName: "Domain names", value: "Domain" },
     { categoryName: "Gaming", value: "Gaming" },
-    { categoryName: "Memberships", value: "Membership" },
-    { categoryName: "Music", value: "Music" },
-    { categoryName: "PFPs", value: "Pfp" },
-    { categoryName: "Photography", value: "Photograph" },
-    { categoryName: "Sports Collectibles", value: "Sport" },
-    { categoryName: "Virtual Worlds", value: "Virtual" },
-    { categoryName: "No category", value: "No" },
+    { categoryName: "Photography", value: "Photography" },
+    { categoryName: "Memberships", value: "Memberships" },
+    // { categoryName: "Domain names", value: "Domain" },
+    // { categoryName: "Music", value: "Music" },
+    // { categoryName: "PFPs", value: "Pfp" },
+    // { categoryName: "Sports Collectibles", value: "Sport" },
+    // { categoryName: "Virtual Worlds", value: "Virtual" },
+    // { categoryName: "No category", value: "No" },
   ];
 
   const blockchains: IBlockchain[] = [
@@ -72,7 +72,7 @@ const CreateCollection = () => {
     await createNFTCollectionService({
       ...data,
       logoImage: data.logoImage[0],
-      featuredImage: data.featuredImage[0],
+      // featuredImage: data.featuredImage[0],
       bannerImage: data.bannerImage[0],
       owner,
     });
@@ -112,7 +112,7 @@ const CreateCollection = () => {
           </div>
         </div>
 
-        <div className="pt-4">
+        {/* <div className="pt-4">
           <label className="text-lg font-medium">Featured image</label>
           <p>
             This image will be used for featuring your collection on the
@@ -144,7 +144,7 @@ const CreateCollection = () => {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
 
         <div className="pt-4">
           <label className="text-lg font-medium">Banner image</label>
@@ -201,7 +201,7 @@ const CreateCollection = () => {
           control={control}
         />
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">URL</label>
@@ -218,7 +218,7 @@ const CreateCollection = () => {
           )}
           name="url"
           control={control}
-        />
+        /> */}
 
         <Controller
           render={({ field }) => (
@@ -250,7 +250,7 @@ const CreateCollection = () => {
           control={control}
         />
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">Link</label>
@@ -268,9 +268,9 @@ const CreateCollection = () => {
           )}
           name="link"
           control={control}
-        />
+        /> */}
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">Blockchain</label>
@@ -289,7 +289,7 @@ const CreateCollection = () => {
           )}
           name="blockchain"
           control={control}
-        />
+        /> */}
 
         {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
