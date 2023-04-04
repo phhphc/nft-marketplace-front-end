@@ -17,7 +17,7 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
       <img
         src={`${
           firstNFT?.image == "<nil>" || firstNFT?.image || firstNFT?.image == ""
-            ? "https://i.seadn.io/gae/mmyoMHBLnHMfHyb3r2T1050yScZqfx2G48kXmP6WruMNpJNnVYsD79tpczbCrAilRLCAkUh3qRTRdpHYx5z9QPnLG3tdXoTU_Hc9?auto=format&w=1920"
+            ? "https://i.seadn.io/gcs/files/89f0cd4457af5632e66fb44bf43309cd.png?auto=format&w=1920"
             : firstNFT?.image
         }`}
         alt=""
@@ -30,7 +30,7 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
             firstNFT?.image == "<nil>" ||
             !firstNFT?.image ||
             firstNFT?.image == ""
-              ? "https://i.seadn.io/gae/mmyoMHBLnHMfHyb3r2T1050yScZqfx2G48kXmP6WruMNpJNnVYsD79tpczbCrAilRLCAkUh3qRTRdpHYx5z9QPnLG3tdXoTU_Hc9?auto=format&w=1920"
+              ? "https://i.seadn.io/gcs/files/89f0cd4457af5632e66fb44bf43309cd.png?auto=format&w=1920"
               : firstNFT?.image
           }`}
           alt=""
@@ -53,7 +53,7 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
                   firstNFT?.image == "<nil>" ||
                   !firstNFT?.image ||
                   firstNFT?.image == ""
-                    ? "https://i.seadn.io/gae/mmyoMHBLnHMfHyb3r2T1050yScZqfx2G48kXmP6WruMNpJNnVYsD79tpczbCrAilRLCAkUh3qRTRdpHYx5z9QPnLG3tdXoTU_Hc9?auto=format&w=1920"
+                    ? "https://i.seadn.io/gcs/files/89f0cd4457af5632e66fb44bf43309cd.png?auto=format&w=1920"
                     : firstNFT?.image
                 }`
               : ""

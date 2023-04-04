@@ -121,7 +121,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
           control={control}
         />
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">External link</label>
@@ -139,7 +139,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
           )}
           name="url"
           control={control}
-        />
+        /> */}
 
         <Controller
           render={({ field }) => (
@@ -197,7 +197,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
           control={control}
         />
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">Blockchain</label>
@@ -216,7 +216,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
           )}
           name="blockchain"
           control={control}
-        />
+        /> */}
 
         {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">

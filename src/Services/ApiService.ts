@@ -371,7 +371,7 @@ export const createNFTService = async ({
   );
   console.log("collection token", collection);
 
-  // todo: mint NFT and send data to BE
+  // mint NFT and send data to BE
 
   await provider.send("eth_requestAccounts", []);
   // const signer = provider.getSigner();
@@ -403,24 +403,6 @@ export const createNFTService = async ({
       gasLimit: 1000000,
     }
   );
-
-  // const mintNFT = async () => {
-  //   const nftId = randomBN();
-  //   let nftTxn = await myNftContractWithSigner.mint(
-  //     "0x162459Bb429a63D2e31Fe2d1cdb5b058f2D31AdF",
-  //     nftId,
-  //     tokenUri,
-  //     { gasLimit: 1000000 }
-  //   );
-  //   await nftTxn.wait();
-  //   console.log(`NFT Minted!`);
-  // };
-
-  // mintNFT()
-  //   .then(() => process.exit(0))
-  //   .catch((error) => {
-  //     console.error(error);
-  //   });
 };
 
 export const createNFTCollectionService = async ({
@@ -488,13 +470,15 @@ export const createNFTCollectionService = async ({
     "MMM",
     "https://abc.com"
   );
-  // return contract.address;
 
   const params = JSON.stringify({
     token: contract.address,
     owner: owner,
     name: name,
     description: desc,
+    metadata: {
+      description: desc,
+    },
     category: category,
     url: url,
     featured_image_cid: featuredImageCid,

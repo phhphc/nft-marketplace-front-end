@@ -155,7 +155,7 @@ const NFTCollectionGridItem = ({
           src={
             item[0].image != "<nil>" && item[0].image != ""
               ? item[0].image
-              : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
+              : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
           }
           alt="NFT Item"
           className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
@@ -163,12 +163,12 @@ const NFTCollectionGridItem = ({
       </Link>
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
-          <div className="p-4 h-20">
-            <h3 className="font-bold uppercase">
+          <div className="p-3 h-20">
+            <h3 className="font-bold uppercase break-words text-sm">
               {item[0].identifier || "Item name"}
             </h3>
             {item[0].listings && (
-              <p className="text-sm font-medium text-gray-900 uppercase">
+              <p className="flex gap-1 text-sm font-medium text-gray-900">
                 {Number(item[0].listings[0]?.start_price || 0) / 1000000000 <
                 1000000000
                   ? `${

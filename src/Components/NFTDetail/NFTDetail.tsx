@@ -183,7 +183,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           src={
             nftDetail[0].image != "<nil>" && nftDetail[0].image != ""
               ? nftDetail[0].image
-              : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
+              : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
           }
           alt="detail"
           className="nft-detail-img rounded-b-lg h-full w-full object-cover object-center lg:h-full lg:w-full"
@@ -288,7 +288,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                   src={
                     nftDetail[0].image != "<nil>"
                       ? nftDetail[0].image
-                      : "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-hoat-hinh-de-thuong-1.jpg"
+                      : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
                   }
                   alt=""
                 />
