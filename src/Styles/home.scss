@@ -1,3 +1,10 @@
-.scroll-bar::-webkit-scrollbar {
-  display: none;
+.p-tabmenu
+  .p-tabmenu-nav
+  .p-tabmenuitem
+  .p-menuitem-link:not(.p-disabled):focus {
+  box-shadow: unset;
+}
+
+.p-carousel[pr_id_1] .p-carousel-item {
+  flex: 0 0 33.333333333333336% !important;
 }

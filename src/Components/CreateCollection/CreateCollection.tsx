@@ -12,19 +12,20 @@ import {
 } from "@Interfaces/index";
 import { createNFTCollectionService } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
+import { Toast } from "primereact/toast";
 
 const CreateCollection = () => {
   const categories: ICategory[] = [
-    { categoryName: "Art", value: "Art" },
-    { categoryName: "Gaming", value: "Gaming" },
-    { categoryName: "Photography", value: "Photography" },
-    { categoryName: "Memberships", value: "Memberships" },
-    // { categoryName: "Domain names", value: "Domain" },
-    // { categoryName: "Music", value: "Music" },
-    // { categoryName: "PFPs", value: "Pfp" },
-    // { categoryName: "Sports Collectibles", value: "Sport" },
-    // { categoryName: "Virtual Worlds", value: "Virtual" },
-    // { categoryName: "No category", value: "No" },
+    { label: "Art", value: "Art" },
+    { label: "Gaming", value: "Gaming" },
+    { label: "Photography", value: "Photography" },
+    { label: "Memberships", value: "Memberships" },
+    // { label: "Domain names", value: "Domain" },
+    // { label: "Music", value: "Music" },
+    // { label: "PFPs", value: "Pfp" },
+    // { label: "Sports Collectibles", value: "Sport" },
+    // { label: "Virtual Worlds", value: "Virtual" },
+    // { label: "No category", value: "No" },
   ];
 
   const blockchains: IBlockchain[] = [
@@ -64,6 +65,7 @@ const CreateCollection = () => {
 
   const web3Context = useContext(AppContext);
   const owner = web3Context.state.web3.myAddress;
+  const toast = useRef<Toast>(null);
 
   const { register, resetField, control, handleSubmit } =
     useForm<IFormCollectionInput>();
@@ -71,6 +73,7 @@ const CreateCollection = () => {
   const onSubmit = async (data: IFormCollectionInput) => {
     await createNFTCollectionService({
       ...data,
+      toast,
       logoImage: data.logoImage[0],
       // featuredImage: data.featuredImage[0],
       bannerImage: data.bannerImage[0],
@@ -240,7 +243,7 @@ const CreateCollection = () => {
               <Dropdown
                 {...field}
                 options={categories}
-                optionLabel="categoryName"
+                optionLabel="label"
                 placeholder="Select a category"
                 className="w-full md:w-14rem"
               />
@@ -293,7 +296,7 @@ const CreateCollection = () => {
 
         {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
-          <Button label="Submit" />
+          <Button label="Create" />
         </div>
       </form>
     </div>

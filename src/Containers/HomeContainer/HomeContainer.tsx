@@ -1,27 +1,32 @@
-import { collectionList } from "./mockCollectionListData";
-import Link from "next/link";
+import CategoryTabMenu from "@Components/CategoryTabMenu/CategoryTabMenu";
+import useAllCollectionList from "@Hooks/useAllCollectionList";
 
-export interface ICollection {
-  imgSrc: string;
-  name: string;
-  floorPrice: number;
-  volume: number;
-}
 
-export interface ICollectionList {
-  collectionList: ICollection[];
-}
+// export interface ICollection {
+//   imgSrc: string;
+//   name: string;
+//   floorPrice: number;
+//   volume: number;
+// }
+
+// export interface ICollectionList {
+//   collectionList: ICollection[];
+// }
 
 function HomeContainer() {
+  const { allCollectionList } = useAllCollectionList();
   return (
     <>
-      {/* Trend collection table */}
+      <CategoryTabMenu allCollectionList={allCollectionList}></CategoryTabMenu>
+      
+
+      {/* Trend collection table
       <div className="flex-col w-full pt-10">
         <span className="font-bold text-xl border-b pb-2 mb-6 flex">
           Top Collections
         </span>
         <div className="trend-table flex flex-col">
-          {/* Table header */}
+          
           <div className="flex w-full">
             <div className="w-1/2 flex justify-between text-sm font-semibold text-gray-400 my-2 px-3">
               <span className="flex-1">Collection</span>
@@ -35,7 +40,7 @@ function HomeContainer() {
             </div>
           </div>
 
-          {/* Table content */}
+          
           <div className="flex flex-col flex-wrap h-80">
             {collectionList.map((collection, index) => (
               <Link
@@ -65,7 +70,7 @@ function HomeContainer() {
         </div>
       </div>
 
-      {/* Notable */}
+      
       <div className="flex-col mt-8">
         <span className="font-bold text-xl border-b pb-2 mb-6 flex">
           Notable Collection
@@ -103,7 +108,7 @@ function HomeContainer() {
         </div>
       </div>
 
-      {/* TOP buy */}
+      
       <div className="flex-col mt-8">
         <span className="font-bold text-xl border-b pb-2 mb-6 flex">
           Top Collector Buys Today
@@ -139,7 +144,7 @@ function HomeContainer() {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

@@ -9,6 +9,7 @@ import { IBlockchain, ICollection, IFormNewNFTInput } from "@Interfaces/index";
 import { createNFTService } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { ICollectionItem } from "@Interfaces/index";
+import { Toast } from "primereact/toast";
 
 export interface ICreateNFTProps {
   allCollectionList: ICollectionItem[];
@@ -17,6 +18,7 @@ export interface ICreateNFTProps {
 const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
   const web3Context = useContext(AppContext);
   const [myCollections, setMyCollections] = useState<ICollectionItem[]>();
+  const toast = useRef<Toast>(null);
   useEffect(() => {
     setMyCollections(
       allCollectionList.filter(
@@ -24,8 +26,6 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
       )
     );
   }, [allCollectionList]);
-
-  console.log("myCollections", myCollections);
 
   let collections: ICollectionItem[];
   if (myCollections) {
@@ -55,6 +55,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
   const onSubmit = async (data: IFormNewNFTInput) => {
     await createNFTService({
       ...data,
+      toast,
       featuredImage: data.featuredImage[0],
       provider: web3Context.state.web3.provider,
       myWallet: web3Context.state.web3.myWallet,
@@ -220,7 +221,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
 
         {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
-          <Button label="Submit" />
+          <Button label="Create" />
         </div>
       </form>
     </div>
