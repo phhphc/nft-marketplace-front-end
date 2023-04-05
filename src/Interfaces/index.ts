@@ -56,7 +56,7 @@ export interface IFormNewNFTInput {
 }
 
 export interface ICategory {
-  categoryName: string;
+  label: string;
   value: string;
 }
 
@@ -184,4 +184,5 @@ export interface ICollectionItem {
   description: string;
   category: string;
   created_at: Date;
+  image: string;
 }

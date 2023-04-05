@@ -124,6 +124,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         await buyTokenService({
           toast,
           orderHashes: [item[0].listings[0].order_hash],
+          price: [item[0].listings[0].start_price],
           myWallet,
           provider,
         });
