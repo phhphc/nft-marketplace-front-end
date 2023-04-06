@@ -161,10 +161,10 @@ const Header = () => {
                     <span className="ml-4">Profile</span>
                   </Link>
                   <Link
-                    href={`/user-profile/collection`}
+                    href={`/my-collections`}
                     className="py-3 w-full hover:bg-slate-200 border-b"
                   >
-                    <span className="ml-4">My Collection</span>
+                    <span className="ml-4">My Collections</span>
                   </Link>
                   <Link
                     href={`/create-collection`}
