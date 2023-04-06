@@ -7,11 +7,15 @@ import { Toast } from "primereact/toast";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { useRouter } from "next/router";
 import useCollectionByToken from "@Hooks/useCollectionByToken";
+import { INFTCollectionItem } from "@Interfaces/index";
 
 const NFTCollectionContainer = () => {
   const { nftCollectionList } = useNFTCollectionList();
   const router = useRouter();
   const { collection } = useCollectionByToken(router.query.token);
+  const nftList = nftCollectionList.filter(
+    (nft: INFTCollectionItem[]) => nft[0].token === router.query.token
+  );
   const toast = useRef<Toast>(null);
   return (
     <>
@@ -19,7 +23,7 @@ const NFTCollectionContainer = () => {
       <ImageProfile collectionImage={collection}></ImageProfile>
       <NFTInfor collectionInfo={collection}></NFTInfor>
       <NFTCollectionList
-        nftCollectionList={nftCollectionList}
+        nftCollectionList={nftList}
         mode={NFT_COLLECTION_MODE.CAN_BUY}
       />
     </>

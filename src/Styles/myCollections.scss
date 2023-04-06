@@ -1,0 +1,11 @@
+#my-collections-list {
+  .p-card-title {
+    text-align: center;
+  }
+  .p-card-content p {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}

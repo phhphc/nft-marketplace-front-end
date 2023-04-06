@@ -12,6 +12,8 @@ export interface IMetaData {
   name: string;
   description: string;
   image: string;
+  logo: string;
+  banner: string;
 }
 
 export interface INFTCollectionItem {
@@ -178,7 +180,7 @@ export type Domain = {
 };
 
 export interface ICollectionItem {
-  metadata: any;
+  metadata: IMetaData;
   token: string;
   owner: string;
   name: string;

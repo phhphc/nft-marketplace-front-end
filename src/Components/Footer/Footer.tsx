@@ -32,10 +32,10 @@ const Footer = () => {
             Profile
           </Link>
           <Link
-            href={`/collection/collection-name-example`}
+            href={`/my-collections`}
             className="pt-4 block"
           >
-            My Collection
+            My Collections
           </Link>
         </div>
       </div>

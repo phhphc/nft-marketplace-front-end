@@ -29,49 +29,6 @@ const CategoryTabMenu = ({ allCollectionList }: ICollectionTabMenu) => {
     setSelectedCategory(allCollectionList);
   }, [allCollectionList]);
 
-  const products = [
-    {
-      token: "1",
-      name: "LoL 1",
-      description:
-        "OpenSea Creatures are adorable aquatic beings primarily for demonstrating what can be done using the OpenSea platform.",
-      image:
-        "https://i.seadn.io/gcs/files/7ed181433ee09174f09a0e31b563d313.png?auto=format&w=256",
-    },
-    {
-      token: "2",
-      name: "LoL 2",
-      description:
-        "OpenSea Creatures are adorable aquatic beings primarily for demonstrating what can be done using the OpenSea platform.",
-      image:
-        "https://i.seadn.io/gcs/files/3c09e6238b3031aa57737e8cb6a03189.png?auto=format&w=256",
-    },
-    {
-      token: "3",
-      name: "LoL 3",
-      description:
-        "OpenSea Creatures are adorable aquatic beings primarily for demonstrating what can be done using the OpenSea platform.",
-      image:
-        "https://i.seadn.io/gcs/files/a2a810c40338c7c7415a0b3162d5b4c9.gif?auto=format&w=256",
-    },
-    {
-      token: "4",
-      name: "LoL 4",
-      description:
-        "OpenSea Creatures are adorable aquatic beings primarily for demonstrating what can be done using the OpenSea platform.",
-      image:
-        "https://i.seadn.io/gcs/files/8c7b672833142c9a4c93cc1c48212632.jpg?auto=format&w=500&h=500",
-    },
-    {
-      token: "5",
-      name: "LoL 5",
-      description:
-        "OpenSea Creatures are adorable aquatic beings primarily for demonstrating what can be done using the OpenSea platform.",
-      image:
-        "https://i.seadn.io/gae/cZ0lurTxSFfA6lZ_5670kU-GB_okeuTv1QSxCWWF_A0goQOGnRxZvVIOnHl3Rkfeqq-Gdmn0CZbcR7_N_UYM00gJD3w7nCwEU0Ns8yY?auto=format&w=500&h=500",
-    },
-  ];
-
   const filterCategory = (
     collectionList: ICollectionItem[],
     category: string
@@ -121,7 +78,7 @@ const CategoryTabMenu = ({ allCollectionList }: ICollectionTabMenu) => {
   };
 
   return (
-    <div>
+    <div id="category-tab-menu">
       <div className="card">
         <TabMenu
           model={categories}

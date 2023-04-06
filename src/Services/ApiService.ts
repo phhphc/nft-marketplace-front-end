@@ -543,3 +543,16 @@ export const getCollectionByTokenService = async (
     })
     .catch((err) => {});
 };
+
+export const getCollectionByOwnerService = async (
+  owner: string
+): Promise<ICollectionItem[]> => {
+  return axios
+    .get("/api/v0.1/collection", {
+      params: { owner: owner },
+    })
+    .then((response) => {
+      return response.data.data.collections || [];
+    })
+    .catch((err) => {});
+};

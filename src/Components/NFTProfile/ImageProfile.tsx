@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ICollectionItem, INFTCollectionItem } from "@Interfaces/index";
+import { ICollectionItem } from "@Interfaces/index";
 
 export interface ICollectionImageProps {
   collectionImage: ICollectionItem[];
