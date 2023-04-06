@@ -85,13 +85,13 @@ const CategoryTabMenu = ({ allCollectionList }: ICollectionTabMenu) => {
 
   const categoryTemplate = (selectedCategory: ICollectionItem) => {
     return (
-      <Link href="/">
+      <Link href={`/collection/${selectedCategory.name}?token=${selectedCategory.token}`}>
         <div className="bg-yellow-50 drop-shadow-2xl m-3 text-center py-5 px-3">
           <div className="mb-3 flex justify-center">
             <img
               src={`${
-                selectedCategory.image
-                  ? selectedCategory.image
+                selectedCategory.metadata.logo
+                  ? selectedCategory.metadata.logo
                   : "https://t3.ftcdn.net/jpg/04/62/93/66/360_F_462936689_BpEEcxfgMuYPfTaIAOC1tCDurmsno7Sp.jpg"
               }`}
               alt={selectedCategory.name}

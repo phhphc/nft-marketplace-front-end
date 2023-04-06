@@ -22,7 +22,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
   useEffect(() => {
     setMyCollections(
       allCollectionList.filter(
-        (item: any) => item.owner == web3Context.state.web3.myAddress
+        (item: ICollectionItem) => item.owner == web3Context.state.web3.myAddress
       )
     );
   }, [allCollectionList]);

@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { INFTCollectionItem } from "@Interfaces/index";
+import { ICollectionItem, INFTCollectionItem } from "@Interfaces/index";
 
-export interface IImageProfileProps {
-  nftCollectionList: INFTCollectionItem[][];
+export interface ICollectionImageProps {
+  collectionImage: ICollectionItem[];
 }
 
-const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
-  const firstNFT = nftCollectionList?.[0]?.[0];
+const ImageProfile = ({ collectionImage }: ICollectionImageProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const handleShowDialog = () => {
     setIsOpen(!isOpen);
@@ -16,9 +15,9 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
     <div id="nft-profile">
       <img
         src={`${
-          firstNFT?.image == "<nil>" || firstNFT?.image || firstNFT?.image == ""
-            ? "https://i.seadn.io/gcs/files/89f0cd4457af5632e66fb44bf43309cd.png?auto=format&w=1920"
-            : firstNFT?.image
+          collectionImage[0]?.metadata?.banner
+            ? collectionImage[0]?.metadata?.banner
+            : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoruLW-fPJAchs4OVGL2xH3sUKqSyo_8cjDvk_9NEieCEjmzCVwS_l0qdX6QMRhmhA6Fo&usqp=CAU"
         }`}
         alt=""
         className="cover-image"
@@ -27,11 +26,9 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
         <img
           onClick={handleShowDialog}
           src={`${
-            firstNFT?.image == "<nil>" ||
-            !firstNFT?.image ||
-            firstNFT?.image == ""
-              ? "https://i.seadn.io/gcs/files/89f0cd4457af5632e66fb44bf43309cd.png?auto=format&w=1920"
-              : firstNFT?.image
+            collectionImage[0]?.metadata?.logo
+              ? collectionImage[0]?.metadata?.logo
+              : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoruLW-fPJAchs4OVGL2xH3sUKqSyo_8cjDvk_9NEieCEjmzCVwS_l0qdX6QMRhmhA6Fo&usqp=CAU"
           }`}
           alt=""
           className="shadow-2xl avt-image"
@@ -50,11 +47,9 @@ const ImageProfile = ({ nftCollectionList }: IImageProfileProps) => {
           src={
             isOpen
               ? `${
-                  firstNFT?.image == "<nil>" ||
-                  !firstNFT?.image ||
-                  firstNFT?.image == ""
-                    ? "https://i.seadn.io/gcs/files/89f0cd4457af5632e66fb44bf43309cd.png?auto=format&w=1920"
-                    : firstNFT?.image
+                  collectionImage[0]?.metadata?.logo
+                    ? collectionImage[0]?.metadata?.logo
+                    : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoruLW-fPJAchs4OVGL2xH3sUKqSyo_8cjDvk_9NEieCEjmzCVwS_l0qdX6QMRhmhA6Fo&usqp=CAU"
                 }`
               : ""
           }
