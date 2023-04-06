@@ -5,16 +5,19 @@ import { NFT_COLLECTION_MODE } from "@Constants/index";
 import { useRef } from "react";
 import { Toast } from "primereact/toast";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
+import { useRouter } from "next/router";
+import useCollectionByToken from "@Hooks/useCollectionByToken";
 
 const NFTCollectionContainer = () => {
   const { nftCollectionList } = useNFTCollectionList();
+  const router = useRouter();
+  const { collection } = useCollectionByToken(router.query.token);
   const toast = useRef<Toast>(null);
-
   return (
     <>
       <Toast ref={toast} position="top-center" />
-      <ImageProfile nftCollectionList={nftCollectionList}></ImageProfile>
-      <NFTInfor nftCollectionList={nftCollectionList}></NFTInfor>
+      <ImageProfile collectionImage={collection}></ImageProfile>
+      <NFTInfor collectionInfo={collection}></NFTInfor>
       <NFTCollectionList
         nftCollectionList={nftCollectionList}
         mode={NFT_COLLECTION_MODE.CAN_BUY}

@@ -138,11 +138,11 @@ const Header = () => {
           {walletConnected && (
             <>
               {/* Temporary all NFTS page  */}
-              <Link href={`/collection/collection-name-example`}>
+              {/* <Link href={`/collection/collection-name-example`}>
                 <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
                   All NFTs
                 </button>
-              </Link>
+              </Link> */}
               {/* Profile */}
               <Link
                 href={`/user-profile/${web3Context.state.web3.myAddress}`}

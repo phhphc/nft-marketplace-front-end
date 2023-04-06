@@ -1,48 +1,48 @@
 import "primeicons/primeicons.css";
 import { Tooltip } from "primereact/tooltip";
 import { useState } from "react";
-import { INFTCollectionItem } from "@Interfaces/index";
+import { ICollectionItem, INFTCollectionItem } from "@Interfaces/index";
 import { useMemo } from "react";
 
-export interface INFTInforProps {
-  nftCollectionList: INFTCollectionItem[][];
+export interface ICollectionInfoProps {
+  collectionInfo: ICollectionItem[];
 }
 
-const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
+const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
   const [isSeeMore, setIsSeeMore] = useState(false);
   const handleClickToRead = () => {
     setIsSeeMore(!isSeeMore);
   };
 
-  const totalVolume = useMemo(() => {
-    return Math.round(
-      (nftCollectionList
-        ? nftCollectionList.reduce(
-            (acc, cur) => acc + Number(cur[0].listings[0]?.start_price || 0),
-            0
-          )
-        : 0) / 1000000000000000000
-    );
-  }, [nftCollectionList]);
+  // const totalVolume = useMemo(() => {
+  //   return Math.round(
+  //     (nftCollectionList
+  //       ? nftCollectionList.reduce(
+  //           (acc, cur) => acc + Number(cur[0].listings[0]?.start_price || 0),
+  //           0
+  //         )
+  //       : 0) / 1000000000000000000
+  //   );
+  // }, [nftCollectionList]);
 
-  const floorPrice = useMemo(() => {
-    return Math.round(
-      (nftCollectionList
-        ? Math.min(
-            ...(nftCollectionList
-              .filter((item) => !!item[0].listings)
-              .map((item) => Number(item[0].listings[0]?.start_price)) as any)
-          )
-        : 0) / 1000000000000000000
-    );
-  }, [nftCollectionList]);
+  // const floorPrice = useMemo(() => {
+  //   return Math.round(
+  //     (nftCollectionList
+  //       ? Math.min(
+  //           ...(nftCollectionList
+  //             .filter((item) => !!item[0].listings)
+  //             .map((item) => Number(item[0].listings[0]?.start_price)) as any)
+  //         )
+  //       : 0) / 1000000000000000000
+  //   );
+  // }, [nftCollectionList]);
 
   return (
     <div id="nft-infor">
       <div className="flex justify-between">
-        <div className="flex">
+        <div className="flex pl-10">
           <div className="nft-name font-semibold text-3xl">
-            GEMMA BY TRISTAN EATON
+            {collectionInfo[0]?.name}
           </div>
           <Tooltip target=".verified-nft" position="right" />
           <i
@@ -92,31 +92,35 @@ const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
           </div>
         </div>
       </div>
-      <div className="nft-author pt-3">
+      {/* <div className="nft-author pt-3">
         By <span className="font-semibold">GEMMA-Factory </span>
-      </div>
+      </div> */}
       <div className="flex detail-infor pt-3 text-lg">
         <div>
           Items{" "}
           <span className="font-semibold pr-1">
-            {nftCollectionList?.length || 0}
+            {/* {nftCollectionList?.length || 0} */}
           </span>
         </div>
         ·
         <div className="pl-1">
-          Created <span className="font-semibold pr-1">Feb 2023</span>
+          Created{" "}
+          <span className="font-semibold pr-1">
+            {collectionInfo[0]?.created_at.toString()}
+          </span>
         </div>
-        ·
+        {/* ·
         <div className="pl-1">
           Creator earnings <span className="font-semibold pr-1">7.5%</span>
-        </div>
+        </div> */}
         ·
         <div className="pl-1">
           Chain <span className="font-semibold pr-1">Ethereum</span>
         </div>
         ·
         <div className="pl-1">
-          Category <span className="font-semibold">PFPs</span>
+          Category{" "}
+          <span className="font-semibold">{collectionInfo[0]?.category}</span>
         </div>
       </div>
       <div className="nft-intro pt-3">
@@ -128,10 +132,7 @@ const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
               : "")
           }
         >
-          GEMMA (The Generative Electronic Museum of Metaverse Art) is a
-          comprehensive generative art collection by Tristan Eaton. Combining
-          Eaton’s stunning portraiture and layered collage, each piece carries
-          its own unique personality and identity.
+          {collectionInfo[0]?.description}
         </p>
         <button onClick={handleClickToRead} className="hover:opacity-80">
           {!isSeeMore ? "See More" : "See Less"}{" "}
@@ -142,14 +143,14 @@ const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
           </span>
         </button>
       </div>
-      <div className="nft-statistics pt-4">
+      {/* <div className="nft-statistics pt-4">
         <div className="flex gap-5">
           <div className="flex flex-col" role="button">
-            <div className="font-semibold text-lg">{totalVolume} ETH</div>
+            <div className="font-semibold text-lg"> ETH</div>
             <div className="text-sm text-slate-500">total volume</div>
           </div>
           <div className="flex flex-col" role="button">
-            <div className="font-semibold text-lg">{floorPrice} ETH</div>
+            <div className="font-semibold text-lg"> ETH</div>
             <div className="text-sm text-slate-500">floor price</div>
           </div>
           <div className="flex flex-col" role="button">
@@ -169,7 +170,7 @@ const NFTInfor = ({ nftCollectionList }: INFTInforProps) => {
             <div className="text-sm text-slate-500">unique owners</div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

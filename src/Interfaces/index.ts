@@ -178,6 +178,7 @@ export type Domain = {
 };
 
 export interface ICollectionItem {
+  metadata: any;
   token: string;
   owner: string;
   name: string;

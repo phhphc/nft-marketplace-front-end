@@ -530,3 +530,16 @@ export const getAllCollectionListService = async (): Promise<
     })
     .catch((err) => {});
 };
+
+export const getCollectionByTokenService = async (
+  token: string
+): Promise<ICollectionItem[]> => {
+  return axios
+    .get("/api/v0.1/collection", {
+      params: { token: token },
+    })
+    .then((response) => {
+      return response.data.data.collections || [];
+    })
+    .catch((err) => {});
+};
