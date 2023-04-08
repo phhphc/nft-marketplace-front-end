@@ -18,6 +18,7 @@ import {
   toBN,
   transformDataRequestToBuyNFT,
   stringHexToNumber,
+  toFulfillmentComponents,
 } from "@Utils/index";
 import { ICollectionItem, Order } from "@Interfaces/index";
 import { cloneDeep } from "lodash";
@@ -264,34 +265,70 @@ export const buyTokenService = async ({
 
   const mkpContractWithSigner = mkpContract.connect(myWallet);
 
-  const orderData = await axios.get("/api/v0.1/order", {
-    params: {
-      order_hash: orderHashes[0],
-    },
+  const orderData = await Promise.all(
+    orderHashes.map((item) =>
+      axios.get("/api/v0.1/order", {
+        params: {
+          order_hash: item,
+        },
+      })
+    )
+  );
+
+  const signatures = orderData.map((item) => item.data.data.signature);
+
+  orderData.forEach((item) => {
+    const signature = item.data.data.signature;
+    item.data.data.totalOriginalConsiderationItems =
+      item.data.data.consideration.length;
+    delete item.data.data.order_hash;
+    delete item.data.data.signature;
   });
 
-  const signature = orderData.data.data.signature;
-  orderData.data.data.totalOriginalConsiderationItems = 1;
-  delete orderData.data.data.order_hash;
-  delete orderData.data.data.signature;
+  let tx;
 
-  console.log(
-    transformDataRequestToBuyNFT({
-      parameters: orderData.data.data,
-      signature,
-    })
-  );
+  if (orderData.length === 1) {
+    tx = await mkpContractWithSigner[
+      "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
+    ](
+      transformDataRequestToBuyNFT({
+        parameters: orderData[0].data.data,
+        signature: signatures[0],
+      }),
 
-  const tx = await mkpContractWithSigner[
-    "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
-  ](
-    transformDataRequestToBuyNFT({
-      parameters: orderData.data.data,
-      signature,
-    }),
+      { value: toBN(price[0]), gasLimit: 1000000 }
+    );
+  } else {
+    const considerationArray: any = [];
+    orderData.forEach((item1, index1) => {
+      item1.data.data.consideration.forEach((item2: any, index2: any) => {
+        considerationArray.push([[index1, index2]]);
+      });
+    });
+    const offerArray: any = [];
+    orderData.forEach((item1, index1) => {
+      item1.data.data.offer.forEach((item2: any, index2: any) => {
+        offerArray.push([[index1, index2]]);
+      });
+    });
 
-    { value: toBN(price[0]), gasLimit: 1000000 }
-  );
+    const realPrice = price.reduce((acc, cur) => {
+      return acc.add(cur);
+    }, toBN(0));
+
+    tx = await mkpContractWithSigner.fulfillAvailableOrders(
+      orderData.map((item, index) =>
+        transformDataRequestToBuyNFT({
+          parameters: item.data.data,
+          signature: signatures[index],
+        })
+      ),
+      offerArray.map(toFulfillmentComponents),
+      considerationArray.map(toFulfillmentComponents),
+      99,
+      { value: toBN(realPrice), gasLimit: 1000000 }
+    );
+  }
   console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
   await tx.wait();
 

@@ -7,12 +7,18 @@ export enum WEB3_ACTION_TYPES {
   CHANGE = "CHANGE",
 }
 
+export interface ICart {
+  orderHash: string;
+  price: string;
+  quantity: number;
+}
+
 export interface IWeb3 {
   provider: any;
   myAddress: string;
   myWallet: Wallet | Contract | null;
   chainId: number;
-  cart: {};
+  cart: ICart[];
   isApprovedForAllNFTs: boolean;
 }
 
@@ -29,7 +35,7 @@ const initialState: IState = {
   web3: {
     provider: null,
     myAddress: "",
-    cart: {},
+    cart: [],
     myWallet: null,
     chainId: 0,
     isApprovedForAllNFTs: false,
@@ -58,7 +64,7 @@ const AppProvider = ({ children }: IAppProvider) => {
   const [state, dispatch] = useReducer(mainReducer, initialState);
 
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("shoppingCart") || "{}");
+    const cart = JSON.parse(localStorage.getItem("shoppingCart") || "[]");
 
     const fetchData = async () => {
       const provider = new ethers.providers.Web3Provider(
