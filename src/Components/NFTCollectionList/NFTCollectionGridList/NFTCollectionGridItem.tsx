@@ -195,13 +195,9 @@ const NFTCollectionGridItem = ({
                       item[0].listings[0].order_hash
                     )
                   }
-                  className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
+                  className="flex justify-center gap-1 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
                 >
-                  <i
-                    className="pi pi-shopping-cart text-red-600"
-                    style={{ fontSize: "1.5rem" }}
-                  ></i>
-                  <div className="pl-1 text-red-600">Remove from cart</div>
+                  <div className=" text-red-600 text-base">Remove from cart</div>
                 </div>
               ) : (
                 <div
@@ -215,11 +211,8 @@ const NFTCollectionGridItem = ({
                   }
                   className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
                 >
-                  <i
-                    className="pi pi-cart-plus text-red-600"
-                    style={{ fontSize: "1.5rem" }}
-                  ></i>
-                  <div className="pl-1 text-red-600">Add to cart</div>
+                  <i className="pi pi-cart-plus text-red-600 pt-1"></i>
+                  <div className=" text-red-600 text-base">Add to cart</div>
                 </div>
               )}
               <button

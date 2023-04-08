@@ -1,4 +1,5 @@
 import { ICollectionItem } from "@Interfaces/index";
+import moment from "moment";
 import Link from "next/link";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
@@ -32,7 +33,7 @@ const MyCollectionsList = ({ myCollections }: IMyCollectionsProps) => {
                   <div>
                     <Tag severity="danger" className="text-xl">
                       <i className="pi pi-clock pb-2">
-                        <span> {collection.created_at.toString()}</span>
+                        <span> {moment(collection.created_at).format('MMMM Do YYYY, h:mm:ss a')}</span>
                       </i>
                     </Tag>
                   </div>

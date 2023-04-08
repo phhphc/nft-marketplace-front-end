@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
 import Link from "next/link";
+import moment from "moment";
 
 export interface ICollectionTabMenu {
   allCollectionList: ICollectionItem[];
@@ -62,7 +63,7 @@ const CategoryTabMenu = ({ allCollectionList }: ICollectionTabMenu) => {
             <div className="mt-5 flex justify-between items-center gap-2">
               <Tag severity="danger" className="text-xl">
                 <i className="pi pi-clock pb-2">
-                  <span> {selectedCategory.created_at.toString()}</span>
+                  <span> {moment(selectedCategory.created_at).format('MMMM Do YYYY, h:mm:ss a')}</span>
                 </i>
               </Tag>
 
