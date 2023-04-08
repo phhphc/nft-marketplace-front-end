@@ -146,7 +146,7 @@ export const CURRENCY = {
 
 export const CURRENCY_UNITS = [
   { name: CURRENCY.ETHER, value: CURRENCY.ETHER },
-  { name: CURRENCY.GWEI, value: CURRENCY.ETHER },
+  { name: CURRENCY.GWEI, value: CURRENCY.GWEI },
 ];
 
 export const STRING_HEX_TO_NUMBER: any = {

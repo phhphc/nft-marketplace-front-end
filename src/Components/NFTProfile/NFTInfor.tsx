@@ -3,6 +3,7 @@ import { Tooltip } from "primereact/tooltip";
 import { useState } from "react";
 import { ICollectionItem, INFTCollectionItem } from "@Interfaces/index";
 import { useMemo } from "react";
+import moment from "moment";
 
 export interface ICollectionInfoProps {
   collectionInfo: ICollectionItem[];
@@ -106,7 +107,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
         <div className="pl-1">
           Created{" "}
           <span className="font-semibold pr-1">
-            {collectionInfo[0]?.created_at.toString()}
+            {moment(collectionInfo[0]?.created_at).format('MMMM Do YYYY, h:mm:ss a')}
           </span>
         </div>
         {/* ·
