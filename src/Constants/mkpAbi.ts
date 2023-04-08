@@ -658,6 +658,10 @@ export const mkpAbi = [
     type: "event",
   },
   {
+    stateMutability: "payable",
+    type: "fallback",
+  },
+  {
     inputs: [
       {
         components: [
@@ -1527,5 +1531,9 @@ export const mkpAbi = [
     ],
     stateMutability: "nonpayable",
     type: "function",
+  },
+  {
+    stateMutability: "payable",
+    type: "receive",
   },
 ];

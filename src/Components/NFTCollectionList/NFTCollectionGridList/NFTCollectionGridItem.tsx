@@ -132,7 +132,11 @@ const NFTCollectionGridItem = ({
   const [selectedUnit, setSelectedUnit] = useState<string>("");
 
   useEffect(() => {
-    if (item[0].listings[0]?.order_hash in web3Context.state.web3.cart) {
+    if (
+      web3Context.state.web3.cart
+        .map((item) => item.orderHash)
+        .includes(item[0].listings[0]?.order_hash)
+    ) {
       setIsAddedToCart(true);
     } else {
       setIsAddedToCart(false);
@@ -202,7 +206,12 @@ const NFTCollectionGridItem = ({
               ) : (
                 <div
                   onClick={() =>
-                    handleAddToCart(web3Context, item[0].listings[0].order_hash)
+                    handleAddToCart(
+                      web3Context,
+                      item[0].listings[0].order_hash,
+                      1,
+                      (item[0].listings[0]?.start_price || 0).toString()
+                    )
                   }
                   className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
                 >

@@ -5,16 +5,19 @@ import { InputText } from "primereact/inputtext";
 import { Tooltip } from "primereact/tooltip";
 import { Sidebar } from "primereact/sidebar";
 import Link from "next/link";
-import { AppContext } from "@Store/index";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { AppContext, ICart } from "@Store/index";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ethers } from "ethers";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import avatar from "@Assets/avatar.png";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { handleRemoveFromCart } from "@Utils/index";
+import { Toast } from "primereact/toast";
+import { buyTokenService } from "@Services/ApiService";
 
 const Header = () => {
+  const toast = useRef<Toast>(null);
   const web3Context = useContext(AppContext);
 
   // Wallet
@@ -98,16 +101,55 @@ const Header = () => {
       payload: {
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
-        cart: {},
+        cart: [],
       },
     });
   };
 
+  const handleBuyShoppingCart = async (
+    myWallet: any,
+    provider: any,
+    cart: ICart[]
+  ) => {
+    try {
+      if (!web3Context.state.web3.provider) {
+        return (
+          toast.current &&
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet!",
+            life: 3000,
+          })
+        );
+      }
+      if (cart.length) {
+        await buyTokenService({
+          toast,
+          orderHashes: cart.map((item) => item.orderHash),
+          price: cart.map((item) => item.price),
+          myWallet,
+          provider,
+        });
+      }
+    } catch (error) {
+      toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to buy NFT!",
+          life: 3000,
+        });
+    }
+  };
+
   useEffect(() => {
-    const cart = { ...web3Context.state.web3.cart };
+    const cart = web3Context.state.web3.cart;
     setCartItemList(
-      nftCollectionList.filter(
-        (item: INFTCollectionItem[]) => item[0].listings[0]?.order_hash in cart
+      nftCollectionList.filter((item: INFTCollectionItem[]) =>
+        cart
+          .map((item) => item.orderHash)
+          .includes(item[0].listings[0]?.order_hash)
       )
     );
   }, [web3Context.state.web3.cart]);
@@ -364,7 +406,16 @@ const Header = () => {
                 <span className="text-xl font-semibold">Total price</span>
                 <span className="font-semibold">{`${totalPrice}`} ETH</span>
               </div>
-              <button className="bg-sky-500 p-4 rounded-lg text-xl font-semibold text-white hover:bg-sky-400">
+              <button
+                className="bg-sky-500 p-4 rounded-lg text-xl font-semibold text-white hover:bg-sky-400"
+                onClick={() =>
+                  handleBuyShoppingCart(
+                    web3Context.state.web3.myWallet,
+                    web3Context.state.web3.provider,
+                    web3Context.state.web3.cart
+                  )
+                }
+              >
                 Purchase
               </button>
             </div>

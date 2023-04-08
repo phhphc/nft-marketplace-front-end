@@ -10,6 +10,7 @@ import {
 import type { BigNumberish, ContractTransaction } from "ethers";
 import {
   ConsiderationItem,
+  FulfillmentComponent,
   OfferItem,
   OrderComponents,
 } from "@Interfaces/index";
@@ -539,10 +540,11 @@ export const parseGwei = (str: string) => {
 export const handleAddToCart = (
   web3Context: IWeb3Context,
   orderHash: string,
-  quantity: number = 1
+  quantity: number = 1,
+  price: string
 ) => {
   const currCart = web3Context.state.web3.cart;
-  const newCart = { ...currCart, [orderHash]: quantity };
+  const newCart = [...currCart, { orderHash, quantity, price }];
   web3Context.dispatch({
     type: WEB3_ACTION_TYPES.CHANGE,
     payload: {
@@ -559,8 +561,8 @@ export const handleRemoveFromCart = (
   quantity: number = 1
 ) => {
   const currCart = web3Context.state.web3.cart;
-  const newCart: any = { ...currCart };
-  delete newCart[orderHash];
+  const newCart: any = currCart.filter((item) => item.orderHash !== orderHash);
+
   web3Context.dispatch({
     type: WEB3_ACTION_TYPES.CHANGE,
     payload: {
@@ -570,3 +572,8 @@ export const handleRemoveFromCart = (
     },
   });
 };
+
+export const toFulfillmentComponents = (
+  arr: number[][]
+): FulfillmentComponent[] =>
+  arr.map(([orderIndex, itemIndex]) => ({ orderIndex, itemIndex }));
