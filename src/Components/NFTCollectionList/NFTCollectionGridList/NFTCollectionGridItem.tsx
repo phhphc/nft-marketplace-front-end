@@ -12,7 +12,11 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
-import { handleAddToCart, handleRemoveFromCart } from "@Utils/index";
+import {
+  handleAddToCart,
+  handleRemoveFromCart,
+  showingPrice,
+} from "@Utils/index";
 import { Checkbox } from "primereact/checkbox";
 
 export interface INFTCollectionGridItemProps {
@@ -207,16 +211,7 @@ const NFTCollectionGridItem = ({
             </h3>
             {item[0].listings && (
               <p className="flex gap-1 text-sm font-medium text-gray-900">
-                {}
-                {Number(item[0].listings[0]?.start_price || 0) / 1000000000 <
-                1000000000
-                  ? `${
-                      Number(item[0].listings[0]?.start_price || 0) / 1000000000
-                    } GWEI`
-                  : `${
-                      Number(item[0].listings[0]?.start_price || 0) /
-                      1000000000000000000
-                    } ETH`}
+                {showingPrice(item[0].listings[0]?.start_price || "0")}
               </p>
             )}
           </div>

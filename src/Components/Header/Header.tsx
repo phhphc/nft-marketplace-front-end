@@ -12,7 +12,7 @@ import { WEB3_ACTION_TYPES } from "@Store/index";
 import avatar from "@Assets/avatar.png";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { handleRemoveFromCart } from "@Utils/index";
+import { handleRemoveFromCart, showingPrice } from "@Utils/index";
 import { Toast } from "primereact/toast";
 import { buyTokenService } from "@Services/ApiService";
 
@@ -85,12 +85,12 @@ const Header = () => {
   const [cartModalVisible, setCartModalVisible] = useState(false);
   const totalPrice = useMemo(() => {
     return Math.round(
-      (cartItemList
+      cartItemList
         ? cartItemList.reduce(
             (acc, cur) => acc + Number(cur[0].listings[0]?.start_price || 0),
             0
           )
-        : 0) / 1000000000000000000
+        : 0
     );
   }, [cartItemList]);
 
@@ -377,11 +377,9 @@ const Header = () => {
                       </div>
                     </div>
                     <span className="price text-sm">
-                      {Number(cartItem[0].listings[0]?.start_price || 0)
-                        ? Number(cartItem[0].listings[0]?.start_price || 0) /
-                          1000000000000000000
-                        : 0}{" "}
-                      ETH
+                      {showingPrice(
+                        cartItem[0].listings[0]?.start_price || "0"
+                      )}
                     </span>
                     <button
                       className="delete-cart-btn hidden hover:text-white"
@@ -399,7 +397,9 @@ const Header = () => {
               </div>
               <div className="flex justify-between border-t-2 mx-3 my-3 pt-3">
                 <span className="text-xl font-semibold">Total price</span>
-                <span className="font-semibold">{`${totalPrice}`} ETH</span>
+                <span className="font-semibold">
+                  {showingPrice(totalPrice.toString())}
+                </span>
               </div>
               <button
                 className="bg-sky-500 p-4 rounded-lg text-xl font-semibold text-white hover:bg-sky-400"

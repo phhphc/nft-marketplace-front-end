@@ -577,3 +577,11 @@ export const toFulfillmentComponents = (
   arr: number[][]
 ): FulfillmentComponent[] =>
   arr.map(([orderIndex, itemIndex]) => ({ orderIndex, itemIndex }));
+
+export const showingPrice = (price: string): string => {
+  const eth = price.slice(0, -18);
+  const gwei = price.slice(-17, -9);
+  const ethShowingPrice = eth ? `${Number(eth)} ETH` : "";
+  const gweiShowingPrice = gwei ? `${Number(gwei)} GWEI` : "";
+  return ethShowingPrice + gweiShowingPrice;
+};

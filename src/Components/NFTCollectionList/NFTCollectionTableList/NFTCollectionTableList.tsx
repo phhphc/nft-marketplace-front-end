@@ -3,6 +3,7 @@ import { Column } from "primereact/column";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { INFTCollectionItem } from "@Interfaces/index";
+import { showingPrice } from "@Utils/index";
 
 export interface INFTCollectionTableListProps {
   nftCollectionList: INFTCollectionItem[][];
@@ -28,8 +29,8 @@ const NFTCollectionTableList = ({
     );
   };
 
-  const priceBodyTemplate = (rowData: INFTCollectionItem[]): number => {
-    return Number(rowData[0]?.listings[0]?.start_price || 0);
+  const priceBodyTemplate = (rowData: INFTCollectionItem[]): string => {
+    return showingPrice(rowData[0]?.listings[0]?.start_price || "0");
   };
 
   const nameBodyTemplate = (rowData: INFTCollectionItem[]) => {
