@@ -21,7 +21,7 @@ const NFTDetailContainer = () => {
           item.map((nft) => nft.identifier).includes(tokenID)
         )[0]
       );
-  }, [nftCollectionList]);
+  }, [nftCollectionList.length]);
 
   return (
     <>
