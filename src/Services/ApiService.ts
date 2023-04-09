@@ -226,25 +226,10 @@ export const sellNFT = async ({
 };
 
 export const getNFTCollectionListInfoService = async (): Promise<
-  INFTCollectionItem[][]
+  INFTCollectionItem[]
 > => {
   const data = await getNFTCollectionListService();
-  return (
-    data.nfts?.reduce((acc: any, cur: INFTCollectionItem) => {
-      const indexOfExistOrderHash = acc.indexOf(
-        (item: INFTCollectionItem) =>
-          item.listings?.[0].order_hash === cur.listings?.[0].order_hash
-      );
-
-      if (indexOfExistOrderHash === -1) {
-        acc.push([cur]);
-        return acc;
-      } else {
-        acc[indexOfExistOrderHash].push(cur);
-        return acc;
-      }
-    }, []) || []
-  );
+  return data.nfts;
   // } else return [];
 };
 
@@ -280,12 +265,18 @@ export const buyTokenService = async ({
   orderData.forEach((item) => {
     const signature = item.data.data.signature;
     item.data.data.totalOriginalConsiderationItems =
-      item.data.data.consideration.length;
-    delete item.data.data.order_hash;
+      delete item.data.data.order_hash;
     delete item.data.data.signature;
   });
 
   let tx;
+
+  console.log(
+    transformDataRequestToBuyNFT({
+      parameters: orderData[0].data.data,
+      signature: signatures[0],
+    })
+  );
 
   if (orderData.length === 1) {
     tx = await mkpContractWithSigner[
@@ -296,7 +287,7 @@ export const buyTokenService = async ({
         signature: signatures[0],
       }),
 
-      { value: toBN(price[0]), gasLimit: 1000000 }
+      { value: toBN(price[0]).add(Number(price[0]) * 5), gasLimit: 10000000 }
     );
   } else {
     const considerationArray: any = [];
@@ -326,7 +317,7 @@ export const buyTokenService = async ({
       offerArray.map(toFulfillmentComponents),
       considerationArray.map(toFulfillmentComponents),
       99,
-      { value: toBN(realPrice), gasLimit: 1000000 }
+      { value: toBN(realPrice), gasLimit: 10000000 }
     );
   }
   console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
