@@ -32,7 +32,11 @@ import { sellNFT, buyTokenService } from "@Services/ApiService";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import { CURRENCY_UNITS } from "@Constants/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
-import { handleAddToCart, handleRemoveFromCart } from "@Utils/index";
+import {
+  handleAddToCart,
+  handleRemoveFromCart,
+  showingPrice,
+} from "@Utils/index";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem[];
@@ -479,19 +483,9 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     <span className="price-value">
                       {nftDetail[0].listings[0] && (
                         <p className="text-sm font-medium text-gray-900 uppercase">
-                          {Number(nftDetail[0].listings[0]?.start_price || 0) /
-                            1000000000 <
-                          1000000000
-                            ? `${
-                                Number(
-                                  nftDetail[0].listings[0]?.start_price || 0
-                                ) / 1000000000
-                              } GWEI`
-                            : `${
-                                Number(
-                                  nftDetail[0].listings[0]?.start_price || 0
-                                ) / 1000000000000000000
-                              } ETH`}
+                          {showingPrice(
+                            nftDetail[0].listings[0]?.start_price || "0"
+                          )}
                         </p>
                       )}
                     </span>
