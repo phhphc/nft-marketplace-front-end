@@ -176,13 +176,13 @@ const NFTCollectionGridItem = ({
 
   return (
     <div
-      key={item[0].identifier}
+      key={item[0].name}
       className="relative nft-collection-item cursor-pointer"
     >
       <Toast ref={toast} position="top-center" />
       <Link
         href={{
-          pathname: `/detail/${item[0].identifier}`,
+          pathname: `/detail/${item[0].name}`,
         }}
         className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none"
       >
@@ -210,7 +210,7 @@ const NFTCollectionGridItem = ({
         <div>
           <div className="p-3 h-20">
             <h3 className="font-bold uppercase break-words text-sm">
-              {item[0].identifier || "Item name"}
+              {item[0].name || "Item name"}
             </h3>
             {item[0].listings && (
               <p className="flex gap-1 text-sm font-medium text-gray-900">

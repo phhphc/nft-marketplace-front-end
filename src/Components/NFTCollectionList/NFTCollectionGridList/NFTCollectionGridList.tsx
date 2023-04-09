@@ -145,7 +145,7 @@ const NFTCollectionGridList = ({
           >
             {items.map((item) => (
               <NFTCollectionGridItem
-                key={item[0].identifier}
+                key={item[0].name}
                 item={item}
                 viewType={viewType}
                 mode={mode}

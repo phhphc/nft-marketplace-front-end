@@ -62,7 +62,7 @@ const NFTCollectionTableList = ({
     return (
       <div>
         <a style={{ cursor: "pointer" }} onClick={() => router.push("/detail")}>
-          {rowData[0].identifier || "Item name"}
+          {rowData[0].name || "Item name"}
         </a>
       </div>
     );
