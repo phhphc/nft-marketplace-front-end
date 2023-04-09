@@ -358,11 +358,11 @@ const Header = () => {
               <div className="space-y-2">
                 {cartItemList.map((cartItem) => (
                   <div
-                    key={cartItem[0].identifier}
+                    key={cartItem[0].name}
                     className="cart-item flex justify-between items-center w-full py-2 px-4 rounded-lg hover:bg-gray-100"
                   >
                     <div className="flex justify-start space-x-2">
-                      <Link href={`/detail/${cartItem[0].identifier}`}>
+                      <Link href={`/detail/${cartItem[0].name}`}>
                         <img
                           src={cartItem[0].image}
                           alt="cart-item"
@@ -370,9 +370,7 @@ const Header = () => {
                         />
                       </Link>
                       <div className="flex flex-col items-start justify-start text-sm">
-                        <span className="font-medium">
-                          {cartItem[0].identifier}
-                        </span>
+                        <span className="font-medium">{cartItem[0].name}</span>
                         <span className="">{"Gemma"}</span>
                       </div>
                     </div>

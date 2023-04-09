@@ -285,8 +285,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="flex space-x-2">
                   <FontAwesomeIcon icon={faClipboard} />
                   <p>
-                    About {nftDetail[0].identifier.toUpperCase()} BY{" "}
-                    {"AuthorName"}
+                    About {nftDetail[0].name.toUpperCase()} BY {"AuthorName"}
                   </p>
                 </div>
               }
@@ -370,7 +369,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 <div className="w-full flex justify-between">
                   <span>Token ID</span>
                   <Link className="text-blue-500" href="">
-                    {nftDetail[0].identifier}
+                    {nftDetail[0].name}
                   </Link>
                 </div>
                 <div className="w-full flex justify-between">
@@ -393,7 +392,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             className="author h-12 flex items-center space-x-2 text-blue-500"
           >
             <span>
-              {nftDetail[0].identifier.toUpperCase()} BY {"AuthorName"}
+              {nftDetail[0].name.toUpperCase()} BY {"AuthorName"}
             </span>
             <i>
               <FontAwesomeIcon icon={faCircleCheck} />
@@ -415,7 +414,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           </div>
         </div>
         <h1 className="name h-14 text-4xl flex items-center font-semibold mt-2 mb-1">
-          {nftDetail[0].identifier.toUpperCase()}
+          {nftDetail[0].name.toUpperCase()}
         </h1>
         <h2 className="owner h-9 flex justify-start items-center space-x-1">
           <span>Owned by</span>
