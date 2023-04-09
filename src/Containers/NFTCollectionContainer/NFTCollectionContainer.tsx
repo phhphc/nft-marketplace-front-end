@@ -13,9 +13,11 @@ const NFTCollectionContainer = () => {
   const { nftCollectionList } = useNFTCollectionList();
   const router = useRouter();
   const { collection } = useCollectionByToken(router.query.token);
+  
   const nftList = nftCollectionList.filter(
     (nft: INFTCollectionItem[]) => nft[0].token === router.query.token
   );
+  console.log('nftList',nftList);
   const toast = useRef<Toast>(null);
   return (
     <>

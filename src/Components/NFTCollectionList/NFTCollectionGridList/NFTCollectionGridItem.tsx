@@ -13,29 +13,42 @@ import { Toast } from "primereact/toast";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { handleAddToCart, handleRemoveFromCart } from "@Utils/index";
+import { Checkbox } from "primereact/checkbox";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
   viewType: COLLECTION_VIEW_TYPE;
   mode: NFT_COLLECTION_MODE;
+  handleAddItemToBundle: (selectedItem: INFTCollectionItem) => void;
+  handleRemoveItemToBundle: (selectedItem: INFTCollectionItem) => void;
 }
 
 const NFTCollectionGridItem = ({
   item,
   viewType,
+  handleAddItemToBundle,
+  handleRemoveItemToBundle,
 }: INFTCollectionGridItemProps) => {
   const { refetch } = useNFTCollectionList();
   const canBuy = (item: INFTCollectionItem[]) => {
-    return !!item[0].listings[0];
+    return (
+      !!item[0].listings[0] &&
+      item[0].owner !== web3Context.state.web3.myAddress
+    );
+  };
+
+  const canSell = (item: INFTCollectionItem[]) => {
+    return (
+      item[0].listings.length === 0 &&
+      item[0].owner === web3Context.state.web3.myAddress
+    );
   };
 
   const [price, setPrice] = useState<number>(0);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
-  const canSell = (item: INFTCollectionItem[]) => {
-    return item[0].owner === web3Context.state.web3.myAddress;
-  };
+
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (!web3Context.state.web3.provider) {
       return (
@@ -109,11 +122,12 @@ const NFTCollectionGridItem = ({
       if (item) {
         await buyTokenService({
           toast,
-          orderHashes: [item[0].listings[0].order_hash],
-          price: [item[0].listings[0].start_price],
+          orderHashes: [item[0].listings[7].order_hash],
+          price: [item[0].listings[7].start_price],
           myWallet,
           provider,
         });
+
         refetch();
       }
     } catch (error) {
@@ -128,7 +142,6 @@ const NFTCollectionGridItem = ({
   };
 
   const [visible, setVisible] = useState(false);
-
   const [selectedUnit, setSelectedUnit] = useState<string>("");
 
   useEffect(() => {
@@ -143,6 +156,17 @@ const NFTCollectionGridItem = ({
     }
   }, [web3Context.state.web3.cart]);
 
+  const [checked, setChecked] = useState(false);
+
+  const onClickItemSellBundle = (event: any) => {
+    setChecked(event.checked);
+    if (event.checked) {
+      handleAddItemToBundle(event.value);
+    } else {
+      handleRemoveItemToBundle(event.value);
+    }
+  };
+
   return (
     <div
       key={item[0].identifier}
@@ -155,15 +179,25 @@ const NFTCollectionGridItem = ({
         }}
         className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none"
       >
-        <img
-          src={
-            item[0].image != "<nil>" && item[0].image != ""
-              ? item[0].image
-              : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
-          }
-          alt="NFT Item"
-          className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
-        />
+        <div className="relative">
+          {canSell(item) && (
+            <Checkbox
+              onChange={onClickItemSellBundle}
+              checked={checked}
+              value={item[0]}
+              className="absolute top-0 right-0"
+            ></Checkbox>
+          )}
+          <img
+            src={
+              item[0].image != "<nil>" && item[0].image != ""
+                ? item[0].image
+                : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
+            }
+            alt="NFT Item"
+            className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
+          />
+        </div>
       </Link>
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
@@ -173,6 +207,7 @@ const NFTCollectionGridItem = ({
             </h3>
             {item[0].listings && (
               <p className="flex gap-1 text-sm font-medium text-gray-900">
+                {}
                 {Number(item[0].listings[0]?.start_price || 0) / 1000000000 <
                 1000000000
                   ? `${
@@ -197,7 +232,9 @@ const NFTCollectionGridItem = ({
                   }
                   className="flex justify-center gap-1 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
                 >
-                  <div className=" text-red-600 text-base">Remove from cart</div>
+                  <div className=" text-red-600 text-base">
+                    Remove from cart
+                  </div>
                 </div>
               ) : (
                 <div

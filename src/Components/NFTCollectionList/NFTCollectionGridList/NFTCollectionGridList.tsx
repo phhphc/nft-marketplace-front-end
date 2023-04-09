@@ -1,9 +1,17 @@
 import NFTCollectionGridItem from "./NFTCollectionGridItem";
-import { COLLECTION_VIEW_TYPE } from "@Constants/index";
+import { COLLECTION_VIEW_TYPE, CURRENCY_UNITS } from "@Constants/index";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
 import { Paginator } from "primereact/paginator";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Button } from "primereact/button";
+import { sellNFT } from "@Services/ApiService";
+import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
+import useNFTCollectionList from "@Hooks/useNFTCollectionList";
+import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { InputNumber } from "primereact/inputnumber";
+import { Dropdown } from "primereact/dropdown";
 
 export interface INFTCollectionGridListProps {
   nftCollectionList: INFTCollectionItem[][];
@@ -20,6 +28,12 @@ const NFTCollectionGridList = ({
   //   "🚀 ~ file: NFTCollectionGridList.tsx:17 ~ nftCollectionList:",
   //   nftCollectionList
   // );
+
+  const { refetch } = useNFTCollectionList();
+  const [visible, setVisible] = useState(false);
+  const [price, setPrice] = useState<number>(0);
+  const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const toast = useRef<Toast>(null);
 
   var size = 12;
   const [first, setFirst] = useState(0);
@@ -38,10 +52,107 @@ const NFTCollectionGridList = ({
     setItems(nftCollectionList.slice(0, size));
   }, [nftCollectionList]);
 
+  const [listItemsSellBundle, setAddItemsSellBundle] = useState<
+    INFTCollectionItem[]
+  >([]);
+  const handleAddItemToBundle = (addedItem: INFTCollectionItem) => {
+    setAddItemsSellBundle((prevState) => [...prevState, addedItem]);
+  };
+
+  const handleRemoveItemToBundle = (removedItem: INFTCollectionItem) => {
+    setAddItemsSellBundle((prevState) =>
+      prevState.filter((item) => item.identifier != removedItem.identifier)
+    );
+  };
+
+  console.log("listItemsSellBundle gridlist", listItemsSellBundle);
+
+  const web3Context = useContext(AppContext);
+
+  const handleSellBundle = async () => {
+    try {
+      await sellNFT({
+        toast,
+        provider: web3Context.state.web3.provider,
+        myAddress: web3Context.state.web3.myAddress,
+        myWallet: web3Context.state.web3.myWallet,
+        item: listItemsSellBundle,
+        price: price.toString(),
+        unit: selectedUnit,
+        isApprovedForAllNFTs: web3Context.state.web3.isApprovedForAllNFTs,
+      });
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.CHANGE,
+        payload: {
+          isApprovedForAllNFTs: true,
+        },
+      });
+      refetch();
+      setVisible(false);
+    } catch (error) {
+      toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to sell NFT as bundle!",
+          life: 3000,
+        });
+    }
+  };
+
   return (
     <>
       {nftCollectionList?.length > 0 ? (
         <div>
+          {listItemsSellBundle.length > 0 && (
+            <div className="flex justify-end mb-8">
+              <Button onClick={() => setVisible(true)}>
+                Sell as bundle
+              </Button>
+              <Dialog
+                header="Please input the price that you want to sell as bundle"
+                visible={visible}
+                style={{ width: "50vw" }}
+                onHide={() => setVisible(false)}
+                footer={
+                  <div>
+                    <Button
+                      label="Cancel"
+                      icon="pi pi-times"
+                      onClick={() => setVisible(false)}
+                      className="p-button-text"
+                    />
+                    <Button
+                      label="Sell"
+                      icon="pi pi-check"
+                      onClick={() => handleSellBundle()}
+                      autoFocus
+                    />
+                  </div>
+                }
+              >
+                <div className="flex gap-3">
+                  <InputNumber
+                    placeholder="Input the price"
+                    value={price}
+                    onValueChange={(e: any) => setPrice(e.value)}
+                    minFractionDigits={2}
+                    maxFractionDigits={5}
+                    min={0}
+                  />
+                  <Dropdown
+                    value={selectedUnit}
+                    onChange={(e) => setSelectedUnit(e.value)}
+                    options={CURRENCY_UNITS}
+                    optionLabel="name"
+                    placeholder="Select a unit"
+                    className="md:w-14rem"
+                  />
+                </div>
+              </Dialog>
+            </div>
+          )}
+
           <div
             className={`grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 xl:gap-x-8 col-span-4 nft-collection-grid-list ${
               viewType === COLLECTION_VIEW_TYPE.LARGE_GRID
@@ -55,6 +166,8 @@ const NFTCollectionGridList = ({
                 item={item}
                 viewType={viewType}
                 mode={mode}
+                handleAddItemToBundle={handleAddItemToBundle}
+                handleRemoveItemToBundle={handleRemoveItemToBundle}
               />
             ))}
           </div>
