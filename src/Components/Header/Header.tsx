@@ -362,7 +362,7 @@ const Header = () => {
                     className="cart-item flex justify-between items-center w-full py-2 px-4 rounded-lg hover:bg-gray-100"
                   >
                     <div className="flex justify-start space-x-2">
-                      <Link href={`/detail/${cartItem[0].name}`}>
+                      <Link href={`/detail/${cartItem[0].identifier}`}>
                         <img
                           src={cartItem[0].image}
                           alt="cart-item"
