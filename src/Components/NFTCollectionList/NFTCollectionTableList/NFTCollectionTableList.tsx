@@ -61,7 +61,10 @@ const NFTCollectionTableList = ({
   const nameBodyTemplate = (rowData: INFTCollectionItem[]) => {
     return (
       <div>
-        <a style={{ cursor: "pointer" }} onClick={() => router.push("/detail")}>
+        <a
+          style={{ cursor: "pointer" }}
+          onClick={() => router.push(`/detail/${rowData[0].identifier}`)}
+        >
           {rowData[0].name || "Item name"}
         </a>
       </div>
