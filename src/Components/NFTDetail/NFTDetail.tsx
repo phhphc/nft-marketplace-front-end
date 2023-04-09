@@ -529,7 +529,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                           nftDetail[0].listings[0].order_hash,
                           1,
                           (
-                            nftDetail[0].listings[0]?.start_price || 0
+                            Number(nftDetail[0].listings[0]?.start_price) *
+                              nftDetail.length || 0
                           ).toString()
                         )
                       }

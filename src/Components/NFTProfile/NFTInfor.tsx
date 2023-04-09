@@ -107,7 +107,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
         <div className="pl-1">
           Created{" "}
           <span className="font-semibold pr-1">
-            {moment(collectionInfo[0]?.created_at).format('MMMM Do YYYY, h:mm:ss a')}
+            {moment(collectionInfo[0]?.created_at).format("MMMM Do YYYY")}
           </span>
         </div>
         {/* ·

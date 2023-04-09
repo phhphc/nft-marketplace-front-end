@@ -122,8 +122,8 @@ const NFTCollectionGridItem = ({
       if (item) {
         await buyTokenService({
           toast,
-          orderHashes: [item[0].listings[7].order_hash],
-          price: [item[0].listings[7].start_price],
+          orderHashes: [item[0].listings[0].order_hash],
+          price: [item[0].listings[0].start_price],
           myWallet,
           provider,
         });
@@ -243,7 +243,10 @@ const NFTCollectionGridItem = ({
                       web3Context,
                       item[0].listings[0].order_hash,
                       1,
-                      (item[0].listings[0]?.start_price || 0).toString()
+                      (
+                        Number(item[0].listings[0]?.start_price) *
+                          item.length || 0
+                      ).toString()
                     )
                   }
                   className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
