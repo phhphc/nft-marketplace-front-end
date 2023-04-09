@@ -2,9 +2,13 @@ import { createContext, useReducer, Dispatch } from "react";
 import web3Reducer from "@Reducer/web3Reducer";
 import { useEffect } from "react";
 import { Contract, ethers, Wallet } from "ethers";
+import { INFTCollectionItem } from "@Interfaces/index";
 
 export enum WEB3_ACTION_TYPES {
   CHANGE = "CHANGE",
+  ADD_BUNDLE = "ADD_BUNDLE",
+  REMOVE_BUNDLE = "REMOVE_BUNDLE",
+  SET_BUNDLE = "SET_BUNDLE",
 }
 
 export interface ICart {
@@ -20,11 +24,12 @@ export interface IWeb3 {
   chainId: number;
   cart: ICart[];
   isApprovedForAllNFTs: boolean;
+  listItemsSellBundle: INFTCollectionItem[];
 }
 
 export interface IWeb3Action {
   type: WEB3_ACTION_TYPES;
-  payload: Partial<IWeb3>;
+  payload: any;
 }
 
 export interface IState {
@@ -39,6 +44,7 @@ const initialState: IState = {
     myWallet: null,
     chainId: 0,
     isApprovedForAllNFTs: false,
+    listItemsSellBundle: [],
   },
 };
 

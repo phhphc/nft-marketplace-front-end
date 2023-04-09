@@ -23,15 +23,11 @@ export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
   viewType: COLLECTION_VIEW_TYPE;
   mode: NFT_COLLECTION_MODE;
-  handleAddItemToBundle: (selectedItem: INFTCollectionItem) => void;
-  handleRemoveItemToBundle: (selectedItem: INFTCollectionItem) => void;
 }
 
 const NFTCollectionGridItem = ({
   item,
   viewType,
-  handleAddItemToBundle,
-  handleRemoveItemToBundle,
 }: INFTCollectionGridItemProps) => {
   const { refetch } = useNFTCollectionList();
   const canBuy = (item: INFTCollectionItem[]) => {
@@ -161,13 +157,20 @@ const NFTCollectionGridItem = ({
   }, [web3Context.state.web3.cart]);
 
   const [checked, setChecked] = useState(false);
+  console.log("🚀 ~ file: NFTCollectionGridItem.tsx:160 ~ checked:", checked);
 
   const onClickItemSellBundle = (event: any) => {
     setChecked(event.checked);
     if (event.checked) {
-      handleAddItemToBundle(event.value);
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.ADD_BUNDLE,
+        payload: event.value,
+      });
     } else {
-      handleRemoveItemToBundle(event.value);
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.REMOVE_BUNDLE,
+        payload: event.value.identifier,
+      });
     }
   };
 

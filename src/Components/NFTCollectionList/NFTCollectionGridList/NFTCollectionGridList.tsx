@@ -52,21 +52,6 @@ const NFTCollectionGridList = ({
     setItems(nftCollectionList.slice(0, size));
   }, [nftCollectionList]);
 
-  const [listItemsSellBundle, setAddItemsSellBundle] = useState<
-    INFTCollectionItem[]
-  >([]);
-  const handleAddItemToBundle = (addedItem: INFTCollectionItem) => {
-    setAddItemsSellBundle((prevState) => [...prevState, addedItem]);
-  };
-
-  const handleRemoveItemToBundle = (removedItem: INFTCollectionItem) => {
-    setAddItemsSellBundle((prevState) =>
-      prevState.filter((item) => item.identifier != removedItem.identifier)
-    );
-  };
-
-  console.log("listItemsSellBundle gridlist", listItemsSellBundle);
-
   const web3Context = useContext(AppContext);
 
   const handleSellBundle = async () => {
@@ -76,7 +61,7 @@ const NFTCollectionGridList = ({
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
         myWallet: web3Context.state.web3.myWallet,
-        item: listItemsSellBundle,
+        item: web3Context.state.web3.listItemsSellBundle,
         price: price.toString(),
         unit: selectedUnit,
         isApprovedForAllNFTs: web3Context.state.web3.isApprovedForAllNFTs,
@@ -104,11 +89,9 @@ const NFTCollectionGridList = ({
     <>
       {nftCollectionList?.length > 0 ? (
         <div>
-          {listItemsSellBundle.length > 0 && (
+          {web3Context.state.web3.listItemsSellBundle.length > 0 && (
             <div className="flex justify-end mb-8">
-              <Button onClick={() => setVisible(true)}>
-                Sell as bundle
-              </Button>
+              <Button onClick={() => setVisible(true)}>Sell as bundle</Button>
               <Dialog
                 header="Please input the price that you want to sell as bundle"
                 visible={visible}
@@ -166,8 +149,6 @@ const NFTCollectionGridList = ({
                 item={item}
                 viewType={viewType}
                 mode={mode}
-                handleAddItemToBundle={handleAddItemToBundle}
-                handleRemoveItemToBundle={handleRemoveItemToBundle}
               />
             ))}
           </div>
