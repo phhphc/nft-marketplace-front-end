@@ -264,8 +264,9 @@ export const buyTokenService = async ({
 
   orderData.forEach((item) => {
     const signature = item.data.data.signature;
-    item.data.data.totalOriginalConsiderationItems =
-      delete item.data.data.order_hash;
+    // I don't know why this is 1
+    item.data.data.totalOriginalConsiderationItems = 1;
+    delete item.data.data.order_hash;
     delete item.data.data.signature;
   });
 
@@ -287,7 +288,10 @@ export const buyTokenService = async ({
         signature: signatures[0],
       }),
 
-      { value: toBN(price[0]).add(Number(price[0]) * 5), gasLimit: 10000000 }
+      {
+        value: toBN(price[0]).mul(orderData[0].data.data.offer.length),
+        gasLimit: 1000000,
+      }
     );
   } else {
     const considerationArray: any = [];
@@ -317,7 +321,7 @@ export const buyTokenService = async ({
       offerArray.map(toFulfillmentComponents),
       considerationArray.map(toFulfillmentComponents),
       99,
-      { value: toBN(realPrice), gasLimit: 10000000 }
+      { value: toBN(realPrice), gasLimit: 1000000 }
     );
   }
   console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
