@@ -60,7 +60,7 @@ interface ICreateNFTServiceProps {
   featuredImage: any;
   name: string;
   url: string;
-  desc: string;
+  description: string;
   collection: string;
   supply: string;
   blockchain: string;
@@ -75,7 +75,7 @@ interface ICreateCollectionProps {
   bannerImage: string;
   name: string;
   url: string;
-  desc: string;
+  description: string;
   category: string;
   link: string;
   blockchain: string;
@@ -365,7 +365,7 @@ export const createNFTService = async ({
   featuredImage,
   name,
   // url,
-  desc,
+  description,
   collection,
   supply,
   // blockchain,
@@ -384,7 +384,7 @@ export const createNFTService = async ({
     pinataContent: {
       image: "https://gateway.pinata.cloud/ipfs/" + featuredImageCid,
       name,
-      description: desc,
+      description: description,
       collection,
       supply,
       // blockchain,
@@ -392,7 +392,7 @@ export const createNFTService = async ({
       metadata: {
         name: `${name}`,
         image: "https://gateway.pinata.cloud/ipfs/" + featuredImageCid,
-        description: desc,
+        description: description,
       },
     },
   });
@@ -429,14 +429,31 @@ export const createNFTService = async ({
 
   const nftId = randomBN();
   console.log("nftId", nftId);
-  await myNftContractWithSigner.mint(
-    await myWallet.getAddress(),
-    nftId,
-    tokenUri,
-    {
-      gasLimit: 1000000,
-    }
-  );
+  try {
+    await myNftContractWithSigner.mint(
+      await myWallet.getAddress(),
+      nftId,
+      tokenUri,
+      {
+        gasLimit: 1000000,
+      }
+    );
+    toast.current &&
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Create NFT successfully!",
+        life: 3000,
+      });
+  } catch (error) {
+    toast.current &&
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Fail to create NFT!",
+        life: 3000,
+      });
+  }
 };
 
 export const createNFTCollectionService = async ({
@@ -449,7 +466,7 @@ export const createNFTCollectionService = async ({
   owner,
   name,
   // url,
-  desc,
+  description,
 }: // link,
 ICreateCollectionProps) => {
   // const featuredImageCid = await handleUploadImageToPinata(featuredImage);
@@ -469,7 +486,7 @@ ICreateCollectionProps) => {
       bannerImage: bannerImageCid,
       name,
       // url,
-      desc,
+      description,
       category,
       // link,
       // blockchain,
@@ -508,9 +525,9 @@ ICreateCollectionProps) => {
     token: contract.address,
     owner: owner,
     name: name,
-    description: desc,
+    description: description,
     metadata: {
-      description: desc,
+      description: description,
       logo: "https://gateway.pinata.cloud/ipfs/" + logoImageCid,
       banner: "https://gateway.pinata.cloud/ipfs/" + bannerImageCid,
     },
@@ -522,8 +539,6 @@ ICreateCollectionProps) => {
     banner_image_cid: bannerImageCid,
   });
 
-  console.log("params", params);
-
   axios
     .post("api/v0.1/collection", params, {
       headers: {
@@ -531,7 +546,6 @@ ICreateCollectionProps) => {
       },
     })
     .then(function (response) {
-      console.log(response);
       toast.current &&
         toast.current.show({
           severity: "success",
@@ -541,7 +555,6 @@ ICreateCollectionProps) => {
         });
     })
     .catch(function (error) {
-      console.log(error);
       toast.current &&
         toast.current.show({
           severity: "error",

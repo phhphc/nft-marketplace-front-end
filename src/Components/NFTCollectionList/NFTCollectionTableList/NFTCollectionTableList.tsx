@@ -46,7 +46,7 @@ const NFTCollectionTableList = ({
         src={
           rowData[0]?.image != "<nil>" && rowData[0]?.image != ""
             ? rowData[0].image
-            : "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
+            : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
         }
         alt="item image"
         className="product-image"

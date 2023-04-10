@@ -22,7 +22,8 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
   useEffect(() => {
     setMyCollections(
       allCollectionList.filter(
-        (item: ICollectionItem) => item.owner == web3Context.state.web3.myAddress
+        (item: ICollectionItem) =>
+          item.owner == web3Context.state.web3.myAddress
       )
     );
   }, [allCollectionList]);
@@ -40,6 +41,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
   ];
 
   const [featuredFile, setFeaturedFile] = useState<string>("");
+
   function handleChangeFeatured(e: any) {
     setFeaturedFile(URL.createObjectURL(e.target.files[0]));
   }
@@ -49,7 +51,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
     resetField("featuredImage");
   }
 
-  const { register, resetField, control, handleSubmit } =
+  const { register, resetField, control, handleSubmit, reset } =
     useForm<IFormNewNFTInput>();
 
   const onSubmit = async (data: IFormNewNFTInput) => {
@@ -57,13 +59,18 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
       ...data,
       toast,
       featuredImage: data.featuredImage[0],
+
       provider: web3Context.state.web3.provider,
       myWallet: web3Context.state.web3.myWallet,
     });
+
+    reset();
+    setFeaturedFile("");
   };
 
   return (
     <div className="create-nft w-1/2 ml-auto mr-auto">
+      <Toast ref={toast} position="top-center" />
       <h1 className="text-4xl font-semibold pt-6">Create NFT</h1>
       <div className="pt-6 pb-1 text-sm">
         <span className="text-red-500">*</span> Required fields
@@ -75,7 +82,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
           </label>
           <p className="text-gray-500">
             File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG,
-            GLB, GLTF. Max size: 100 MB
+            GLB, GLTF.
           </p>
           <div className="flex pt-3">
             <div className="upload-featured-btn-wrapper">
@@ -112,6 +119,7 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
               <div>
                 <InputText
                   {...field}
+                  {...register("name", { required: true })}
                   placeholder="Example: Rare Clovers"
                   className="w-full"
                 />
@@ -151,15 +159,15 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
                 underneath its image. Markdown syntax is supported.
               </p>
               <div>
-                <InputTextarea
+                <InputText
                   {...field}
-                  className="w-full h-44"
+                  className="w-full"
                   placeholder="Provide a detailed description of your item"
                 />
               </div>
             </div>
           )}
-          name="desc"
+          name="description"
           control={control}
         />
 
@@ -189,7 +197,13 @@ const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
               </p>
               <div>
                 <span className="w-full">
-                  <InputText {...field} placeholder="1" className="w-full" />
+                  <InputText
+                    {...field}
+                    value={1}
+                    {...register("supply", { required: true })}
+                    placeholder="1"
+                    className="w-full"
+                  />
                 </span>
               </div>
             </div>

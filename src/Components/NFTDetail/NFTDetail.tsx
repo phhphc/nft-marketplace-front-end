@@ -46,10 +46,16 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   // to do: show UI in bundle mode
   const { refetch } = useNFTCollectionList();
   const canBuy = (item: INFTCollectionItem[]) => {
-    return !!item[0].listings[0];
+    return (
+      !!item[0].listings[0] &&
+      item[0].owner !== web3Context.state.web3.myAddress
+    );
   };
   const canSell = (item: INFTCollectionItem[]) => {
-    return item[0].owner === web3Context.state.web3.myAddress;
+    return (
+      item[0].listings.length === 0 &&
+      item[0].owner === web3Context.state.web3.myAddress
+    );
   };
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);

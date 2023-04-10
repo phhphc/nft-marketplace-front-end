@@ -41,7 +41,7 @@ export interface IFormCollectionInput {
   bannerImage: string;
   name: string;
   url: string;
-  desc: string;
+  description: string;
   category: string;
   link: string;
   blockchain: string;
@@ -51,7 +51,7 @@ export interface IFormNewNFTInput {
   featuredImage: string;
   name: string;
   url: string;
-  desc: string;
+  description: string;
   collection: string;
   supply: string;
   blockchain: string;

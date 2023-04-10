@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from "react";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Image } from "primereact/image";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -67,22 +67,26 @@ const CreateCollection = () => {
   const owner = web3Context.state.web3.myAddress;
   const toast = useRef<Toast>(null);
 
-  const { register, resetField, control, handleSubmit } =
+  const { register, resetField, control, handleSubmit, reset } =
     useForm<IFormCollectionInput>();
 
   const onSubmit = async (data: IFormCollectionInput) => {
     await createNFTCollectionService({
-      ...data,
       toast,
+      ...data,
       logoImage: data.logoImage[0],
       // featuredImage: data.featuredImage[0],
       bannerImage: data.bannerImage[0],
       owner,
     });
+    reset();
+    setLogoFile("");
+    setBannerFile("");
   };
 
   return (
     <div className="create-collection w-5/12 ml-auto mr-auto">
+      <Toast ref={toast} position="top-center" />
       <h1 className="text-4xl font-semibold pt-6">Create a Collection</h1>
       <div className="pt-6 pb-1 text-sm">
         <span className="text-red-500">*</span> Required fields
@@ -194,6 +198,7 @@ const CreateCollection = () => {
               <div>
                 <InputText
                   {...field}
+                  {...register("name", { required: true })}
                   placeholder="Example: Rare Clovers"
                   className="w-full"
                 />
@@ -228,11 +233,15 @@ const CreateCollection = () => {
             <div className="pt-4">
               <label className="text-lg font-medium">Description</label>
               <div>
-                <InputTextarea {...field} className="w-full h-44" />
+                <InputText
+                  {...field}
+                  className="w-full"
+                  placeholder="Provide a detailed description of your collection"
+                />
               </div>
             </div>
           )}
-          name="desc"
+          name="description"
           control={control}
         />
 
@@ -242,6 +251,7 @@ const CreateCollection = () => {
               <label className="text-lg font-medium">Category</label>
               <Dropdown
                 {...field}
+                {...register("category", { required: true })}
                 options={categories}
                 optionLabel="label"
                 placeholder="Select a category"
