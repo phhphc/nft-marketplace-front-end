@@ -5,9 +5,14 @@ import { useContext, useRef } from "react";
 import { AppContext } from "@Store/index";
 import { Toast } from "primereact/toast";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
+import { useRouter } from "next/router";
 
 const UserProfileContainer = () => {
-  const { nftCollectionList } = useNFTCollectionList();
+  const router = useRouter();
+  const { nftCollectionList } = useNFTCollectionList({
+    owner: router.query.user_id as string,
+  });
+
   const toast = useRef<Toast>(null);
 
   const web3Context = useContext(AppContext);

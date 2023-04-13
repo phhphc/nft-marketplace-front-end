@@ -4,11 +4,11 @@ module.exports = () => {
     return [
       {
         source: "/api/v0.1/nft",
-        destination: `${process.env.BACKEND_URL}/nft?limit=100&offset=0`,
+        destination: `${process.env.BACKEND_URL}/nft`,
       },
       {
-        source: "/api/v0.1/collection",
-        destination: `${process.env.BACKEND_URL}/collection`,
+        source: "/api/v0.1/collection/:path*",
+        destination: `${process.env.BACKEND_URL}/collection/:path*`,
       },
       {
         source: "/api/v0.1/order",

@@ -23,7 +23,7 @@ const NFTCollectionTableList = ({
   nftCollectionList,
 }: INFTCollectionTableListProps) => {
   const toast = useRef<Toast>(null);
-  const { refetch } = useNFTCollectionList();
+  const { refetch } = useNFTCollectionList({});
   const web3Context = useContext(AppContext);
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);

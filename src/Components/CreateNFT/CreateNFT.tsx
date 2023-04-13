@@ -12,21 +12,21 @@ import { ICollectionItem } from "@Interfaces/index";
 import { Toast } from "primereact/toast";
 
 export interface ICreateNFTProps {
-  allCollectionList: ICollectionItem[];
+  collectionList: ICollectionItem[];
 }
 
-const CreateNFT = ({ allCollectionList }: ICreateNFTProps) => {
+const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
   const web3Context = useContext(AppContext);
   const [myCollections, setMyCollections] = useState<ICollectionItem[]>();
   const toast = useRef<Toast>(null);
   useEffect(() => {
     setMyCollections(
-      allCollectionList.filter(
+      collectionList.filter(
         (item: ICollectionItem) =>
           item.owner == web3Context.state.web3.myAddress
       )
     );
-  }, [allCollectionList]);
+  }, [collectionList]);
 
   let collections: ICollectionItem[];
   if (myCollections) {

@@ -1,6 +1,4 @@
 import CategoryTabMenu from "@Components/CategoryTabMenu/CategoryTabMenu";
-import useAllCollectionList from "@Hooks/useAllCollectionList";
-
 
 // export interface ICollection {
 //   imgSrc: string;
@@ -14,11 +12,9 @@ import useAllCollectionList from "@Hooks/useAllCollectionList";
 // }
 
 function HomeContainer() {
-  const { allCollectionList } = useAllCollectionList();
   return (
     <>
-      <CategoryTabMenu allCollectionList={allCollectionList}></CategoryTabMenu>
-      
+      <CategoryTabMenu></CategoryTabMenu>
 
       {/* Trend collection table
       <div className="flex-col w-full pt-10">

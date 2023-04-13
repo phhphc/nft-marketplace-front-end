@@ -1,16 +1,21 @@
 import { INFTCollectionItem } from "@Interfaces/index";
-import { getNFTCollectionListInfoService } from "@Services/ApiService";
+import { getNFTCollectionListService } from "@Services/ApiService";
 import { useQuery } from "react-query";
 
-const useNFTCollectionList = () => {
+interface IUseNFTCollectionListProps {
+  token?: string;
+  owner?: string;
+}
+
+const useNFTCollectionList = ({ token, owner }: IUseNFTCollectionListProps) => {
   const result = useQuery({
-    queryKey: "NFTCollectionList",
-    queryFn: getNFTCollectionListInfoService,
+    queryKey: `nftCollectionList-${token}-${owner}`,
+    queryFn: () => getNFTCollectionListService({ token, owner }),
     staleTime: Infinity,
     retry: true,
   });
 
-  const nftCollectionList =
+  const nftCollectionList: INFTCollectionItem[][] =
     result.data?.reduce((acc: any, cur: INFTCollectionItem) => {
       const indexOfExistOrderHash = acc.findIndex(
         (item: INFTCollectionItem[]) =>

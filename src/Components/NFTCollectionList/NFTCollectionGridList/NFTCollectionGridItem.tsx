@@ -29,7 +29,7 @@ const NFTCollectionGridItem = ({
   item,
   viewType,
 }: INFTCollectionGridItemProps) => {
-  const { refetch } = useNFTCollectionList();
+  const { refetch } = useNFTCollectionList({});
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
       !!item[0].listings[0] &&

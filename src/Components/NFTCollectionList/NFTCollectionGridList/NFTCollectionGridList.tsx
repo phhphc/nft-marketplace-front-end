@@ -24,13 +24,13 @@ const NFTCollectionGridList = ({
   viewType,
   mode,
 }: INFTCollectionGridListProps) => {
-  const { refetch } = useNFTCollectionList();
+  const { refetch } = useNFTCollectionList({});
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
   const toast = useRef<Toast>(null);
 
-  var size = 12;
+  const size = 12;
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(12);
   const [items, setItems] = useState<INFTCollectionItem[][]>([]);
