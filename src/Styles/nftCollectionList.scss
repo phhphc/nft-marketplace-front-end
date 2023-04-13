@@ -16,6 +16,10 @@
           opacity: 1;
         }
       }
+      .p-galleria-thumbnail-wrapper {
+        position: absolute;
+        bottom: 0;
+      }
       .buy-now-btn {
         &:hover {
           flex: 1;
