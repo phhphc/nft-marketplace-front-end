@@ -10,6 +10,7 @@ import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
+import { Galleria } from "primereact/galleria";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import {
@@ -29,6 +30,7 @@ const NFTCollectionGridItem = ({
   item,
   viewType,
 }: INFTCollectionGridItemProps) => {
+  console.log("item", item);
   const { refetch } = useNFTCollectionList({});
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
@@ -157,7 +159,6 @@ const NFTCollectionGridItem = ({
   }, [web3Context.state.web3.cart]);
 
   const [checked, setChecked] = useState(false);
-  console.log("🚀 ~ file: NFTCollectionGridItem.tsx:160 ~ checked:", checked);
 
   const onClickItemSellBundle = (event: any) => {
     setChecked(event.checked);
@@ -174,18 +175,31 @@ const NFTCollectionGridItem = ({
     }
   };
 
+  const itemTemplate = (item: INFTCollectionItem) => {
+    return <img src={item.image} alt={item.name} style={{ width: "100%" }} />;
+  };
+
+  
+  const thumbnailTemplate = (item: INFTCollectionItem) => {
+    return <img src={item.image} alt={item.name} />;
+  };
+
+  const [selectedItemIndex, setSelectedItemIndex] = useState(0)
+  const onSelectedItem = (event: any) => {
+    console.log("selectedItemInBundle", event.index);
+    setSelectedItemIndex(event.index);
+  }
+
   return (
     <div
+      // href={{
+      //   pathname: `/detail/${item[0].identifier}`,
+      // }}
       key={item[0].name}
-      className="relative nft-collection-item cursor-pointer"
+      className="relative nft-collection-item"
     >
       <Toast ref={toast} position="top-center" />
-      <Link
-        href={{
-          pathname: `/detail/${item[0].identifier}`,
-        }}
-        className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none"
-      >
+      <div className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none">
         <div className="relative">
           {canSell(item) && (
             <Checkbox
@@ -195,23 +209,45 @@ const NFTCollectionGridItem = ({
               className="absolute top-0 right-0"
             ></Checkbox>
           )}
-          <img
-            src={
-              item[0].image != "<nil>" && item[0].image != ""
-                ? item[0].image
-                : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
-            }
-            alt="NFT Item"
-            className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
-          />
+          {item.length == 1 && (
+            <img
+              src={
+                item[0].image != "<nil>" && item[0].image != ""
+                  ? item[0].image
+                  : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
+              }
+              alt="NFT Item"
+              className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
+            />
+          )}
+          {item.length > 1 && (
+            <div className="card">
+              <Galleria
+                value={item}
+                numVisible={2}
+                style={{ maxWidth: "640px" }}
+                item={itemTemplate}
+                thumbnail={thumbnailTemplate}
+                activeIndex={selectedItemIndex}
+                onItemChange={onSelectedItem}
+              />
+            </div>
+          )}
         </div>
-      </Link>
+      </div>
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
           <div className="p-3 h-20">
-            <h3 className="font-bold uppercase break-words text-sm">
-              {item[0].name || "Item name"}
-            </h3>
+            {item.length == 1 && (
+              <h3 className="font-bold uppercase break-words text-sm">
+                {item[0].name || "Item name"}
+              </h3>
+            )}
+            {item.length > 1 && (
+              <h3 className="font-bold uppercase break-words text-sm">
+                {item[selectedItemIndex].name}
+              </h3>
+            )}
             {item[0].listings && (
               <p className="flex gap-1 text-sm font-medium text-gray-900">
                 {showingPrice(item[0].listings[0]?.start_price || "0")}
