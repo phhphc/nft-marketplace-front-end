@@ -220,7 +220,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                 : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
             }
             alt="detail"
-            className="nft-detail-img rounded-b-lg h-full w-full object-cover object-center lg:h-full lg:w-full"
+            className="nft-detail-img rounded-b-lg w-full object-cover object-center lg:w-full"
           />
         ) : (
           <div className="card">
