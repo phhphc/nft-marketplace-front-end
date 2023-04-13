@@ -67,21 +67,15 @@ const NFTCollectionList = ({
         );
     }
 
-    if (searchValue === "") {
-      setNftCollectionListSearch(nftCollectionList.sort(sortFunction));
-    } else {
-      setNftCollectionListSearch(
-        nftCollectionList
-          .filter((item: INFTCollectionItem[]) =>
-            item.some((nft: INFTCollectionItem) =>
-              nft.name
-                ?.toLowerCase()
-                .includes(searchValue?.toLowerCase().trim())
-            )
+    setNftCollectionListSearch(
+      nftCollectionList
+        .filter((item: INFTCollectionItem[]) =>
+          item.some((nft: INFTCollectionItem) =>
+            nft.name?.toLowerCase().includes(searchValue?.toLowerCase().trim())
           )
-          .sort(sortFunction)
-      );
-    }
+        )
+        .sort(sortFunction)
+    );
   }, [searchValue, nftCollectionList, currentSort.code]);
 
   return (
