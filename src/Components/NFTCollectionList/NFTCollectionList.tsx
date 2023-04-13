@@ -1,10 +1,14 @@
-import { useState } from "react";
-import { COLLECTION_VIEW_TYPE } from "@Constants/index";
+import { useEffect, useState } from "react";
+import {
+  COLLECTION_VIEW_TYPE,
+  SORT_OPTIONS,
+  SORT_OPTIONS_CODE,
+} from "@Constants/index";
 import NFTCollectionGridList from "@Components/NFTCollectionList/NFTCollectionGridList/NFTCollectionGridList";
 import NFTCollectionListTopSection from "@Components/NFTCollectionList/NFTCollectionListTopSection";
 import NFTCollectionFilter from "@Components/NFTCollectionList/NFTCollectionFilter";
 import NFTCollectionTableList from "@Components/NFTCollectionList/NFTCollectionTableList/NFTCollectionTableList";
-import { INFTCollectionItem } from "@Interfaces/index";
+import { IDropDown, INFTCollectionItem } from "@Interfaces/index";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
 
 export interface INFTCollectionListProps {
@@ -16,6 +20,11 @@ const NFTCollectionList = ({
   nftCollectionList,
   mode,
 }: INFTCollectionListProps) => {
+  const [currentSort, setCurrentSort] = useState<IDropDown>(SORT_OPTIONS[0]);
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [nftCollectionListSearch, setNftCollectionListSearch] =
+    useState<INFTCollectionItem[][]>(nftCollectionList);
+
   const [viewType, setViewType] = useState<COLLECTION_VIEW_TYPE>(
     COLLECTION_VIEW_TYPE.LARGE_GRID
   );
@@ -25,9 +34,63 @@ const NFTCollectionList = ({
     setViewType(selectedViewType);
   };
 
+  useEffect(() => {
+    let sortFunction = (
+      item1: INFTCollectionItem[],
+      item2: INFTCollectionItem[]
+    ) =>
+      item2.reduce(
+        (acc: number, cur: INFTCollectionItem) =>
+          acc + Number(cur.listings?.[0]?.start_price || 0),
+        0
+      ) -
+      item1.reduce(
+        (acc: number, cur: INFTCollectionItem) =>
+          acc + Number(cur.listings?.[0]?.start_price || 0),
+        0
+      );
+
+    if (currentSort.code === SORT_OPTIONS_CODE.PRICE_LOW_TO_HIGH) {
+      sortFunction = (
+        item1: INFTCollectionItem[],
+        item2: INFTCollectionItem[]
+      ) =>
+        item1.reduce(
+          (acc: number, cur: INFTCollectionItem) =>
+            acc + Number(cur.listings?.[0]?.start_price || 0),
+          0
+        ) -
+        item2.reduce(
+          (acc: number, cur: INFTCollectionItem) =>
+            acc + Number(cur.listings?.[0]?.start_price || 0),
+          0
+        );
+    }
+
+    if (searchValue === "") {
+      setNftCollectionListSearch(nftCollectionList.sort(sortFunction));
+    } else {
+      setNftCollectionListSearch(
+        nftCollectionList
+          .filter((item: INFTCollectionItem[]) =>
+            item.some((nft: INFTCollectionItem) =>
+              nft.name
+                ?.toLowerCase()
+                .includes(searchValue?.toLowerCase().trim())
+            )
+          )
+          .sort(sortFunction)
+      );
+    }
+  }, [searchValue, nftCollectionList, currentSort.code]);
+
   return (
     <div id="nft-collection-list" className="mt-12">
       <NFTCollectionListTopSection
+        currentSort={currentSort}
+        setCurrentSort={setCurrentSort}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
         viewType={viewType}
         handleChangeView={handleChangeView}
       />
@@ -35,11 +98,13 @@ const NFTCollectionList = ({
         <NFTCollectionFilter />
         <div className="md:col-start-2 col-end-6 col-start-1">
           {viewType === COLLECTION_VIEW_TYPE.LIST ? (
-            <NFTCollectionTableList nftCollectionList={nftCollectionList} />
+            <NFTCollectionTableList
+              nftCollectionList={nftCollectionListSearch}
+            />
           ) : (
             <NFTCollectionGridList
               viewType={viewType}
-              nftCollectionList={nftCollectionList}
+              nftCollectionList={nftCollectionListSearch}
               mode={mode}
             />
           )}

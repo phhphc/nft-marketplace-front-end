@@ -13,17 +13,22 @@ import { IDropDown } from "@Interfaces/index";
 import { InputText } from "primereact/inputtext";
 
 export interface INFTCollectionListTopSection {
+  currentSort: IDropDown;
+  setCurrentSort: React.Dispatch<React.SetStateAction<IDropDown>>;
+  searchValue: string;
+  setSearchValue: React.Dispatch<React.SetStateAction<string>>;
   viewType: COLLECTION_VIEW_TYPE;
   handleChangeView: (selectedViewType: COLLECTION_VIEW_TYPE) => void;
 }
 
 const NFTCollectionListTopSection = ({
+  currentSort,
+  setCurrentSort,
+  searchValue,
+  setSearchValue,
   viewType,
   handleChangeView,
 }: INFTCollectionListTopSection) => {
-  const [searchValue, setSearchValue] = useState<string>("");
-  const [currentSort, setCurrentSort] = useState<IDropDown>(SORT_OPTIONS[0]);
-
   const handleClickSortDropdown = (sort: IDropDown) => {
     setCurrentSort(sort);
   };
@@ -45,7 +50,7 @@ const NFTCollectionListTopSection = ({
         className="flex-1 mr-12 mb-8"
         value={searchValue}
         onChange={(e) => handleChangeSearchValue(e.target.value)}
-        placeholder="Search"
+        placeholder="Search name"
       />
       <Dropdown
         className="w-1/4 mr-12 mb-8"

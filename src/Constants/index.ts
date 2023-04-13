@@ -60,9 +60,14 @@ export const NFT_USER_PROFILE_TABS_LIST = [
   NFT_USER_PROFILE_TABS.FAVORITED,
 ];
 
+export const SORT_OPTIONS_CODE = {
+  PRICE_LOW_TO_HIGH: "1",
+  PRICE_HIGH_TO_LOW: "2",
+};
+
 export const SORT_OPTIONS: IDropDown[] = [
-  { name: "Price low to high", code: "1" },
-  { name: "Price high to low", code: "2" },
+  { name: "Price low to high", code: SORT_OPTIONS_CODE.PRICE_LOW_TO_HIGH },
+  { name: "Price high to low", code: SORT_OPTIONS_CODE.PRICE_HIGH_TO_LOW },
 ];
 
 export enum NFT_COLLECTION_MODE {
