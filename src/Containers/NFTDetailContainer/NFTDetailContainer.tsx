@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 
 const NFTDetailContainer = () => {
-  const { nftCollectionList } = useNFTCollectionList();
+  const { nftCollectionList } = useNFTCollectionList({});
   const [nftDetail, setNftDetail] = useState<INFTCollectionItem[]>();
 
   const toast = useRef<Toast>(null);

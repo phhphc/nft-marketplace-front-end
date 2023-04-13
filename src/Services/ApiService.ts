@@ -37,6 +37,10 @@ interface ISellNFTProps {
   isApprovedForAllNFTs?: boolean;
 }
 
+interface IGetNFTCollectionListServiceProps {
+  token?: string;
+}
+
 interface IGetOfferByTokenProps {
   tokenId: string;
   tokenAddress: string;
@@ -82,15 +86,19 @@ interface ICreateCollectionProps {
   owner: string;
 }
 
-export const getNFTCollectionListService = async (
-  owner?: string
-): Promise<any> => {
-  const params: { [k: string]: any } = {};
-  if (owner) params.owner = owner;
+export const getNFTCollectionListService = async (additionalParams: {
+  [k: string]: any;
+}): Promise<any> => {
+  const params: { [k: string]: any } = {
+    limit: 100,
+    offet: 0,
+    ...additionalParams,
+  };
+
   return axios
     .get("/api/v0.1/nft", { params })
     .then((response) => {
-      return response.data.data || [];
+      return response.data.data.nfts || [];
     })
     .catch((err) => {});
 };
@@ -121,9 +129,7 @@ export const sellNFT = async ({
 }: ISellNFTProps) => {
   try {
     const erc721Address = item[0].token;
-    const mkpAddress =
-      process.env.NEXT_PUBLIC_MKP_ADDRESS ??
-      "0x5300EEEeA4751fDF9f32647B965599e8Ef7656DC";
+    const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
 
     await provider.send("eth_requestAccounts", []);
 
@@ -225,14 +231,6 @@ export const sellNFT = async ({
   }
 };
 
-export const getNFTCollectionListInfoService = async (): Promise<
-  INFTCollectionItem[]
-> => {
-  const data = await getNFTCollectionListService();
-  return data.nfts;
-  // } else return [];
-};
-
 export const buyTokenService = async ({
   toast,
   orderHashes,
@@ -240,9 +238,7 @@ export const buyTokenService = async ({
   myWallet,
   provider,
 }: IBuyTokenServiceProps) => {
-  const mkpAddress =
-    process.env.NEXT_PUBLIC_MKP_ADDRESS ??
-    "0x5300EEEeA4751fDF9f32647B965599e8Ef7656DC";
+  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
 
   await provider.send("eth_requestAccounts", []);
 
@@ -565,11 +561,15 @@ ICreateCollectionProps) => {
     });
 };
 
-export const getAllCollectionListService = async (): Promise<
-  ICollectionItem[]
-> => {
+export const getAllCollectionListService = async (
+  category: string
+): Promise<ICollectionItem[]> => {
+  const url =
+    category === "All"
+      ? `/api/v0.1/collection`
+      : `/api/v0.1/collection/${category}`;
   return axios
-    .get("/api/v0.1/collection")
+    .get(url)
     .then((response) => {
       return response.data.data.collections || [];
     })

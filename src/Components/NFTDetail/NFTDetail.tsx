@@ -44,7 +44,7 @@ export interface INFTDetailProps {
 
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   // to do: show UI in bundle mode
-  const { refetch } = useNFTCollectionList();
+  const { refetch } = useNFTCollectionList({});
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
       !!item[0].listings[0] &&

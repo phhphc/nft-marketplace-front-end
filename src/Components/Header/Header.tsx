@@ -80,7 +80,7 @@ const Header = () => {
   }, []);
 
   // Cart
-  const { nftCollectionList } = useNFTCollectionList();
+  const { nftCollectionList } = useNFTCollectionList({});
   const [cartItemList, setCartItemList] = useState<INFTCollectionItem[][]>([]);
   const [cartModalVisible, setCartModalVisible] = useState(false);
   const totalPrice = useMemo(() => {

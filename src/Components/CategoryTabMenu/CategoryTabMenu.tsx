@@ -1,17 +1,16 @@
 import { ICategory, ICollectionItem } from "@Interfaces/index";
 import { TabMenu } from "primereact/tabmenu";
 import { Carousel } from "primereact/carousel";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
 import Link from "next/link";
 import moment from "moment";
+import useCollectionListByCategory from "@Hooks/useCollectionListByCategory";
 
-export interface ICollectionTabMenu {
-  allCollectionList: ICollectionItem[];
-}
+export interface ICollectionTabMenu {}
 
-const CategoryTabMenu = ({ allCollectionList }: ICollectionTabMenu) => {
+const CategoryTabMenu = ({}: ICollectionTabMenu) => {
   const categories: ICategory[] = [
     { label: "All", value: "All" },
     { label: "Art", value: "Art" },
@@ -19,31 +18,21 @@ const CategoryTabMenu = ({ allCollectionList }: ICollectionTabMenu) => {
     { label: "Photography", value: "Photography" },
     { label: "Memberships", value: "Memberships" },
   ];
+
   const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState(allCollectionList);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+
+  const { collectionList } = useCollectionListByCategory(selectedCategory);
   function handleChangeActive(event: any) {
     setActiveIndex(event.index);
-    setSelectedCategory(filterCategory(allCollectionList, event.value.value));
+    setSelectedCategory(event.value.value);
   }
-
-  useEffect(() => {
-    setSelectedCategory(allCollectionList);
-  }, [allCollectionList]);
-
-  const filterCategory = (
-    collectionList: ICollectionItem[],
-    category: string
-  ) => {
-    if (category !== "All") {
-      return collectionList.filter(
-        (collection: ICollectionItem) => collection.category === category
-      );
-    } else return collectionList;
-  };
 
   const categoryTemplate = (selectedCategory: ICollectionItem) => {
     return (
-      <Link href={`/collection/${selectedCategory.name}?token=${selectedCategory.token}`}>
+      <Link
+        href={`/collection/${selectedCategory.name}?token=${selectedCategory.token}`}
+      >
         <div className="bg-yellow-50 drop-shadow-2xl m-3 text-center py-5 px-3">
           <div className="mb-3 flex justify-center">
             <img
@@ -63,7 +52,12 @@ const CategoryTabMenu = ({ allCollectionList }: ICollectionTabMenu) => {
             <div className="mt-5 flex justify-between items-center gap-2">
               <Tag severity="danger" className="text-xl">
                 <i className="pi pi-clock pb-2">
-                  <span> {moment(selectedCategory.created_at).format('MMMM Do YYYY, h:mm:ss a')}</span>
+                  <span>
+                    {" "}
+                    {moment(selectedCategory.created_at).format(
+                      "MMMM Do YYYY, h:mm:ss a"
+                    )}
+                  </span>
                 </i>
               </Tag>
 
@@ -87,10 +81,10 @@ const CategoryTabMenu = ({ allCollectionList }: ICollectionTabMenu) => {
           onTabChange={handleChangeActive}
         />
       </div>
-      {selectedCategory.length > 0 ? (
+      {collectionList.length > 0 ? (
         <div className="card">
           <Carousel
-            value={selectedCategory}
+            value={collectionList}
             numVisible={3}
             numScroll={3}
             itemTemplate={categoryTemplate}
