@@ -24,11 +24,6 @@ const NFTCollectionGridList = ({
   viewType,
   mode,
 }: INFTCollectionGridListProps) => {
-  // console.log(
-  //   "🚀 ~ file: NFTCollectionGridList.tsx:17 ~ nftCollectionList:",
-  //   nftCollectionList
-  // );
-
   const { refetch } = useNFTCollectionList();
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
