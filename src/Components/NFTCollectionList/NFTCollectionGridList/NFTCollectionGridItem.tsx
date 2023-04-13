@@ -30,7 +30,6 @@ const NFTCollectionGridItem = ({
   item,
   viewType,
 }: INFTCollectionGridItemProps) => {
-  console.log("item", item);
   const { refetch } = useNFTCollectionList({});
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
@@ -145,6 +144,7 @@ const NFTCollectionGridItem = ({
 
   const [visible, setVisible] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const [selectedItemBundleIndex, setSelectedItemBundleIndex] = useState(0);
 
   useEffect(() => {
     if (
@@ -175,29 +175,32 @@ const NFTCollectionGridItem = ({
     }
   };
 
-  const itemTemplate = (item: INFTCollectionItem) => {
-    return <img src={item.image} alt={item.name} style={{ width: "100%" }} />;
+  const itemTemplate = (selectedItem: INFTCollectionItem) => {
+    return (
+      <Link
+        href={{
+          pathname: `/detail/${selectedItem.identifier}`,
+        }}
+      >
+        <img
+          src={selectedItem.image}
+          alt={selectedItem.name}
+          style={{ width: "100%" }}
+        />
+      </Link>
+    );
   };
 
-  
-  const thumbnailTemplate = (item: INFTCollectionItem) => {
-    return <img src={item.image} alt={item.name} />;
+  const thumbnailTemplate = (selectedItem: INFTCollectionItem) => {
+    return <img src={selectedItem.image} alt={selectedItem.name} />;
   };
 
-  const [selectedItemIndex, setSelectedItemIndex] = useState(0)
-  const onSelectedItem = (event: any) => {
-    console.log("selectedItemInBundle", event.index);
-    setSelectedItemIndex(event.index);
-  }
+  const onSelectedBundleItem = (event: any) => {
+    setSelectedItemBundleIndex(event.index);
+  };
 
   return (
-    <div
-      // href={{
-      //   pathname: `/detail/${item[0].identifier}`,
-      // }}
-      key={item[0].name}
-      className="relative nft-collection-item"
-    >
+    <div key={item[0].name} className="relative nft-collection-item">
       <Toast ref={toast} position="top-center" />
       <div className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none">
         <div className="relative">
@@ -209,27 +212,32 @@ const NFTCollectionGridItem = ({
               className="absolute top-0 right-0"
             ></Checkbox>
           )}
-          {item.length == 1 && (
-            <img
-              src={
-                item[0].image != "<nil>" && item[0].image != ""
-                  ? item[0].image
-                  : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
-              }
-              alt="NFT Item"
-              className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
-            />
-          )}
-          {item.length > 1 && (
+          {item.length == 1 ? (
+            <Link
+              href={{
+                pathname: `/detail/${item[0].identifier}`,
+              }}
+            >
+              <img
+                src={
+                  item[0].image != "<nil>" && item[0].image != ""
+                    ? item[0].image
+                    : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
+                }
+                alt="NFT Item"
+                className="h-full w-full object-cover object-center lg:h-full lg:w-full nft-collection-img"
+              />
+            </Link>
+          ) : (
             <div className="card">
               <Galleria
                 value={item}
-                numVisible={2}
+                numVisible={3}
                 style={{ maxWidth: "640px" }}
                 item={itemTemplate}
                 thumbnail={thumbnailTemplate}
-                activeIndex={selectedItemIndex}
-                onItemChange={onSelectedItem}
+                activeIndex={selectedItemBundleIndex}
+                onItemChange={onSelectedBundleItem}
               />
             </div>
           )}
@@ -238,19 +246,19 @@ const NFTCollectionGridItem = ({
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
           <div className="p-3 h-20">
-            {item.length == 1 && (
+            {item.length == 1 ? (
               <h3 className="font-bold uppercase break-words text-sm">
                 {item[0].name || "Item name"}
               </h3>
-            )}
-            {item.length > 1 && (
+            ) : (
               <h3 className="font-bold uppercase break-words text-sm">
-                {item[selectedItemIndex].name}
+                {item[selectedItemBundleIndex].name}
               </h3>
             )}
             {item[0].listings && (
               <p className="flex gap-1 text-sm font-medium text-gray-900">
                 {showingPrice(item[0].listings[0]?.start_price || "0")}
+                {item.length > 1 && " / 1 item"}
               </p>
             )}
           </div>
@@ -264,7 +272,7 @@ const NFTCollectionGridItem = ({
                       item[0].listings[0].order_hash
                     )
                   }
-                  className="flex justify-center gap-1 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
+                  className="flex justify-center gap-1 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md cursor-pointer"
                 >
                   <div className=" text-red-600 text-base">
                     Remove from cart
@@ -283,7 +291,7 @@ const NFTCollectionGridItem = ({
                       ).toString()
                     )
                   }
-                  className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md"
+                  className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md cursor-pointer"
                 >
                   <i className="pi pi-cart-plus text-red-600 pt-1"></i>
                   <div className=" text-red-600 text-base">Add to cart</div>

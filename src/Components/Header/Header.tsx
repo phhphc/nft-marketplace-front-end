@@ -83,11 +83,30 @@ const Header = () => {
   const { nftCollectionList } = useNFTCollectionList({});
   const [cartItemList, setCartItemList] = useState<INFTCollectionItem[][]>([]);
   const [cartModalVisible, setCartModalVisible] = useState(false);
+  // const totalPrice = useMemo(() => {
+  //   return Math.round(
+  //     cartItemList
+  //       ? cartItemList.reduce(
+  //           (acc, cur) => acc + Number(cur[0].listings[0]?.start_price || 0),
+  //           0
+  //         )
+  //       : 0
+  //   );
+  // }, [cartItemList]);
+
   const totalPrice = useMemo(() => {
     return Math.round(
       cartItemList
         ? cartItemList.reduce(
-            (acc, cur) => acc + Number(cur[0].listings[0]?.start_price || 0),
+            (acc, cur) =>
+              acc +
+              Number(
+                cur.reduce(
+                  (accChild, curChild) =>
+                    accChild + Number(curChild.listings[0]?.start_price || 0),
+                  0
+                )
+              ),
             0
           )
         : 0
@@ -370,14 +389,24 @@ const Header = () => {
                         />
                       </Link>
                       <div className="flex flex-col items-start justify-start text-sm">
-                        <span className="font-medium">{cartItem[0].name}</span>
-                        <span className="">{"Gemma"}</span>
+                        {cartItem.length > 1 && (
+                          <span className="font-medium">Bundle</span>
+                        )}
+                        {cartItem.map((item) => (
+                          <span className="font-medium">{item.name}</span>
+                        ))}
                       </div>
                     </div>
                     <span className="price text-sm">
-                      {showingPrice(
-                        cartItem[0].listings[0]?.start_price || "0"
-                      )}
+                      {cartItem.length == 1
+                        ? showingPrice(
+                            cartItem[0].listings[0]?.start_price || "0"
+                          )
+                        : showingPrice(
+                            String(
+                              Number(cartItem[0].listings[0]?.start_price) * 2
+                            ) || "0"
+                          )}
                     </span>
                     <button
                       className="delete-cart-btn hidden hover:text-white"
