@@ -1,11 +1,11 @@
 import React from "react";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 const LoadingPage = () => {
   return (
     <div id="loading-page">
-      <div className="spinner">
-        <span>Loading...</span>
-        <div className="half-spinner"></div>
+      <div className="card flex">
+        <ProgressSpinner strokeWidth="5" />
       </div>
     </div>
   );
