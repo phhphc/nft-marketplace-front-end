@@ -1,0 +1,15 @@
+#loading-page {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+  background: rgba(51, 51, 51, 0.7);
+  z-index: 10;
+  .p-progress-spinner {
+    height: 98%;
+  }
+}
