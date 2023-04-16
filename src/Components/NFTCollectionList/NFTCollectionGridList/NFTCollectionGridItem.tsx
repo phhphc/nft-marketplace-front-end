@@ -19,7 +19,6 @@ import {
   showingPrice,
 } from "@Utils/index";
 import { Checkbox } from "primereact/checkbox";
-import LoadingPage from "@Components/LoadingPage/LoadingPage";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
@@ -122,7 +121,6 @@ const NFTCollectionGridItem = ({
         );
       }
       if (item) {
-        setIsLoading(true)
         await buyTokenService({
           toast,
           orderHashes: [item[0].listings[0].order_hash],
@@ -130,11 +128,9 @@ const NFTCollectionGridItem = ({
           myWallet,
           provider,
         });
-        setIsLoading(false)
         refetch();
       }
     } catch (error) {
-      setIsLoading(false)
       toast.current &&
         toast.current.show({
           severity: "error",
@@ -202,12 +198,9 @@ const NFTCollectionGridItem = ({
     setSelectedItemBundleIndex(event.index);
   };
 
-  const [isLoading, setIsLoading]=useState(false)
-
   return (
     <div key={item[0].name} className="relative nft-collection-item">
       <Toast ref={toast} position="top-center" />
-      {isLoading && <LoadingPage/>}
       <div className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none">
         <div className="relative">
           {canSell(item) && (
