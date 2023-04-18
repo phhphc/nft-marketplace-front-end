@@ -27,7 +27,7 @@ import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
-import { useContext, useState, useEffect, useRef } from "react";
+import { useContext, useState, useEffect, useRef, useMemo } from "react";
 import { sellNFT, buyTokenService } from "@Services/ApiService";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import { CURRENCY_UNITS } from "@Constants/index";
@@ -38,6 +38,7 @@ import {
   showingPrice,
 } from "@Utils/index";
 import { Galleria } from "primereact/galleria";
+import moment from "moment";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem[];
@@ -60,6 +61,10 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
+
+  const endTime = useMemo(() => {
+    return new Date(Number(nftDetail[0].listings?.[0]?.end_time));
+  }, []);
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (!web3Context.state.web3.provider) {
@@ -130,6 +135,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
       );
     }
     try {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
       if (item) {
         await buyTokenService({
           toast,
@@ -148,6 +154,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           detail: "Fail to buy NFT!",
           life: 3000,
         });
+    } finally {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
@@ -462,7 +470,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             {nftDetail[selectedItemIndex].owner}
           </Link>
         </h2>
-        <div className="flex flex-start space-x-8 pt-5 pb-8">
+        {/* <div className="flex flex-start space-x-8 pt-5 pb-8">
           <div className="view space-x-1">
             <i>
               <FontAwesomeIcon icon={faEye} />
@@ -483,62 +491,69 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             </i>
             <span>{"Art"}</span>
           </div>
-        </div>
+        </div> */}
         <div className="boxes w-full border rounded-lg">
-          {nftDetail[selectedItemIndex].listings && (
-            <div className="time-box flex flex-col border-b p-5 text-lg">
-              <div className="space-x-2 ">
-                <i>
-                  <FontAwesomeIcon icon={faClock} />
-                </i>
-                <span>Sale ends {"January 20, 2023 at 8:50 AM GMT+7"}</span>
-              </div>
-              <div className="time flex item-center space-x-14 mt-2">
-                <div className="day flex flex-col">
-                  <span className="font-semibold text-2xl">{"02"}</span>
-                  <span>Days</span>
-                </div>
-                <div className="hour flex flex-col">
-                  <span className="font-semibold text-2xl">{"09"}</span>
-                  <span>Hours</span>
-                </div>
-                <div className="minute flex flex-col">
-                  <span className="font-semibold text-2xl">{"17"}</span>
-                  <span>Minutes</span>
-                </div>
-                <div className="second flex flex-col">
-                  <span className="font-semibold text-2xl">{"02"}</span>
-                  <span>Seconds</span>
-                </div>
-              </div>
-            </div>
-          )}
-          <div className="buy-box flex flex-col p-5 ">
-            {!!nftDetail[selectedItemIndex]?.listings && (
-              <>
-                {nftDetail.length > 1 && (
-                  <span className="text-md">
-                    Bunlde: {nftDetail.length} items
+          {nftDetail[selectedItemIndex].listings &&
+            moment(endTime).format() !== "Invalid date" && (
+              <div className="time-box flex flex-col border-b p-5 text-lg">
+                <div className="space-x-2 ">
+                  <i>
+                    <FontAwesomeIcon icon={faClock} />
+                  </i>
+                  <span>
+                    {`Sale ends 
+                  ${moment(endTime).format("MMMM Do YYYY HH:mm")}`}
                   </span>
-                )}
-                <span className="text-md text-gray-500">Current price</span>
-                <div className="price flex mb-3 space-x-2">
-                  <span className="text-3xl font-bold space-x-1 my-1 ">
-                    <span className="price-value">
-                      {nftDetail[selectedItemIndex].listings[0] && (
-                        <p className="text-sm font-medium text-gray-900 uppercase">
-                          {showingPrice(
-                            nftDetail[selectedItemIndex].listings[0]
-                              ?.start_price || "0"
-                          )}
-                          {nftDetail.length > 1 && " / 1 item"}
-                        </p>
-                      )}
+                </div>
+                <div className="time flex item-center space-x-14 mt-2">
+                  <div className="day flex flex-col">
+                    <span className="font-semibold text-2xl">
+                      {endTime.getDate()}
                     </span>
-                  </span>
+                    <span>Days</span>
+                  </div>
+                  <div className="hour flex flex-col">
+                    <span className="font-semibold text-2xl">
+                      {endTime.getHours()}
+                    </span>
+                    <span>Hours</span>
+                  </div>
+                  <div className="minute flex flex-col">
+                    <span className="font-semibold text-2xl">
+                      {endTime.getMinutes()}
+                    </span>
+                    <span>Minutes</span>
+                  </div>
                 </div>
-              </>
+              </div>
             )}
+          <div className="buy-box flex flex-col p-5 ">
+            {!!nftDetail[selectedItemIndex]?.listings &&
+              !!nftDetail[0]?.listings?.[0] && (
+                <>
+                  {nftDetail.length > 1 && (
+                    <span className="text-md">
+                      Bundle: {nftDetail.length} items
+                    </span>
+                  )}
+                  <span className="text-md text-gray-500">Current price</span>
+                  <div className="price flex mb-3 space-x-2">
+                    <span className="text-3xl font-bold space-x-1 my-1 ">
+                      <span className="price-value">
+                        {nftDetail[selectedItemIndex].listings[0] && (
+                          <p className="text-sm font-medium text-gray-900 uppercase">
+                            {showingPrice(
+                              nftDetail[selectedItemIndex].listings[0]
+                                ?.start_price || "0"
+                            )}
+                            {nftDetail.length > 1 && " / 1 item"}
+                          </p>
+                        )}
+                      </span>
+                    </span>
+                  </div>
+                </>
+              )}
 
             {canBuy(nftDetail) && (
               <div className="flex justify-between w-full">
