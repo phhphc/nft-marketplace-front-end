@@ -9,6 +9,8 @@ export enum WEB3_ACTION_TYPES {
   ADD_BUNDLE = "ADD_BUNDLE",
   REMOVE_BUNDLE = "REMOVE_BUNDLE",
   SET_BUNDLE = "SET_BUNDLE",
+  ADD_LOADING = "ADD_LOADING",
+  REMOVE_LOADING = "REMOVE_LOADING",
 }
 
 export interface ICart {
@@ -25,11 +27,12 @@ export interface IWeb3 {
   cart: ICart[];
   isApprovedForAllNFTs: boolean;
   listItemsSellBundle: INFTCollectionItem[];
+  loading: boolean;
 }
 
 export interface IWeb3Action {
   type: WEB3_ACTION_TYPES;
-  payload: any;
+  payload?: any;
 }
 
 export interface IState {
@@ -45,6 +48,7 @@ const initialState: IState = {
     chainId: 0,
     isApprovedForAllNFTs: false,
     listItemsSellBundle: [],
+    loading: false,
   },
 };
 

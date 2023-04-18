@@ -7,7 +7,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { IBlockchain, ICollection, IFormNewNFTInput } from "@Interfaces/index";
 import { createNFTService } from "@Services/ApiService";
-import { AppContext } from "@Store/index";
+import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { ICollectionItem } from "@Interfaces/index";
 import { Toast } from "primereact/toast";
 
@@ -55,6 +55,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
     useForm<IFormNewNFTInput>();
 
   const onSubmit = async (data: IFormNewNFTInput) => {
+    web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
     await createNFTService({
       ...data,
       toast,
@@ -66,6 +67,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
 
     reset();
     setFeaturedFile("");
+    web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
   };
 
   return (

@@ -108,6 +108,7 @@ const NFTCollectionGridItem = ({
     provider: any,
     item?: INFTCollectionItem[]
   ) => {
+    web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
     try {
       if (!web3Context.state.web3.provider) {
         return (
@@ -128,6 +129,7 @@ const NFTCollectionGridItem = ({
           myWallet,
           provider,
         });
+
         refetch();
       }
     } catch (error) {
@@ -138,6 +140,8 @@ const NFTCollectionGridItem = ({
           detail: "Fail to buy NFT!",
           life: 3000,
         });
+    } finally {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
