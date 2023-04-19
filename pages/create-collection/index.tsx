@@ -1,7 +1,11 @@
 import Head from "next/head";
 import CreateCollectionContainer from "@Containers/CreateCollectionContainer/CreateCollectionContainer";
+import LoadingPage from "@Components/LoadingPage/LoadingPage";
+import { useContext } from "react";
+import { AppContext } from "@Store/index";
 
 export default function CreateCollectionPage() {
+  const web3Context = useContext(AppContext);
   return (
     <>
       <Head>
@@ -10,11 +14,12 @@ export default function CreateCollectionPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>
+      <main>
         <>
           <CreateCollectionContainer />
+          {web3Context.state.web3.loading && <LoadingPage />}
         </>
-      </div>
+      </main>
     </>
   );
 }

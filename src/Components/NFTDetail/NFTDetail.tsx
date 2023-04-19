@@ -90,6 +90,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
       );
     }
     try {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
+      setVisible(false);
       await sellNFT({
         toast,
         provider: web3Context.state.web3.provider,
@@ -115,6 +117,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           detail: "Fail to sell NFT!",
           life: 3000,
         });
+    } finally {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
@@ -151,7 +155,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Fail to buy NFT!",
+          detail: "You have rejected the transaction!",
           life: 3000,
         });
     } finally {

@@ -17,20 +17,11 @@ export interface ICreateNFTProps {
 
 const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
   const web3Context = useContext(AppContext);
-  const [myCollections, setMyCollections] = useState<ICollectionItem[]>();
   const toast = useRef<Toast>(null);
-  useEffect(() => {
-    setMyCollections(
-      collectionList.filter(
-        (item: ICollectionItem) =>
-          item.owner == web3Context.state.web3.myAddress
-      )
-    );
-  }, [collectionList]);
 
   let collections: ICollectionItem[];
-  if (myCollections) {
-    collections = myCollections?.map((collection: ICollectionItem) => {
+  if (collectionList) {
+    collections = collectionList?.map((collection: ICollectionItem) => {
       return { ...collection, value: collection.token };
     });
   }
@@ -60,11 +51,9 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
       ...data,
       toast,
       featuredImage: data.featuredImage[0],
-
       provider: web3Context.state.web3.provider,
       myWallet: web3Context.state.web3.myWallet,
     });
-
     reset();
     setFeaturedFile("");
     web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });

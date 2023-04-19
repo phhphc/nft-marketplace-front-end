@@ -51,6 +51,8 @@ const NFTCollectionGridList = ({
 
   const handleSellBundle = async () => {
     try {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
+      setVisible(false);
       await sellNFT({
         toast,
         provider: web3Context.state.web3.provider,
@@ -68,7 +70,6 @@ const NFTCollectionGridList = ({
         },
       });
       refetch();
-      setVisible(false);
     } catch (error) {
       toast.current &&
         toast.current.show({
@@ -77,6 +78,8 @@ const NFTCollectionGridList = ({
           detail: "Fail to sell NFT as bundle!",
           life: 3000,
         });
+    } finally {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
