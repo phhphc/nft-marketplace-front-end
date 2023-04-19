@@ -11,7 +11,7 @@ import {
   IFormCollectionInput,
 } from "@Interfaces/index";
 import { createNFTCollectionService } from "@Services/ApiService";
-import { AppContext } from "@Store/index";
+import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { Toast } from "primereact/toast";
 
 const CreateCollection = () => {
@@ -71,17 +71,30 @@ const CreateCollection = () => {
     useForm<IFormCollectionInput>();
 
   const onSubmit = async (data: IFormCollectionInput) => {
-    await createNFTCollectionService({
-      toast,
-      ...data,
-      logoImage: data.logoImage[0],
-      // featuredImage: data.featuredImage[0],
-      bannerImage: data.bannerImage[0],
-      owner,
-    });
-    reset();
-    setLogoFile("");
-    setBannerFile("");
+    web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
+    try {
+      await createNFTCollectionService({
+        toast,
+        ...data,
+        logoImage: data.logoImage[0],
+        // featuredImage: data.featuredImage[0],
+        bannerImage: data.bannerImage[0],
+        owner,
+      });
+    } catch (error) {
+      toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "You have rejected the transaction!",
+          life: 3000,
+        });
+    } finally {
+      reset();
+      setLogoFile("");
+      setBannerFile("");
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
+    }
   };
 
   return (

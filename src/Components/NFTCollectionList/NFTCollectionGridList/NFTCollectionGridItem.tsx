@@ -74,6 +74,8 @@ const NFTCollectionGridItem = ({
       );
     }
     try {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
+      setVisible(false);
       await sellNFT({
         toast,
         provider: web3Context.state.web3.provider,
@@ -91,7 +93,6 @@ const NFTCollectionGridItem = ({
         },
       });
       refetch();
-      setVisible(false);
     } catch (error) {
       toast.current &&
         toast.current.show({
@@ -100,6 +101,8 @@ const NFTCollectionGridItem = ({
           detail: "Fail to sell NFT!",
           life: 3000,
         });
+    } finally {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
@@ -129,7 +132,6 @@ const NFTCollectionGridItem = ({
           myWallet,
           provider,
         });
-
         refetch();
       }
     } catch (error) {
@@ -137,7 +139,7 @@ const NFTCollectionGridItem = ({
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Fail to buy NFT!",
+          detail: "You have rejected the transaction!",
           life: 3000,
         });
     } finally {
