@@ -139,7 +139,7 @@ const NFTCollectionGridItem = ({
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "You have rejected the transaction!",
+          detail: "Fail to buy NFT!",
           life: 3000,
         });
     } finally {
