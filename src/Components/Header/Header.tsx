@@ -42,7 +42,7 @@ const Header = () => {
     }
     // If metamask is not installed
     else {
-      alert("No metamask on your brownser");
+      alert("No metamask on your browser");
     }
   };
 
@@ -130,6 +130,8 @@ const Header = () => {
     provider: any,
     cart: ICart[]
   ) => {
+    web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
+    setCartModalVisible(false);
     try {
       if (!web3Context.state.web3.provider) {
         return (
@@ -160,6 +162,9 @@ const Header = () => {
           detail: "Fail to buy NFT!",
           life: 3000,
         });
+    }
+    finally {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
