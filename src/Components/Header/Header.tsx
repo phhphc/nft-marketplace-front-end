@@ -181,6 +181,7 @@ const Header = () => {
 
   return (
     <div id="header" className="fixed top-0 right-0 left-0 h-24 z-10">
+      <Toast ref={toast} position="top-center" />
       <div className="flex h-full w-full bg-gray-100 shadow items-center justify-between px-10">
         {/* Logo */}
         <Link href="/" id="logo">
