@@ -107,6 +107,14 @@ const AppProvider = ({ children }: IAppProvider) => {
   }, []);
 
   useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        window.location.reload();
+      });
+    }
+  });
+
+  useEffect(() => {
     localStorage.setItem("shoppingCart", JSON.stringify(state.web3.cart));
   }, [state.web3.cart]);
 

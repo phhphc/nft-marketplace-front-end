@@ -162,8 +162,7 @@ const Header = () => {
           detail: "Fail to buy NFT!",
           life: 3000,
         });
-    }
-    finally {
+    } finally {
       web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
@@ -206,10 +205,7 @@ const Header = () => {
           {walletConnected && (
             <>
               {/* Profile */}
-              <Link
-                href={`/user-profile/${web3Context.state.web3.myAddress}`}
-                className="profile-btn relative"
-              >
+              <Link href={`/user-profile`} className="profile-btn relative">
                 <Image
                   src={avatar}
                   alt="avatar"
@@ -217,7 +213,7 @@ const Header = () => {
                 />
                 <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
                   <Link
-                    href={`/user-profile/${web3Context.state.web3.myAddress}`}
+                    href={`/user-profile`}
                     className="py-3 w-full hover:bg-slate-200 rounded-t-lg border-b"
                   >
                     <span className="ml-4">Profile</span>
@@ -241,7 +237,7 @@ const Header = () => {
                     <span className="ml-4">Create NFT</span>
                   </Link>
                   <Link
-                    href={`/user-profile/favorite`}
+                    href={`/user-profile`}
                     className="py-3 w-full hover:bg-slate-200 border-b"
                   >
                     <span className="ml-4">Favorite</span>
@@ -436,13 +432,11 @@ const Header = () => {
               </div>
               <button
                 className="bg-sky-500 p-4 rounded-lg text-xl font-semibold text-white hover:bg-sky-400"
-                onClick={() =>
-                  handleBuyShoppingCart(
-                    web3Context.state.web3.myWallet,
-                    web3Context.state.web3.provider,
-                    web3Context.state.web3.cart
-                  )
-                }
+                onClick={() => (
+                  web3Context.state.web3.myWallet,
+                  web3Context.state.web3.provider,
+                  web3Context.state.web3.cart
+                )}
               >
                 Purchase
               </button>

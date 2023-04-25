@@ -1,6 +1,6 @@
 import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import Link from "next/link";
-import { INFTCollectionItem, Order, OrderParameters } from "@Interfaces/index";
+import { INFTCollectionItem } from "@Interfaces/index";
 import { sellNFT, buyTokenService } from "@Services/ApiService";
 import { NFT_COLLECTION_MODE, CURRENCY_UNITS } from "@Constants/index";
 import { useContext, useState, useEffect, useRef } from "react";
@@ -12,7 +12,6 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { Galleria } from "primereact/galleria";
 import { WEB3_ACTION_TYPES } from "@Store/index";
-import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import {
   handleAddToCart,
   handleRemoveFromCart,
@@ -24,18 +23,16 @@ export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
   viewType: COLLECTION_VIEW_TYPE;
   mode: NFT_COLLECTION_MODE;
+  setCountFetch?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionGridItem = ({
   item,
   viewType,
+  setCountFetch,
 }: INFTCollectionGridItemProps) => {
-  const { refetch } = useNFTCollectionList({});
   const canBuy = (item: INFTCollectionItem[]) => {
-    return (
-      !!item[0].listings[0] &&
-      item[0].owner !== web3Context.state.web3.myAddress
-    );
+    return !!item[0].listings[0];
   };
 
   const canSell = (item: INFTCollectionItem[]) => {
@@ -92,7 +89,7 @@ const NFTCollectionGridItem = ({
           isApprovedForAllNFTs: true,
         },
       });
-      refetch();
+      setCountFetch && setCountFetch((prev) => prev + 1);
     } catch (error) {
       toast.current &&
         toast.current.show({
@@ -132,7 +129,7 @@ const NFTCollectionGridItem = ({
           myWallet,
           provider,
         });
-        refetch();
+        setCountFetch && setCountFetch((prev) => prev + 1);
       }
     } catch (error) {
       toast.current &&

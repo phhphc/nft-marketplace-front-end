@@ -25,16 +25,10 @@ const Footer = () => {
         </div>
         <div className="mr-16">
           <div className="font-bold">My Account</div>
-          <Link
-            href={`/user-profile/${web3Context.state.web3.myAddress}`}
-            className="pt-4 block"
-          >
+          <Link href={`/user-profile`} className="pt-4 block">
             Profile
           </Link>
-          <Link
-            href={`/my-collections`}
-            className="pt-4 block"
-          >
+          <Link href={`/my-collections`} className="pt-4 block">
             My Collections
           </Link>
         </div>
