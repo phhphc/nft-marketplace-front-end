@@ -17,14 +17,15 @@ export interface INFTCollectionGridListProps {
   nftCollectionList: INFTCollectionItem[][];
   viewType: COLLECTION_VIEW_TYPE;
   mode: NFT_COLLECTION_MODE;
+  setCountFetch?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionGridList = ({
   nftCollectionList,
   viewType,
   mode,
+  setCountFetch,
 }: INFTCollectionGridListProps) => {
-  const { refetch } = useNFTCollectionList({});
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
@@ -69,7 +70,7 @@ const NFTCollectionGridList = ({
           isApprovedForAllNFTs: true,
         },
       });
-      refetch();
+      setCountFetch && setCountFetch((prev) => prev + 1);
     } catch (error) {
       toast.current &&
         toast.current.show({
@@ -147,6 +148,7 @@ const NFTCollectionGridList = ({
                 item={item}
                 viewType={viewType}
                 mode={mode}
+                setCountFetch={setCountFetch}
               />
             ))}
           </div>

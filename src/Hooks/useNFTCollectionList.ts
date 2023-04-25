@@ -5,11 +5,16 @@ import { useQuery } from "react-query";
 interface IUseNFTCollectionListProps {
   token?: string;
   owner?: string;
+  countFetch?: number;
 }
 
-const useNFTCollectionList = ({ token, owner }: IUseNFTCollectionListProps) => {
+const useNFTCollectionList = ({
+  token,
+  owner,
+  countFetch = 0,
+}: IUseNFTCollectionListProps) => {
   const result = useQuery({
-    queryKey: `nftCollectionList-${token}-${owner}`,
+    queryKey: `nftCollectionList-${token}-${owner}-${countFetch}`,
     queryFn: () => getNFTCollectionListService({ token, owner }),
     staleTime: Infinity,
     retry: true,

@@ -8,14 +8,12 @@ import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { useRouter } from "next/router";
 
 const UserProfileContainer = () => {
-  const router = useRouter();
+  const web3Context = useContext(AppContext);
   const { nftCollectionList } = useNFTCollectionList({
-    owner: router.query.user_id as string,
+    owner: web3Context.state.web3.myAddress as string,
   });
 
   const toast = useRef<Toast>(null);
-
-  const web3Context = useContext(AppContext);
 
   return (
     <>

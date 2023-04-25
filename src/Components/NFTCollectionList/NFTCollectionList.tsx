@@ -14,11 +14,13 @@ import { NFT_COLLECTION_MODE } from "@Constants/index";
 export interface INFTCollectionListProps {
   nftCollectionList: INFTCollectionItem[][];
   mode: NFT_COLLECTION_MODE;
+  setCountFetch?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const NFTCollectionList = ({
   nftCollectionList,
   mode,
+  setCountFetch,
 }: INFTCollectionListProps) => {
   const [currentSort, setCurrentSort] = useState<IDropDown>(SORT_OPTIONS[0]);
   const [searchValue, setSearchValue] = useState<string>("");
@@ -97,6 +99,7 @@ const NFTCollectionList = ({
             />
           ) : (
             <NFTCollectionGridList
+              setCountFetch={setCountFetch}
               viewType={viewType}
               nftCollectionList={nftCollectionListSearch}
               mode={mode}
