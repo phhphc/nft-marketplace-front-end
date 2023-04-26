@@ -202,3 +202,17 @@ export interface INFTEvent {
   label: string;
   value: string;
 }
+
+export interface INFTListings {
+  price: string;
+  quantity: string;
+  expiration: string;
+  from: string;
+}
+
+export interface INFTOffers {
+  price: string;
+  quantity: string;
+  expiration: string;
+  from: string;
+}

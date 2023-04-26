@@ -1,26 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
 import {
-  faEthereum,
-  faInstagram,
-  faTwitter,
-} from "@fortawesome/free-brands-svg-icons";
-import { faHeart, faEye, faClock } from "@fortawesome/free-regular-svg-icons";
-import {
-  faShapes,
-  faCircleCheck,
-  faShareNodes,
-  faEllipsis,
-  faChartSimple,
-  faClipboard,
   faInfoCircle,
   faBars,
-  faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
-import { Tooltip } from "primereact/tooltip";
 import { Accordion, AccordionTab } from "primereact/accordion";
-import { INFTCollectionItem, Order } from "@Interfaces/index";
+import { INFTCollectionItem } from "@Interfaces/index";
 import { AppContext } from "@Store/index";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
@@ -41,8 +28,8 @@ import { Galleria } from "primereact/galleria";
 import moment from "moment";
 import NFTActivity from "@Components/NFTActivity/NFTActivity";
 import NFTPriceHistory from "@Components/NFTPriceHistory/NFTPriceHistory";
-import NFTListings from "@Components/NFTListings/NFTListings";
-import NFTOffers from "@Components/NFTOffers/NFTOffers";
+import NFTListing from "@Components/NFTListing/NFTListing";
+import NFTOffer from "@Components/NFTOffer/NFTOffer";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem[];
@@ -638,8 +625,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             </div>
 
             <NFTPriceHistory></NFTPriceHistory>
-            <NFTListings></NFTListings>
-            <NFTOffers></NFTOffers>
+            <NFTListing></NFTListing>
+            <NFTOffer></NFTOffer>
           </div>
         </div>
       </div>
