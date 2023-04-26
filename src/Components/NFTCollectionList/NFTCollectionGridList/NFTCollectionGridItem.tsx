@@ -23,13 +23,13 @@ export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
   viewType: COLLECTION_VIEW_TYPE;
   mode: NFT_COLLECTION_MODE;
-  setCountFetch?: React.Dispatch<React.SetStateAction<number>>;
+  refetch: () => void;
 }
 
 const NFTCollectionGridItem = ({
   item,
   viewType,
-  setCountFetch,
+  refetch,
 }: INFTCollectionGridItemProps) => {
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
@@ -82,7 +82,6 @@ const NFTCollectionGridItem = ({
       );
     }
     try {
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
       setVisible(false);
       await sellNFT({
         toast,
@@ -100,7 +99,7 @@ const NFTCollectionGridItem = ({
           isApprovedForAllNFTs: true,
         },
       });
-      setCountFetch && setCountFetch((prev) => prev + 1);
+      refetch();
     } catch (error) {
       toast.current &&
         toast.current.show({
@@ -109,8 +108,6 @@ const NFTCollectionGridItem = ({
           detail: "Fail to sell NFT!",
           life: 3000,
         });
-    } finally {
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
@@ -119,7 +116,6 @@ const NFTCollectionGridItem = ({
     provider: any,
     item?: INFTCollectionItem[]
   ) => {
-    web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
     try {
       if (!web3Context.state.web3.provider) {
         return (
@@ -140,7 +136,7 @@ const NFTCollectionGridItem = ({
           myWallet,
           provider,
         });
-        setCountFetch && setCountFetch((prev) => prev + 1);
+        refetch();
       }
     } catch (error) {
       toast.current &&
@@ -150,8 +146,6 @@ const NFTCollectionGridItem = ({
           detail: "Fail to buy NFT!",
           life: 3000,
         });
-    } finally {
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 

@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 const UserProfileContainer = () => {
   const web3Context = useContext(AppContext);
-  const { nftCollectionList } = useNFTCollectionList({
+  const { nftCollectionList, refetch } = useNFTCollectionList({
     owner: web3Context.state.web3.myAddress as string,
   });
 
@@ -21,9 +21,11 @@ const UserProfileContainer = () => {
         <>
           <div>
             <Toast ref={toast} position="top-center" />
-            <NFTImageUserProfile></NFTImageUserProfile>
             <UserInfor></UserInfor>
-            <NFTUserProfileTabs nftCollectionList={nftCollectionList} />
+            <NFTUserProfileTabs
+              nftCollectionList={nftCollectionList}
+              refetch={refetch}
+            />
           </div>
         </>
       ) : (

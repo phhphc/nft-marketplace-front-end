@@ -10,11 +10,9 @@ import useCollectionByToken from "@Hooks/useCollectionByToken";
 
 const NFTCollectionContainer = () => {
   const router = useRouter();
-  const [countFetch, setCountFetch] = useState<number>(0);
   const { collection } = useCollectionByToken(router.query.token);
-  const { nftCollectionList } = useNFTCollectionList({
+  const { nftCollectionList, refetch } = useNFTCollectionList({
     token: router.query.token as string,
-    countFetch,
   });
 
   const toast = useRef<Toast>(null);
@@ -26,7 +24,7 @@ const NFTCollectionContainer = () => {
       <NFTCollectionList
         nftCollectionList={nftCollectionList}
         mode={NFT_COLLECTION_MODE.CAN_BUY}
-        setCountFetch={setCountFetch}
+        refetch={refetch}
       />
     </>
   );

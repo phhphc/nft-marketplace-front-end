@@ -46,7 +46,6 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
     useForm<IFormNewNFTInput>();
 
   const onSubmit = async (data: IFormNewNFTInput) => {
-    web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
     await createNFTService({
       ...data,
       toast,
@@ -56,7 +55,6 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
     });
     reset();
     setFeaturedFile("");
-    web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
   };
 
   return (

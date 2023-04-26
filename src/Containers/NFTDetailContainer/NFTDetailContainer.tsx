@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 
 const NFTDetailContainer = () => {
-  const { nftCollectionList } = useNFTCollectionList({});
+  const { nftCollectionList, refetch } = useNFTCollectionList({});
   const [nftDetail, setNftDetail] = useState<INFTCollectionItem[]>();
 
   const toast = useRef<Toast>(null);
@@ -28,7 +28,7 @@ const NFTDetailContainer = () => {
       {nftDetail && (
         <>
           <Toast ref={toast} position="top-center" />
-          <NFTDetail nftDetail={nftDetail} />
+          <NFTDetail nftDetail={nftDetail} refetch={refetch} />
         </>
       )}
     </>

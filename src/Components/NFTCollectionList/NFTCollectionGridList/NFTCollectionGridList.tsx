@@ -17,14 +17,14 @@ export interface INFTCollectionGridListProps {
   nftCollectionList: INFTCollectionItem[][];
   viewType: COLLECTION_VIEW_TYPE;
   mode: NFT_COLLECTION_MODE;
-  setCountFetch?: React.Dispatch<React.SetStateAction<number>>;
+  refetch: () => void;
 }
 
 const NFTCollectionGridList = ({
   nftCollectionList,
   viewType,
   mode,
-  setCountFetch,
+  refetch,
 }: INFTCollectionGridListProps) => {
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
@@ -52,7 +52,6 @@ const NFTCollectionGridList = ({
 
   const handleSellBundle = async () => {
     try {
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
       setVisible(false);
       await sellNFT({
         toast,
@@ -70,7 +69,7 @@ const NFTCollectionGridList = ({
           isApprovedForAllNFTs: true,
         },
       });
-      setCountFetch && setCountFetch((prev) => prev + 1);
+      refetch();
     } catch (error) {
       toast.current &&
         toast.current.show({
@@ -79,8 +78,6 @@ const NFTCollectionGridList = ({
           detail: "Fail to sell NFT as bundle!",
           life: 3000,
         });
-    } finally {
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
@@ -148,7 +145,7 @@ const NFTCollectionGridList = ({
                 item={item}
                 viewType={viewType}
                 mode={mode}
-                setCountFetch={setCountFetch}
+                refetch={refetch}
               />
             ))}
           </div>

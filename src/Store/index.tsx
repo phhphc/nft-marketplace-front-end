@@ -109,6 +109,16 @@ const AppProvider = ({ children }: IAppProvider) => {
   useEffect(() => {
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", () => {
+        dispatch({
+          type: WEB3_ACTION_TYPES.CHANGE,
+          payload: {
+            cart: [],
+            isApprovedForAllNFTs: false,
+            listItemsSellBundle: [],
+            loading: false,
+          },
+        });
+        localStorage.setItem("shoppingCart", JSON.stringify([]));
         window.location.reload();
       });
     }
