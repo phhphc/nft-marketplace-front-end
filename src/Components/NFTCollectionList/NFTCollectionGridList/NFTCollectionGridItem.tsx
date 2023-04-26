@@ -270,7 +270,7 @@ const NFTCollectionGridItem = ({
             )}
           </div>
           {canBuy(item) && (
-            <div className="flex gap-3 justify-between w-full">
+            <div className="flex gap-3 justify-between w-full absolute bottom-0 left-0 right-0">
               {isAddedToCart ? (
                 <div
                   onClick={() =>
@@ -321,7 +321,7 @@ const NFTCollectionGridItem = ({
           {canSell(item) && (
             <div>
               <button
-                className="w-full bg-green-500 hover:bg-green-700 h-10 text-white rounded-md"
+                className="w-full bg-green-500 hover:bg-green-700 h-10 text-white rounded-md absolute bottom-0 left-0 right-0"
                 onClick={() => setVisible(true)}
               >
                 Sell
@@ -370,8 +370,8 @@ const NFTCollectionGridItem = ({
             </div>
           )}
           {isSelling(item) && (
-            <div className="w-full bg-yellow-500 h-10 text-white rounded-md text-center">
-              <span className="inline-grid h-full items-center">
+            <div className="w-full bg-yellow-500 h-10 text-white rounded-md text-center absolute bottom-0 left-0 right-0">
+              <span className="inline-grid h-full items-center ">
                 Your NFT is selling
               </span>
             </div>

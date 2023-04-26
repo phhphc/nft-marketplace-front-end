@@ -235,12 +235,6 @@ const Header = () => {
                   >
                     <span className="ml-4">Create NFT</span>
                   </Link>
-                  <Link
-                    href={`/user-profile`}
-                    className="py-3 w-full hover:bg-slate-200 border-b"
-                  >
-                    <span className="ml-4">Favorite</span>
-                  </Link>
                 </div>
               </Link>
 
