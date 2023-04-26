@@ -65,7 +65,7 @@ const NFTCollectionGridItem = ({
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Please login your wallet!",
+          detail: "Please login your wallet",
           life: 3000,
         })
       );
