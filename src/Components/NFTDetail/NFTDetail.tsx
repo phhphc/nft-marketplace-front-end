@@ -1,9 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
-import {
-  faInfoCircle,
-  faBars,
-} from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faBars } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
 import { Accordion, AccordionTab } from "primereact/accordion";
@@ -49,6 +46,10 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
       item[0].owner === web3Context.state.web3.myAddress
     );
   };
+  const canDownload = (item: INFTCollectionItem[]) => {
+    return item[0].owner === web3Context.state.web3.myAddress;
+  };
+
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
@@ -146,7 +147,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "You have rejected the transaction!",
+          detail: "Fail to buy NFT!",
           life: 3000,
         });
     } finally {
@@ -154,7 +155,29 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
     }
   };
 
+  const handleMakeOffer = async (item: INFTCollectionItem[]) => {};
+
+  const downloadItem = (items: INFTCollectionItem[]) => {
+    items.forEach((item: INFTCollectionItem) => {
+      const url = item.image;
+      fetch(url, {
+        mode: "cors",
+      })
+        .then((response) => response.blob())
+        .then((blob) => {
+          let blobUrl = window.URL.createObjectURL(blob);
+          let a = document.createElement("a");
+          a.download = `${item.name}`;
+          a.href = blobUrl;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        });
+    });
+  };
+
   const [visible, setVisible] = useState(false);
+  const [dialogMakeOffer, setDialogMakeOffer] = useState(false);
   const [price, setPrice] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
@@ -412,10 +435,10 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
             {nftDetail[selectedItemIndex].name.toUpperCase()}
           </h1>
           <h2 className="text-lg flex justify-start items-center space-x-1">
-            <span>Owned by</span>
-            <Link href="/" className="text-blue-500">
+            <div>Owned by</div>
+            <span className="text-blue-500">
               {nftDetail[selectedItemIndex].owner}
-            </Link>
+            </span>
           </h2>
           {/* <div className="flex flex-start space-x-8 pt-5 pb-8">
           <div className="view space-x-1">
@@ -480,28 +503,22 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                   !!nftDetail[0]?.listings?.[0] && (
                     <>
                       {nftDetail.length > 1 && (
-                        <span className="text-md">
+                        <span className="text-lg">
                           Bundle: {nftDetail.length} items
                         </span>
                       )}
-                      <span className="text-md text-gray-500">
-                        Current price
-                      </span>
-                      <div className="price flex mb-3 space-x-2">
-                        <span className="text-3xl font-bold space-x-1 my-1 ">
-                          <span className="price-value">
-                            {nftDetail[selectedItemIndex].listings[0] && (
-                              <p className="text-sm font-medium text-gray-900 uppercase">
-                                {showingPrice(
-                                  nftDetail[selectedItemIndex].listings[0]
-                                    ?.start_price || "0"
-                                )}
-                                {nftDetail.length > 1 && " / 1 item"}
-                              </p>
+                      {nftDetail[selectedItemIndex].listings[0] && (
+                        <div className="flex gap-3 mb-3 text-lg">
+                          <div>Price:</div>
+                          <div className="font-medium text-gray-900 uppercase self-center">
+                            {showingPrice(
+                              nftDetail[selectedItemIndex].listings[0]
+                                ?.start_price || "0"
                             )}
-                          </span>
-                        </span>
-                      </div>
+                            {nftDetail.length > 1 && " / 1 item"}
+                          </div>
+                        </div>
+                      )}
                     </>
                   )}
 
@@ -563,21 +580,75 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                         Buy Now
                       </button>
                     </div>
-                    <button className="w-60 bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg">
-                      <i className="pi pi-tag"></i>
-                      <span className="pl-2">Make offer</span>
-                    </button>
+                    <div>
+                      <button
+                        onClick={() => setDialogMakeOffer(true)}
+                        className="w-60 bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg"
+                      >
+                        <i className="pi pi-tag"></i>
+                        <span className="pl-2">Make offer</span>
+                      </button>
+                      <Dialog
+                        header="Please input the price that you want to make offer"
+                        visible={dialogMakeOffer}
+                        style={{ width: "50vw" }}
+                        onHide={() => setDialogMakeOffer(false)}
+                        footer={
+                          <div>
+                            <Button
+                              label="Cancel"
+                              icon="pi pi-times"
+                              onClick={() => setDialogMakeOffer(false)}
+                              className="p-button-text"
+                            />
+                            <Button
+                              label="Make offer"
+                              icon="pi pi-check"
+                              onClick={() => handleMakeOffer(nftDetail)}
+                              autoFocus
+                            />
+                          </div>
+                        }
+                      >
+                        <div className="flex gap-3">
+                          <InputNumber
+                            placeholder="Input the price"
+                            value={price}
+                            onValueChange={(e: any) => setPrice(e.value)}
+                            minFractionDigits={2}
+                            maxFractionDigits={5}
+                            min={0}
+                          />
+                          <Dropdown
+                            value={selectedUnit}
+                            onChange={(e) => setSelectedUnit(e.value)}
+                            options={CURRENCY_UNITS}
+                            optionLabel="name"
+                            placeholder="Select a unit"
+                            className="md:w-14rem"
+                          />
+                        </div>
+                      </Dialog>
+                    </div>
                   </div>
                 )}
 
                 {canSell(nftDetail) && (
                   <div>
-                    <button
-                      className="w-1/2 bg-green-500 hover:bg-green-700 h-16 text-white rounded-md text-xl"
-                      onClick={() => setVisible(true)}
-                    >
-                      Sell
-                    </button>
+                    <div className="flex justify-evenly">
+                      <button
+                        className="w-2/5 bg-green-500 hover:bg-green-700 h-16 text-white rounded-md text-xl"
+                        onClick={() => setVisible(true)}
+                      >
+                        Sell
+                      </button>
+                      <button
+                        onClick={() => downloadItem(nftDetail)}
+                        className="w-2/5 bg-yellow-500 hover:bg-yellow-600 h-16 text-white rounded-md text-xl"
+                      >
+                        Download your NFT
+                      </button>
+                    </div>
                     <Dialog
                       header="Please input the price that you want to sell"
                       visible={visible}
@@ -619,6 +690,17 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                         />
                       </div>
                     </Dialog>
+                  </div>
+                )}
+
+                {!canSell(nftDetail) && canDownload(nftDetail) && (
+                  <div>
+                    <button
+                      onClick={() => downloadItem(nftDetail)}
+                      className="w-2/5 bg-yellow-500 hover:bg-yellow-600 h-16 text-white rounded-md text-xl"
+                    >
+                      Download your NFT
+                    </button>
                   </div>
                 )}
               </div>
