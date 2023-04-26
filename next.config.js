@@ -15,6 +15,10 @@ module.exports = () => {
         destination: `${process.env.BACKEND_URL}/order`,
       },
       {
+        source: "/api/v0.1/orderV2",
+        destination: `${process.env.BACKEND_URL}/orderV2`,
+      },
+      {
         source: "/api/v0.1/order/offer",
         destination: `${process.env.BACKEND_URL}/orders/offer`,
       },

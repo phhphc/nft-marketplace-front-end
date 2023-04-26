@@ -71,7 +71,6 @@ const CreateCollection = () => {
     useForm<IFormCollectionInput>();
 
   const onSubmit = async (data: IFormCollectionInput) => {
-    web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
     try {
       await createNFTCollectionService({
         toast,
@@ -93,7 +92,6 @@ const CreateCollection = () => {
       reset();
       setLogoFile("");
       setBannerFile("");
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 

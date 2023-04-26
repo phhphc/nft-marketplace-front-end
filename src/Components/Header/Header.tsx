@@ -9,12 +9,13 @@ import { AppContext, ICart } from "@Store/index";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ethers } from "ethers";
 import { WEB3_ACTION_TYPES } from "@Store/index";
-import avatar from "@Assets/avatar.png";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { handleRemoveFromCart, showingPrice } from "@Utils/index";
 import { Toast } from "primereact/toast";
 import { buyTokenService } from "@Services/ApiService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const toast = useRef<Toast>(null);
@@ -130,7 +131,6 @@ const Header = () => {
     provider: any,
     cart: ICart[]
   ) => {
-    web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
     setCartModalVisible(false);
     try {
       if (!web3Context.state.web3.provider) {
@@ -153,8 +153,11 @@ const Header = () => {
           provider,
         });
         handleRemoveAllFromCart();
+        window.location.reload();
       }
     } catch (error) {
+      console.log(error);
+      handleRemoveAllFromCart();
       toast.current &&
         toast.current.show({
           severity: "error",
@@ -162,8 +165,6 @@ const Header = () => {
           detail: "Fail to buy NFT!",
           life: 3000,
         });
-    } finally {
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
@@ -176,7 +177,7 @@ const Header = () => {
           .includes(item[0].listings[0]?.order_hash)
       )
     );
-  }, [web3Context.state.web3.cart]);
+  }, [web3Context.state.web3.cart, nftCollectionList.length]);
 
   return (
     <div id="header" className="fixed top-0 right-0 left-0 h-24 z-10">
@@ -206,11 +207,9 @@ const Header = () => {
             <>
               {/* Profile */}
               <Link href={`/user-profile`} className="profile-btn relative">
-                <Image
-                  src={avatar}
-                  alt="avatar"
-                  className="h-12 w-12 border-2 border-black rounded-full"
-                />
+                <i className="favorite cursor-pointer">
+                  <FontAwesomeIcon icon={faBars} />
+                </i>
                 <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
                   <Link
                     href={`/user-profile`}
@@ -263,11 +262,6 @@ const Header = () => {
               >
                 <div className="flex flex-col">
                   <div className="flex items-center justify-start space-x-3">
-                    <Image
-                      src={avatar}
-                      alt="avatar"
-                      className="h-12 w-12 border-2 border-black rounded-full"
-                    />
                     <span className="text-base w-32 overflow-hidden text-ellipsis">
                       {web3Context.state.web3.myAddress}
                     </span>
@@ -432,11 +426,13 @@ const Header = () => {
               </div>
               <button
                 className="bg-sky-500 p-4 rounded-lg text-xl font-semibold text-white hover:bg-sky-400"
-                onClick={() => (
-                  web3Context.state.web3.myWallet,
-                  web3Context.state.web3.provider,
-                  web3Context.state.web3.cart
-                )}
+                onClick={() =>
+                  handleBuyShoppingCart(
+                    web3Context.state.web3.myWallet,
+                    web3Context.state.web3.provider,
+                    web3Context.state.web3.cart
+                  )
+                }
               >
                 Purchase
               </button>

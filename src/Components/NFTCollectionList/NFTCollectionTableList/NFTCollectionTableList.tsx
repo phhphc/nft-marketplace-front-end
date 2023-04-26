@@ -17,13 +17,14 @@ import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 
 export interface INFTCollectionTableListProps {
   nftCollectionList: INFTCollectionItem[][];
+  refetch: () => void;
 }
 
 const NFTCollectionTableList = ({
   nftCollectionList,
+  refetch,
 }: INFTCollectionTableListProps) => {
   const toast = useRef<Toast>(null);
-  const { refetch } = useNFTCollectionList({});
   const web3Context = useContext(AppContext);
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);

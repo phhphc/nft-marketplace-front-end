@@ -248,57 +248,57 @@ export const buyTokenService = async ({
 
   const orderData = await Promise.all(
     orderHashes.map((item) =>
-      axios.get("/api/v0.1/order", {
+      axios.get("/api/v0.1/orderV2", {
         params: {
-          order_hash: item,
+          orderHash: item,
         },
       })
     )
   );
 
-  const signatures = orderData.map((item) => item.data.data.signature);
+  const signatures = orderData.map(
+    (item) => item.data.data.content[0].signature
+  );
 
   orderData.forEach((item) => {
-    const signature = item.data.data.signature;
+    const signature = item.data.data.content[0].signature;
     // I don't know why this is 1
-    item.data.data.totalOriginalConsiderationItems = 1;
-    delete item.data.data.order_hash;
-    delete item.data.data.signature;
+    item.data.data.content[0].totalOriginalConsiderationItems = 1;
+    delete item.data.data.content[0].status;
+    delete item.data.data.content[0].orderHash;
+    delete item.data.data.content[0].signature;
   });
 
   let tx;
-
-  console.log(
-    transformDataRequestToBuyNFT({
-      parameters: orderData[0].data.data,
-      signature: signatures[0],
-    })
-  );
 
   if (orderData.length === 1) {
     tx = await mkpContractWithSigner[
       "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
     ](
       transformDataRequestToBuyNFT({
-        parameters: orderData[0].data.data,
+        parameters: orderData[0].data.data.content[0],
         signature: signatures[0],
       }),
 
       {
-        value: toBN(price[0]).mul(orderData[0].data.data.offer.length),
+        value: toBN(price[0]).mul(
+          orderData[0].data.data.content[0].offer.length
+        ),
         gasLimit: 1000000,
       }
     );
   } else {
     const considerationArray: any = [];
     orderData.forEach((item1, index1) => {
-      item1.data.data.consideration.forEach((item2: any, index2: any) => {
-        considerationArray.push([[index1, index2]]);
-      });
+      item1.data.data.content[0].consideration.forEach(
+        (item2: any, index2: any) => {
+          considerationArray.push([[index1, index2]]);
+        }
+      );
     });
     const offerArray: any = [];
     orderData.forEach((item1, index1) => {
-      item1.data.data.offer.forEach((item2: any, index2: any) => {
+      item1.data.data.content[0].offer.forEach((item2: any, index2: any) => {
         offerArray.push([[index1, index2]]);
       });
     });
@@ -307,10 +307,23 @@ export const buyTokenService = async ({
       return acc.add(cur);
     }, toBN(0));
 
+    console.log(
+      orderData.map((item, index) =>
+        transformDataRequestToBuyNFT({
+          parameters: item.data.data.content[0],
+          signature: signatures[index],
+        })
+      ),
+      offerArray,
+      considerationArray,
+      99,
+      { value: toBN(realPrice), gasLimit: 1000000 }
+    );
+
     tx = await mkpContractWithSigner.fulfillAvailableOrders(
       orderData.map((item, index) =>
         transformDataRequestToBuyNFT({
-          parameters: item.data.data,
+          parameters: item.data.data.content[0],
           signature: signatures[index],
         })
       ),
@@ -538,7 +551,7 @@ ICreateCollectionProps) => {
   axios
     .post("api/v0.1/collection", params, {
       headers: {
-        "content-type": "application/json",
+        "content[0]-type": "application/json",
       },
     })
     .then(function (response) {
