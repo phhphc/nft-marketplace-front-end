@@ -1,0 +1,11 @@
+#nft-activity {
+  .p-multiselect-panel .p-multiselect-header {
+    display: none !important;
+  }
+}
+
+.p-accordion
+  .p-accordion-header:not(.p-disabled)
+  .p-accordion-header-link:focus {
+  box-shadow: unset !important;
+}

@@ -189,3 +189,16 @@ export interface ICollectionItem {
   created_at: Date;
   image: string;
 }
+
+export interface INFTActivity {
+  event: string;
+  price: string;
+  from: string;
+  to: string;
+  date: string;
+}
+
+export interface INFTEvent {
+  label: string;
+  value: string;
+}
