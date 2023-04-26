@@ -32,12 +32,23 @@ const NFTCollectionGridItem = ({
   setCountFetch,
 }: INFTCollectionGridItemProps) => {
   const canBuy = (item: INFTCollectionItem[]) => {
-    return !!item[0].listings[0];
+    return (
+      !!item[0].listings[0] &&
+      item[0].owner !== web3Context.state.web3.myAddress
+    );
   };
 
   const canSell = (item: INFTCollectionItem[]) => {
     return (
       item[0].listings.length === 0 &&
+      item[0].owner === web3Context.state.web3.myAddress
+    );
+  };
+
+  const isSelling = (item: INFTCollectionItem[]) => {
+    return (
+      !canBuy(item) &&
+      !canSell(item) &&
       item[0].owner === web3Context.state.web3.myAddress
     );
   };
@@ -258,7 +269,7 @@ const NFTCollectionGridItem = ({
               </h3>
             )}
             {item[0].listings && (
-              <p className="flex gap-1 text-sm font-medium text-gray-900">
+              <p className="flex gap-1 text-sm font-medium text-gray-900 pt-1">
                 {showingPrice(item[0].listings[0]?.start_price || "0")}
                 {item.length > 1 && " / 1 item"}
               </p>
@@ -362,6 +373,13 @@ const NFTCollectionGridItem = ({
                   />
                 </div>
               </Dialog>
+            </div>
+          )}
+          {isSelling(item) && (
+            <div className="w-full bg-yellow-500 h-10 text-white rounded-md text-center">
+              <span className="inline-grid h-full items-center">
+                Your NFT is selling
+              </span>
             </div>
           )}
         </div>
