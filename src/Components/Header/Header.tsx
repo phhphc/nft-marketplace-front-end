@@ -82,7 +82,6 @@ const Header = () => {
 
   // Cart
   const { nftCollectionList } = useNFTCollectionList({});
-  const [cartItemList, setCartItemList] = useState<INFTCollectionItem[][]>([]);
   const [cartModalVisible, setCartModalVisible] = useState(false);
   // const totalPrice = useMemo(() => {
   //   return Math.round(
@@ -94,6 +93,13 @@ const Header = () => {
   //       : 0
   //   );
   // }, [cartItemList]);
+  const cartItemList = useMemo(() => {
+    return nftCollectionList.filter((item: INFTCollectionItem[]) =>
+      web3Context.state.web3.cart
+        .map((item) => item.orderHash)
+        .includes(item[0].listings[0]?.order_hash)
+    );
+  }, [web3Context.state.web3.cart, nftCollectionList]);
 
   const totalPrice = useMemo(() => {
     return Math.round(
@@ -115,7 +121,6 @@ const Header = () => {
   }, [cartItemList]);
 
   const handleRemoveAllFromCart = () => {
-    setCartItemList([]);
     web3Context.dispatch({
       type: WEB3_ACTION_TYPES.CHANGE,
       payload: {
@@ -156,7 +161,6 @@ const Header = () => {
         window.location.reload();
       }
     } catch (error) {
-      console.log(error);
       handleRemoveAllFromCart();
       toast.current &&
         toast.current.show({
@@ -167,17 +171,6 @@ const Header = () => {
         });
     }
   };
-
-  useEffect(() => {
-    const cart = web3Context.state.web3.cart;
-    setCartItemList(
-      nftCollectionList.filter((item: INFTCollectionItem[]) =>
-        cart
-          .map((item) => item.orderHash)
-          .includes(item[0].listings[0]?.order_hash)
-      )
-    );
-  }, [web3Context.state.web3.cart, nftCollectionList.length]);
 
   return (
     <div id="header" className="fixed top-0 right-0 left-0 h-24 z-10">

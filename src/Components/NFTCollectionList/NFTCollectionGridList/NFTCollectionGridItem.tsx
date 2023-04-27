@@ -24,12 +24,14 @@ export interface INFTCollectionGridItemProps {
   viewType: COLLECTION_VIEW_TYPE;
   mode: NFT_COLLECTION_MODE;
   refetch: () => void;
+  hideSellBundle?: boolean;
 }
 
 const NFTCollectionGridItem = ({
   item,
   viewType,
   refetch,
+  hideSellBundle = false,
 }: INFTCollectionGridItemProps) => {
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
@@ -211,7 +213,7 @@ const NFTCollectionGridItem = ({
       <Toast ref={toast} position="top-center" />
       <div className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none">
         <div className="relative">
-          {canSell(item) && (
+          {canSell(item) && !hideSellBundle && (
             <Checkbox
               onChange={onClickItemSellBundle}
               checked={checked}
