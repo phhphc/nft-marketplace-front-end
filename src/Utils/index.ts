@@ -304,7 +304,7 @@ export const createOrder = async (
   const orderParameters = stringHexToNumber(
     toBigNumberHex({
       offerer: await offerer.getAddress(),
-      zone: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      zone: "0x0000000000000000000000000000000000000000",
       offer,
       consideration,
       totalOriginalConsiderationItems: consideration.length,
