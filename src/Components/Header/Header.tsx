@@ -200,9 +200,10 @@ const Header = () => {
             <>
               {/* Profile */}
               <Link href={`/user-profile`} className="profile-btn relative">
-                <i className="favorite cursor-pointer">
-                  <FontAwesomeIcon icon={faBars} />
-                </i>
+                <button className="rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center">
+                  <i className="pi pi-user text-black text-3xl"></i>
+                </button>
+
                 <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
                   <Link
                     href={`/user-profile`}
