@@ -49,7 +49,7 @@ const CategoryTabMenu = ({}: ICollectionTabMenu) => {
             <h4 className="mb-1 font-medium text-2xl">
               {selectedCategory.name}
             </h4>
-            <div className="mt-5 flex justify-between items-center gap-2">
+            <div className="mt-5">
               <Tag severity="danger" className="text-xl">
                 <i className="pi pi-clock pb-2">
                   <span>
@@ -60,11 +60,6 @@ const CategoryTabMenu = ({}: ICollectionTabMenu) => {
                   </span>
                 </i>
               </Tag>
-
-              <Button
-                icon="pi pi-star-fill"
-                className="p-button-success p-button-rounded"
-              />
             </div>
           </div>
         </div>

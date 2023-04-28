@@ -42,6 +42,28 @@ const NFTCollectionTableList = ({
     });
   }, [selectedNFTs]);
 
+  const canBuy = (item: INFTCollectionItem[]) => {
+    return (
+      !!item[0].listings[0] &&
+      item[0].owner !== web3Context.state.web3.myAddress
+    );
+  };
+
+  const canSell = (item: INFTCollectionItem[]) => {
+    return (
+      item[0].listings.length === 0 &&
+      item[0].owner === web3Context.state.web3.myAddress
+    );
+  };
+
+  const isSelling = (item: INFTCollectionItem[]) => {
+    return (
+      !canBuy(item) &&
+      !canSell(item) &&
+      item[0].owner === web3Context.state.web3.myAddress
+    );
+  };
+
   const imageBodyTemplate = (rowData: INFTCollectionItem[]) => {
     return (
       <img
@@ -57,7 +79,14 @@ const NFTCollectionTableList = ({
   };
 
   const priceBodyTemplate = (rowData: INFTCollectionItem[]): string => {
-    return showingPrice(rowData[0]?.listings[0]?.start_price || "0");
+    return rowData.length == 1
+      ? showingPrice(rowData[0]?.listings[0]?.start_price || "0")
+      : showingPrice(
+          String(
+            Number(rowData[0].listings[0]?.start_price || 0) * rowData.length
+          )
+        );
+    // return showingPrice(rowData[0]?.listings[0]?.start_price || "0");
   };
 
   const nameBodyTemplate = (rowData: INFTCollectionItem[]) => {
@@ -67,10 +96,31 @@ const NFTCollectionTableList = ({
           style={{ cursor: "pointer" }}
           onClick={() => router.push(`/detail/${rowData[0].identifier}`)}
         >
-          {rowData[0].name || "Item name"}
+          {rowData.length == 1
+            ? rowData[0].name || "Item name"
+            : rowData.map((item) => <div>{item.name || "Item name"}</div>)}
         </a>
       </div>
     );
+  };
+
+  const quantityBodyTemplate = (rowData: INFTCollectionItem[]): number => {
+    return rowData.length;
+  };
+
+  const ownerBodyTemplate = (rowData: INFTCollectionItem[]): string => {
+    return rowData[0]?.owner;
+  };
+
+  const statusBodyTemplate = (rowData: INFTCollectionItem[]): string => {
+    if (canBuy(rowData)) {
+      return "You can buy this NFT";
+    } else if (canSell(rowData)) {
+      return "You can sell this NFT";
+    } else if (isSelling(rowData)) {
+      return "Your NFT is selling";
+    }
+    return "";
   };
 
   const handleSellBundle = async () => {
@@ -179,16 +229,26 @@ const NFTCollectionTableList = ({
                     header="Name"
                     body={nameBodyTemplate}
                   ></Column>
+                  <Column
+                    header="Quantity"
+                    body={quantityBodyTemplate}
+                  ></Column>
                   <Column header="Image" body={imageBodyTemplate}></Column>
                   <Column
                     field="price"
                     header="Current Price"
                     body={priceBodyTemplate}
                   ></Column>
-                  <Column header="Best Offer"></Column>
-                  <Column header="Last Sale"></Column>
-                  <Column header="Owner"></Column>
-                  <Column header="Time Listed"></Column>
+                  <Column
+                    field="owner"
+                    header="Owner"
+                    body={ownerBodyTemplate}
+                  ></Column>
+                  <Column
+                    field="status"
+                    header="Status"
+                    body={statusBodyTemplate}
+                  ></Column>
                 </DataTable>
               </div>
             </div>

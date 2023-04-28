@@ -52,58 +52,18 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
             data-pr-tooltip="This collection belongs to a verified account and has significant interest or sales."
           />
         </div>
-        <div className="detail-link">
-          <div className="flex gap-10 pt-4 text-lg">
-            <Tooltip target=".icon-etherscan" position="top" />
-            <i
-              className="icon-etherscan pi pi-chart-line"
-              data-pr-tooltip="View on Etherscan"
-              role="button"
-            />
-
-            <Tooltip target=".icon-website" position="top" />
-            <i
-              role="button"
-              className="icon-website pi pi-globe"
-              data-pr-tooltip="Website"
-            />
-
-            <Tooltip target=".icon-facebook" position="top" />
-            <i
-              role="button"
-              className="icon-facebook pi pi-facebook"
-              data-pr-tooltip="Facebook"
-            />
-
-            <Tooltip target=".icon-share" position="top" />
-            <i
-              role="button"
-              className="icon-share pi pi-share-alt"
-              data-pr-tooltip="Share"
-            />
-
-            <Tooltip target=".icon-watch-list" position="top" />
-            <i
-              role="button"
-              className="icon-watch-list pi pi-star"
-              data-pr-tooltip="Add to watchlist"
-            />
-
-            <i role="button" className="pi pi-ellipsis-h" />
-          </div>
-        </div>
+        
       </div>
       {/* <div className="nft-author pt-3">
         By <span className="font-semibold">GEMMA-Factory </span>
       </div> */}
       <div className="flex detail-infor pt-3 text-lg">
-        <div>
+        {/* <div>
           Items{" "}
           <span className="font-semibold pr-1">
-            {/* {nftCollectionList?.length || 0} */}
           </span>
         </div>
-        ·
+        · */}
         <div className="pl-1">
           Created{" "}
           <span className="font-semibold pr-1">
