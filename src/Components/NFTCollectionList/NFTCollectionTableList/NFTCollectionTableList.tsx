@@ -4,7 +4,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { showingPrice } from "@Utils/index";
-import { Checkbox } from "primereact/checkbox";
 import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
@@ -18,11 +17,13 @@ import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 export interface INFTCollectionTableListProps {
   nftCollectionList: INFTCollectionItem[][];
   refetch: () => void;
+  hideSellBundle?: boolean;
 }
 
 const NFTCollectionTableList = ({
   nftCollectionList,
   refetch,
+  hideSellBundle = false,
 }: INFTCollectionTableListProps) => {
   const toast = useRef<Toast>(null);
   const web3Context = useContext(AppContext);
@@ -157,52 +158,53 @@ const NFTCollectionTableList = ({
     <>
       {nftCollectionList?.length > 0 ? (
         <>
-          {web3Context.state.web3.listItemsSellBundle.length > 0 && (
-            <div className="flex justify-end mb-8">
-              <Button onClick={() => setVisible(true)}>Sell as bundle</Button>
-              <Dialog
-                header="Please input the price that you want to sell as bundle"
-                visible={visible}
-                style={{ width: "50vw" }}
-                onHide={() => setVisible(false)}
-                footer={
-                  <div>
-                    <Button
-                      label="Cancel"
-                      icon="pi pi-times"
-                      onClick={() => setVisible(false)}
-                      className="p-button-text"
+          {web3Context.state.web3.listItemsSellBundle.length > 0 &&
+            !hideSellBundle && (
+              <div className="flex justify-end mb-8">
+                <Button onClick={() => setVisible(true)}>Sell as bundle</Button>
+                <Dialog
+                  header="Please input the price that you want to sell as bundle"
+                  visible={visible}
+                  style={{ width: "50vw" }}
+                  onHide={() => setVisible(false)}
+                  footer={
+                    <div>
+                      <Button
+                        label="Cancel"
+                        icon="pi pi-times"
+                        onClick={() => setVisible(false)}
+                        className="p-button-text"
+                      />
+                      <Button
+                        label="Sell"
+                        icon="pi pi-check"
+                        onClick={() => handleSellBundle()}
+                        autoFocus
+                      />
+                    </div>
+                  }
+                >
+                  <div className="flex gap-3">
+                    <InputNumber
+                      placeholder="Input the price"
+                      value={price}
+                      onValueChange={(e: any) => setPrice(e.value)}
+                      minFractionDigits={2}
+                      maxFractionDigits={5}
+                      min={0}
                     />
-                    <Button
-                      label="Sell"
-                      icon="pi pi-check"
-                      onClick={() => handleSellBundle()}
-                      autoFocus
+                    <Dropdown
+                      value={selectedUnit}
+                      onChange={(e) => setSelectedUnit(e.value)}
+                      options={CURRENCY_UNITS}
+                      optionLabel="name"
+                      placeholder="Select a unit"
+                      className="md:w-14rem"
                     />
                   </div>
-                }
-              >
-                <div className="flex gap-3">
-                  <InputNumber
-                    placeholder="Input the price"
-                    value={price}
-                    onValueChange={(e: any) => setPrice(e.value)}
-                    minFractionDigits={2}
-                    maxFractionDigits={5}
-                    min={0}
-                  />
-                  <Dropdown
-                    value={selectedUnit}
-                    onChange={(e) => setSelectedUnit(e.value)}
-                    options={CURRENCY_UNITS}
-                    optionLabel="name"
-                    placeholder="Select a unit"
-                    className="md:w-14rem"
-                  />
-                </div>
-              </Dialog>
-            </div>
-          )}
+                </Dialog>
+              </div>
+            )}
           <div className="nft-collection-table-list">
             <div className="datatable-templating-demo ">
               <div className="card">
@@ -216,10 +218,12 @@ const NFTCollectionTableList = ({
                   dataKey="0.identifier"
                   responsiveLayout="scroll"
                 >
-                  <Column
-                    selectionMode="multiple"
-                    headerStyle={{ width: "3em" }}
-                  ></Column>
+                  {!hideSellBundle && (
+                    <Column
+                      selectionMode="multiple"
+                      headerStyle={{ width: "3em" }}
+                    ></Column>
+                  )}
                   <Column
                     field="name"
                     header="Name"

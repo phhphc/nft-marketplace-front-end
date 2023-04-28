@@ -141,12 +141,10 @@ export const sellNFT = async ({
 
     const erc721ContractWithSigner = erc721Contract.connect(myWallet);
 
-    if (!isApprovedForAllNFTs) {
-      await erc721ContractWithSigner["setApprovalForAll(address,bool)"](
-        mkpAddress,
-        true
-      );
-    }
+    await erc721ContractWithSigner["setApprovalForAll(address,bool)"](
+      mkpAddress,
+      true
+    );
 
     const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 
@@ -238,115 +236,115 @@ export const buyTokenService = async ({
   myWallet,
   provider,
 }: IBuyTokenServiceProps) => {
-  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+  try {
+    const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
 
-  await provider.send("eth_requestAccounts", []);
+    await provider.send("eth_requestAccounts", []);
 
-  const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
+    const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 
-  const mkpContractWithSigner = mkpContract.connect(myWallet);
+    const mkpContractWithSigner = mkpContract.connect(myWallet);
 
-  const orderData = await Promise.all(
-    orderHashes.map((item) =>
-      axios.get("/api/v0.1/orderV2", {
-        params: {
-          orderHash: item,
-        },
-      })
-    )
-  );
-
-  const signatures = orderData.map(
-    (item) => item.data.data.content[0].signature
-  );
-
-  orderData.forEach((item) => {
-    const signature = item.data.data.content[0].signature;
-    // I don't know why this is 1
-    item.data.data.content[0].totalOriginalConsiderationItems = 1;
-    delete item.data.data.content[0].status;
-    delete item.data.data.content[0].orderHash;
-    delete item.data.data.content[0].signature;
-  });
-
-  let tx;
-
-  if (orderData.length === 1) {
-    tx = await mkpContractWithSigner[
-      "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
-    ](
-      transformDataRequestToBuyNFT({
-        parameters: orderData[0].data.data.content[0],
-        signature: signatures[0],
-      }),
-
-      {
-        value: toBN(price[0]).mul(
-          orderData[0].data.data.content[0].offer.length
-        ),
-        gasLimit: 1000000,
-      }
+    const orderData = await Promise.all(
+      orderHashes.map((item) =>
+        axios.get("/api/v0.1/orderV2", {
+          params: {
+            orderHash: item,
+          },
+        })
+      )
     );
-  } else {
-    const considerationArray: any = [];
-    orderData.forEach((item1, index1) => {
-      item1.data.data.content[0].consideration.forEach(
-        (item2: any, index2: any) => {
-          considerationArray.push([[index1, index2]]);
+
+    const signatures = orderData.map(
+      (item) => item.data.data.content[0].signature
+    );
+
+    orderData.forEach((item) => {
+      const signature = item.data.data.content[0].signature;
+      // I don't know why this is 1
+      item.data.data.content[0].totalOriginalConsiderationItems = 1;
+      delete item.data.data.content[0].status;
+      delete item.data.data.content[0].orderHash;
+      delete item.data.data.content[0].signature;
+    });
+
+    let tx;
+
+    if (orderData.length === 1) {
+      tx = await mkpContractWithSigner[
+        "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
+      ](
+        transformDataRequestToBuyNFT({
+          parameters: orderData[0].data.data.content[0],
+          signature: signatures[0],
+        }),
+
+        {
+          value: toBN(price[0]).mul(
+            orderData[0].data.data.content[0].offer.length
+          ),
+          // gasLimit: 30000,
         }
       );
-    });
-    const offerArray: any = [];
-    orderData.forEach((item1, index1) => {
-      item1.data.data.content[0].offer.forEach((item2: any, index2: any) => {
-        offerArray.push([[index1, index2]]);
+    } else {
+      const considerationArray: any = [];
+      orderData.forEach((item1, index1) => {
+        item1.data.data.content[0].consideration.forEach(
+          (item2: any, index2: any) => {
+            considerationArray.push([[index1, index2]]);
+          }
+        );
       });
-    });
+      const offerArray: any = [];
+      orderData.forEach((item1, index1) => {
+        item1.data.data.content[0].offer.forEach((item2: any, index2: any) => {
+          offerArray.push([[index1, index2]]);
+        });
+      });
 
-    const realPrice = price.reduce((acc, cur) => {
-      return acc.add(cur);
-    }, toBN(0));
+      const realPrice = price.reduce((acc, cur) => {
+        return acc.add(cur);
+      }, toBN(0));
 
-    console.log(
-      orderData.map((item, index) =>
-        transformDataRequestToBuyNFT({
-          parameters: item.data.data.content[0],
-          signature: signatures[index],
-        })
-      ),
-      offerArray,
-      considerationArray,
-      99,
-      { value: toBN(realPrice), gasLimit: 1000000 }
-    );
+      console.log(
+        orderData.map((item, index) =>
+          transformDataRequestToBuyNFT({
+            parameters: item.data.data.content[0],
+            signature: signatures[index],
+          })
+        ),
+        offerArray,
+        considerationArray,
+        99,
+        { value: toBN(realPrice), gasLimit: 1000000 }
+      );
 
-    tx = await mkpContractWithSigner.fulfillAvailableOrders(
-      orderData.map((item, index) =>
-        transformDataRequestToBuyNFT({
-          parameters: item.data.data.content[0],
-          signature: signatures[index],
-        })
-      ),
-      offerArray.map(toFulfillmentComponents),
-      considerationArray.map(toFulfillmentComponents),
-      99,
-      { value: toBN(realPrice), gasLimit: 1000000 }
-    );
+      tx = await mkpContractWithSigner.fulfillAvailableOrders(
+        orderData.map((item, index) =>
+          transformDataRequestToBuyNFT({
+            parameters: item.data.data.content[0],
+            signature: signatures[index],
+          })
+        ),
+        offerArray.map(toFulfillmentComponents),
+        considerationArray.map(toFulfillmentComponents),
+        99,
+        { value: toBN(realPrice) }
+      );
+    }
+    console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
+    await tx.wait();
+
+    toast.current &&
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Buy NFT successfully!",
+        life: 3000,
+      });
+  } catch (err) {
+    console.dir(err);
   }
-  console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
-  await tx.wait();
-
-  toast.current &&
-    toast.current.show({
-      severity: "success",
-      summary: "Success",
-      detail: "Buy NFT successfully!",
-      life: 3000,
-    });
-
-  // } catch (err) {
-  //   console.dir(err);
-  // }
   //  todo: buy cart
 };
 

@@ -15,12 +15,14 @@ export interface INFTCollectionListProps {
   nftCollectionList: INFTCollectionItem[][];
   mode: NFT_COLLECTION_MODE;
   refetch: () => void;
+  hideSellBundle?: boolean;
 }
 
 const NFTCollectionList = ({
   nftCollectionList,
   mode,
   refetch,
+  hideSellBundle = false,
 }: INFTCollectionListProps) => {
   const [currentSort, setCurrentSort] = useState<IDropDown>(SORT_OPTIONS[0]);
   const [searchValue, setSearchValue] = useState<string>("");
@@ -97,6 +99,7 @@ const NFTCollectionList = ({
             <NFTCollectionTableList
               refetch={refetch}
               nftCollectionList={nftCollectionListSearch}
+              hideSellBundle={hideSellBundle}
             />
           ) : (
             <NFTCollectionGridList
@@ -104,6 +107,7 @@ const NFTCollectionList = ({
               viewType={viewType}
               nftCollectionList={nftCollectionListSearch}
               mode={mode}
+              hideSellBundle={hideSellBundle}
             />
           )}
         </div>

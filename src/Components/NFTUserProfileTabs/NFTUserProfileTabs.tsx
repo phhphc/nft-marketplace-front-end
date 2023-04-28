@@ -17,6 +17,7 @@ const NFTUserProfileTabs = ({
         nftCollectionList={nftCollectionList}
         refetch={refetch}
         mode={NFT_COLLECTION_MODE.CAN_SELL}
+        hideSellBundle
       />
     </div>
   );
