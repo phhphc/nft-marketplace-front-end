@@ -41,6 +41,28 @@ const NFTCollectionTableList = ({
     });
   }, [selectedNFTs]);
 
+  const canBuy = (item: INFTCollectionItem[]) => {
+    return (
+      !!item[0].listings[0] &&
+      item[0].owner !== web3Context.state.web3.myAddress
+    );
+  };
+
+  const canSell = (item: INFTCollectionItem[]) => {
+    return (
+      item[0].listings.length === 0 &&
+      item[0].owner === web3Context.state.web3.myAddress
+    );
+  };
+
+  const isSelling = (item: INFTCollectionItem[]) => {
+    return (
+      !canBuy(item) &&
+      !canSell(item) &&
+      item[0].owner === web3Context.state.web3.myAddress
+    );
+  };
+
   const imageBodyTemplate = (rowData: INFTCollectionItem[]) => {
     return (
       <img
@@ -70,6 +92,21 @@ const NFTCollectionTableList = ({
         </a>
       </div>
     );
+  };
+
+  const ownerBodyTemplate = (rowData: INFTCollectionItem[]): string => {
+    return rowData[0]?.owner;
+  };
+
+  const statusBodyTemplate = (rowData: INFTCollectionItem[]): string => {
+    if (canBuy(rowData)) {
+      return "You can buy this NFT";
+    } else if (canSell(rowData)) {
+      return "You can sell this NFT";
+    } else if (isSelling(rowData)) {
+      return "Your NFT is selling";
+    }
+    return "";
   };
 
   const handleSellBundle = async () => {
@@ -181,10 +218,16 @@ const NFTCollectionTableList = ({
                     header="Current Price"
                     body={priceBodyTemplate}
                   ></Column>
-                  <Column header="Best Offer"></Column>
-                  <Column header="Last Sale"></Column>
-                  <Column header="Owner"></Column>
-                  <Column header="Time Listed"></Column>
+                  <Column
+                    field="owner"
+                    header="Owner"
+                    body={ownerBodyTemplate}
+                  ></Column>
+                  <Column
+                    field="status"
+                    header="Status"
+                    body={statusBodyTemplate}
+                  ></Column>
                 </DataTable>
               </div>
             </div>
