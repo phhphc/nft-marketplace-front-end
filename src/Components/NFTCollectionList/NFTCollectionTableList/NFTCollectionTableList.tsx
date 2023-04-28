@@ -78,7 +78,14 @@ const NFTCollectionTableList = ({
   };
 
   const priceBodyTemplate = (rowData: INFTCollectionItem[]): string => {
-    return showingPrice(rowData[0]?.listings[0]?.start_price || "0");
+    return rowData.length == 1
+      ? showingPrice(rowData[0]?.listings[0]?.start_price || "0")
+      : showingPrice(
+          String(
+            Number(rowData[0].listings[0]?.start_price || 0) * rowData.length
+          )
+        );
+    // return showingPrice(rowData[0]?.listings[0]?.start_price || "0");
   };
 
   const nameBodyTemplate = (rowData: INFTCollectionItem[]) => {
@@ -88,10 +95,16 @@ const NFTCollectionTableList = ({
           style={{ cursor: "pointer" }}
           onClick={() => router.push(`/detail/${rowData[0].identifier}`)}
         >
-          {rowData[0].name || "Item name"}
+          {rowData.length == 1
+            ? rowData[0].name || "Item name"
+            : rowData.map((item) => <div>{item.name || "Item name"}</div>)}
         </a>
       </div>
     );
+  };
+
+  const quantityBodyTemplate = (rowData: INFTCollectionItem[]): number => {
+    return rowData.length;
   };
 
   const ownerBodyTemplate = (rowData: INFTCollectionItem[]): string => {
@@ -211,6 +224,10 @@ const NFTCollectionTableList = ({
                     field="name"
                     header="Name"
                     body={nameBodyTemplate}
+                  ></Column>
+                  <Column
+                    header="Quantity"
+                    body={quantityBodyTemplate}
                   ></Column>
                   <Column header="Image" body={imageBodyTemplate}></Column>
                   <Column
