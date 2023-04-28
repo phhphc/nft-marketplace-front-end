@@ -1,0 +1,74 @@
+#edit-profile-form {
+  .upload-profile-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+
+    .btn {
+      border: 2px solid gray;
+      color: gray;
+      border-radius: 50%;
+      border-style: dotted;
+      height: 10rem;
+      width: 10rem;
+    }
+
+    input[type="file"] {
+      width: 10rem;
+      height: 10rem;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      z-index: 1;
+    }
+  }
+
+  .upload-profile-btn-wrapper:hover {
+    background: #ebebeb;
+    border-radius: 50%;
+  }
+
+  .profile-image {
+    position: absolute;
+    border-radius: 50%;
+    height: 10rem;
+    width: 10rem;
+    object-fit: cover;
+  }
+
+  .upload-banner-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+
+    .btn {
+      border: 2px solid gray;
+      color: gray;
+      border-style: dotted;
+      height: 10rem;
+      width: 10rem;
+    }
+
+    input[type="file"] {
+      width: 10rem;
+      height: 10rem;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      z-index: 1;
+    }
+  }
+
+  .upload-banner-btn-wrapper:hover {
+    background: #ebebeb;
+  }
+
+  .profile-banner {
+    position: absolute;
+    height: 10rem;
+    width: 10rem;
+    object-fit: cover;
+  }
+}

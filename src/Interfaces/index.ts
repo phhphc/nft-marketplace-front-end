@@ -216,3 +216,11 @@ export interface INFTOffers {
   expiration: string;
   from: string;
 }
+
+export interface IFormEditProfileInput {
+  profileImage: string;
+  profileBanner: string;
+  username: string;
+  bio: string;
+  email: string;
+}
