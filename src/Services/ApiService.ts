@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ethers } from "ethers";
 import { erc721Abi } from "@Constants/erc721Abi";
+import { erc20Abi } from "@Constants/erc20Abi";
 import { mkpAbi } from "@Constants/mkpAbi";
 import { erc721CollectionAbi } from "@Constants/erc721CollectionAbi";
 import FormData from "form-data";
@@ -11,6 +12,7 @@ import {
   transformDataRequestToSellNFT,
   randomBN,
   toAddress,
+  getTestItem20,
 } from "@Utils/index";
 import { CURRENCY } from "@Constants/index";
 import {
@@ -34,11 +36,16 @@ interface ISellNFTProps {
   item: INFTCollectionItem[];
   price: string;
   unit: string;
-  isApprovedForAllNFTs?: boolean;
 }
 
-interface IGetNFTCollectionListServiceProps {
-  token?: string;
+interface IMakeOfferProps {
+  toast: any;
+  provider: any;
+  myAddress: string;
+  myWallet: any;
+  item: INFTCollectionItem;
+  price: string;
+  unit: string;
 }
 
 interface IGetOfferByTokenProps {
@@ -46,7 +53,7 @@ interface IGetOfferByTokenProps {
   tokenAddress: string;
 }
 
-interface IBuyTokenServiceProps {
+interface IBuyTokenProps {
   toast: any;
   provider: any;
   myWallet: any;
@@ -54,9 +61,13 @@ interface IBuyTokenServiceProps {
   price: string[];
 }
 
-interface IGetNFTCollectionListInfoServiceProps {
+interface IFulfillMakeOfferProps {
   toast: any;
-  callback: any;
+  provider: any;
+  myWallet: any;
+  orderHash: string;
+  price: string[];
+  myAddress: string;
 }
 
 interface ICreateNFTServiceProps {
@@ -117,6 +128,117 @@ export const getOfferByToken = async ({
     .catch((err) => {});
 };
 
+export const makeOffer = async ({
+  toast,
+  provider,
+  myAddress,
+  myWallet,
+  item,
+  price,
+  unit,
+}: IMakeOfferProps) => {
+  try {
+    const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
+    const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+
+    const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
+
+    const erc20ContractWithSigner = erc20Contract.connect(myWallet);
+
+    await erc20ContractWithSigner.mint({
+      value: unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
+    });
+
+    await erc20ContractWithSigner.increaseAllowance(
+      myAddress,
+      unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price)
+    );
+
+    const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
+
+    const mkpContractWithSigner = mkpContract.connect(myWallet);
+
+    const offer = [
+      getTestItem20(
+        0,
+        unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
+        unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
+        undefined,
+        erc20Address
+      ),
+    ];
+
+    const consideration = [
+      getTestItem721(item.identifier, 1, 1, myAddress, item.token),
+    ];
+    const { chainId } = await provider.getNetwork();
+    const {
+      order,
+      orderHash,
+      value,
+      orderStatus,
+      orderComponents,
+      startTime,
+      endTime,
+      signature,
+    } = await createOrder(
+      mkpContractWithSigner,
+      chainId,
+      myWallet,
+      undefined,
+      offer,
+      consideration,
+      0 // FULL_OPEN
+    );
+
+    console.log(
+      transformDataRequestToSellNFT({
+        orderHash,
+        offerer: myAddress,
+        zone: orderComponents.zone,
+        zone_hash: orderComponents.zoneHash,
+        signature,
+        offer,
+        consideration,
+        orderType: orderComponents.orderType,
+        orderValue: value,
+        startTime,
+        endTime,
+        salt: orderComponents.salt,
+        counter: orderComponents.counter,
+      })
+    );
+
+    await axios.post(
+      "/api/v0.1/order",
+      transformDataRequestToSellNFT({
+        orderHash,
+        offerer: myAddress,
+        zone: orderComponents.zone,
+        zone_hash: orderComponents.zoneHash,
+        signature,
+        offer,
+        consideration,
+        orderType: orderComponents.orderType,
+        orderValue: value,
+        startTime,
+        endTime,
+        salt: orderComponents.salt,
+        counter: orderComponents.counter,
+      })
+    );
+    toast.current &&
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Make order successfully!",
+        life: 15000,
+      });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export const sellNFT = async ({
   toast,
   provider,
@@ -125,13 +247,10 @@ export const sellNFT = async ({
   item,
   price,
   unit,
-  isApprovedForAllNFTs = false,
 }: ISellNFTProps) => {
   try {
     const erc721Address = item[0].token;
     const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
-
-    await provider.send("eth_requestAccounts", []);
 
     const erc721Contract = new ethers.Contract(
       erc721Address,
@@ -141,16 +260,19 @@ export const sellNFT = async ({
 
     const erc721ContractWithSigner = erc721Contract.connect(myWallet);
 
-    await erc721ContractWithSigner["setApprovalForAll(address,bool)"](
-      mkpAddress,
-      true
+    const isApproved = await erc721ContractWithSigner.isApprovedForAll(
+      myAddress,
+      mkpAddress
     );
+
+    if (!isApproved) {
+      await erc721ContractWithSigner.setApprovalForAll(mkpAddress, true);
+    }
 
     const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 
     const mkpContractWithSigner = mkpContract.connect(myWallet);
 
-    // await erc721ContractWithSigner["mint"](await signer.getAddress(), nftId, uri);
     const offer = item.map((nft) =>
       getTestItem721(nft.identifier, 1, 1, undefined, nft.token)
     );
@@ -229,13 +351,90 @@ export const sellNFT = async ({
   }
 };
 
-export const buyTokenService = async ({
+export const fulfillMakeOffer = async ({
+  toast,
+  orderHash,
+  price,
+  myWallet,
+  provider,
+  myAddress,
+}: IFulfillMakeOfferProps) => {
+  try {
+    const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+
+    const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
+
+    const mkpContractWithSigner = mkpContract.connect(myWallet);
+
+    const orderData = await axios.get("/api/v0.1/orderV2", {
+      params: {
+        orderHash,
+        isCancelled: false,
+        isFulfilled: false,
+        isInvalid: false,
+      },
+    });
+
+    const erc721Address = orderData.data.data.content[0].token;
+
+    const erc721Contract = new ethers.Contract(
+      erc721Address,
+      erc721Abi,
+      provider
+    );
+
+    const erc721ContractWithSigner = erc721Contract.connect(myWallet);
+
+    const isApproved = await erc721ContractWithSigner.isApprovedForAll(
+      myAddress,
+      mkpAddress
+    );
+
+    if (!isApproved) {
+      await erc721ContractWithSigner.setApprovalForAll(mkpAddress, true);
+    }
+
+    const signature = orderData.data.data.content[0].signature;
+
+    orderData.data.data.content[0].totalOriginalConsiderationItems = 1;
+    delete orderData.data.data.content[0].status;
+    delete orderData.data.data.content[0].orderHash;
+    delete orderData.data.data.content[0].signature;
+
+    const tx = await mkpContractWithSigner.fulfillOrder(
+      transformDataRequestToBuyNFT({
+        parameters: orderData.data.data.content[0],
+        signature: signature,
+      }),
+
+      {
+        value: toBN(price[0]),
+        gasLimit: 100000,
+      }
+    );
+
+    console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
+    await tx.wait();
+
+    toast.current &&
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Fulfill make offer successfully!",
+        life: 3000,
+      });
+  } catch (err) {
+    console.dir(err);
+  }
+};
+
+export const buyToken = async ({
   toast,
   orderHashes,
   price,
   myWallet,
   provider,
-}: IBuyTokenServiceProps) => {
+}: IBuyTokenProps) => {
   try {
     const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
 
@@ -250,6 +449,9 @@ export const buyTokenService = async ({
         axios.get("/api/v0.1/orderV2", {
           params: {
             orderHash: item,
+            isCancelled: false,
+            isFulfilled: false,
+            isInvalid: false,
           },
         })
       )
@@ -283,7 +485,7 @@ export const buyTokenService = async ({
           value: toBN(price[0]).mul(
             orderData[0].data.data.content[0].offer.length
           ),
-          // gasLimit: 30000,
+          gasLimit: 100000,
         }
       );
     } else {
@@ -329,7 +531,7 @@ export const buyTokenService = async ({
         offerArray.map(toFulfillmentComponents),
         considerationArray.map(toFulfillmentComponents),
         99,
-        { value: toBN(realPrice) }
+        { value: toBN(realPrice), gasLimit: 100000 }
       );
     }
     console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
@@ -345,7 +547,6 @@ export const buyTokenService = async ({
   } catch (err) {
     console.dir(err);
   }
-  //  todo: buy cart
 };
 
 const handleUploadImageToPinata = async (image: any) => {

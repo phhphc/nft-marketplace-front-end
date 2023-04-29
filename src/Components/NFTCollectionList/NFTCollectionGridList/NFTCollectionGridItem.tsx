@@ -1,7 +1,7 @@
 import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import Link from "next/link";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { sellNFT, buyTokenService } from "@Services/ApiService";
+import { sellNFT, buyToken } from "@Services/ApiService";
 import { NFT_COLLECTION_MODE, CURRENCY_UNITS } from "@Constants/index";
 import { useContext, useState, useEffect, useRef } from "react";
 import { AppContext } from "@Store/index";
@@ -93,13 +93,6 @@ const NFTCollectionGridItem = ({
         item,
         price: price.toString(),
         unit: selectedUnit,
-        isApprovedForAllNFTs: web3Context.state.web3.isApprovedForAllNFTs,
-      });
-      web3Context.dispatch({
-        type: WEB3_ACTION_TYPES.CHANGE,
-        payload: {
-          isApprovedForAllNFTs: true,
-        },
       });
       refetch();
     } catch (error) {
@@ -131,7 +124,7 @@ const NFTCollectionGridItem = ({
         );
       }
       if (item) {
-        await buyTokenService({
+        await buyToken({
           toast,
           orderHashes: [item[0].listings[0].order_hash],
           price: [item[0].listings[0].start_price],
