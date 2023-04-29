@@ -1,12 +1,15 @@
 import { IFormEditProfileInput } from "@Interfaces/index";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { useState } from "react";
+import { Toast } from "primereact/toast";
+import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 const EditProfileForm = () => {
   const [profileImageFile, setProfileImageFile] = useState<string>("");
   const [profileBannerFile, setProfileBannerFile] = useState<string>("");
+
+  const toast = useRef<Toast>(null);
 
   function handleChangeProfileImage(e: any) {
     setProfileImageFile(URL.createObjectURL(e.target.files[0]));
@@ -30,15 +33,22 @@ const EditProfileForm = () => {
     useForm<IFormEditProfileInput>();
 
   const onSubmit = async (data: IFormEditProfileInput) => {
+    console.log({
+      ...data,
+      profileImage: data.profileImage[0],
+      profileBanner: data.profileBanner[0],
+      toast,
+    })
     setProfileImageFile("");
     setProfileBannerFile("");
     reset();
   };
   return (
     <div id="edit-profile-form">
+      <Toast ref={toast} position="top-center" />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex justify-around">
-          <div className="pt-4">
+          <div className="pt-4 relative">
             <label className="text-lg font-medium pl-6">Profile Image</label>
             <div className="flex pt-3">
               <div className="upload-profile-btn-wrapper">
@@ -62,7 +72,7 @@ const EditProfileForm = () => {
               )}
             </div>
           </div>
-          <div className="pt-4">
+          <div className="pt-4 relative">
             <label className="text-lg font-medium pl-6">Profile Banner</label>
             <div className="flex pt-3">
               <div className="upload-banner-btn-wrapper">

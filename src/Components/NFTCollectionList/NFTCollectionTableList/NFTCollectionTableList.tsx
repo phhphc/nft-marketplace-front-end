@@ -236,7 +236,7 @@ const NFTCollectionTableList = ({
                   <Column header="Image" body={imageBodyTemplate}></Column>
                   <Column
                     field="price"
-                    header="Current Price"
+                    header="Price"
                     body={priceBodyTemplate}
                   ></Column>
                   <Column
