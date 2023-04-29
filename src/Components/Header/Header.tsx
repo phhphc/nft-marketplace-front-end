@@ -13,7 +13,7 @@ import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { handleRemoveFromCart, showingPrice } from "@Utils/index";
 import { Toast } from "primereact/toast";
-import { buyTokenService } from "@Services/ApiService";
+import { buyToken } from "@Services/ApiService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
@@ -150,7 +150,7 @@ const Header = () => {
         );
       }
       if (cart.length) {
-        await buyTokenService({
+        await buyToken({
           toast,
           orderHashes: cart.map((item) => item.orderHash),
           price: cart.map((item) => item.price),

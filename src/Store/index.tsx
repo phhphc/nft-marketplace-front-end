@@ -25,7 +25,6 @@ export interface IWeb3 {
   myWallet: Wallet | Contract | null;
   chainId: number;
   cart: ICart[];
-  isApprovedForAllNFTs: boolean;
   listItemsSellBundle: INFTCollectionItem[];
   loading: boolean;
 }
@@ -46,7 +45,6 @@ const initialState: IState = {
     cart: [],
     myWallet: null,
     chainId: 0,
-    isApprovedForAllNFTs: false,
     listItemsSellBundle: [],
     loading: false,
   },
@@ -113,7 +111,6 @@ const AppProvider = ({ children }: IAppProvider) => {
           type: WEB3_ACTION_TYPES.CHANGE,
           payload: {
             cart: [],
-            isApprovedForAllNFTs: false,
             listItemsSellBundle: [],
             loading: false,
           },

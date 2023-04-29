@@ -12,7 +12,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { useContext, useState, useEffect, useRef, useMemo } from "react";
-import { sellNFT, buyTokenService } from "@Services/ApiService";
+import { sellNFT, buyToken, makeOffer } from "@Services/ApiService";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import { CURRENCY_UNITS } from "@Constants/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
@@ -82,7 +82,6 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
       );
     }
     try {
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
       setVisible(false);
       await sellNFT({
         toast,
@@ -92,13 +91,6 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
         item,
         price: price.toString(),
         unit: selectedUnit,
-        isApprovedForAllNFTs: web3Context.state.web3.isApprovedForAllNFTs,
-      });
-      web3Context.dispatch({
-        type: WEB3_ACTION_TYPES.CHANGE,
-        payload: {
-          isApprovedForAllNFTs: true,
-        },
       });
       refetch();
     } catch (error) {
@@ -109,8 +101,6 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           detail: "Fail to sell NFT!",
           life: 3000,
         });
-    } finally {
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
@@ -131,9 +121,8 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
       );
     }
     try {
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
       if (item) {
-        await buyTokenService({
+        await buyToken({
           toast,
           orderHashes: [item[0].listings[0].order_hash],
           price: [item[0].listings[0].start_price],
@@ -150,12 +139,54 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
           detail: "Fail to buy NFT!",
           life: 3000,
         });
-    } finally {
-      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
     }
   };
 
-  const handleMakeOffer = async (item: INFTCollectionItem[]) => {};
+  const handleMakeOffer = async (item: INFTCollectionItem) => {
+    if (!web3Context.state.web3.provider) {
+      return (
+        toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please login your wallet!",
+          life: 3000,
+        })
+      );
+    }
+    if (price === 0) {
+      return (
+        toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "The price must be higher than 0!",
+          life: 3000,
+        })
+      );
+    }
+    try {
+      setVisible(false);
+      await makeOffer({
+        toast,
+        provider: web3Context.state.web3.provider,
+        myAddress: web3Context.state.web3.myAddress,
+        myWallet: web3Context.state.web3.myWallet,
+        item,
+        price: price.toString(),
+        unit: selectedUnit,
+      });
+      refetch();
+    } catch (error) {
+      toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to sell NFT!",
+          life: 3000,
+        });
+    }
+  };
 
   const downloadItem = (items: INFTCollectionItem[]) => {
     items.forEach((item: INFTCollectionItem) => {
@@ -522,7 +553,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                     </>
                   )}
 
-                {canBuy(nftDetail) && (
+                {!canBuy(nftDetail) && (
                   <div className="flex justify-between w-full">
                     <div className="flex gap-3 justify-between">
                       {isAddedToCart ? (
@@ -604,7 +635,7 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                             <Button
                               label="Make offer"
                               icon="pi pi-check"
-                              onClick={() => handleMakeOffer(nftDetail)}
+                              onClick={() => handleMakeOffer(nftDetail[0])}
                               autoFocus
                             />
                           </div>
