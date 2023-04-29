@@ -62,13 +62,6 @@ const NFTCollectionGridList = ({
         item: web3Context.state.web3.listItemsSellBundle,
         price: price.toString(),
         unit: selectedUnit,
-        isApprovedForAllNFTs: web3Context.state.web3.isApprovedForAllNFTs,
-      });
-      web3Context.dispatch({
-        type: WEB3_ACTION_TYPES.CHANGE,
-        payload: {
-          isApprovedForAllNFTs: true,
-        },
       });
       refetch();
     } catch (error) {

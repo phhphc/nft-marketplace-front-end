@@ -126,6 +126,24 @@ export const getTestItem721 = (
   );
 };
 
+export const getTestItem20 = (
+  identifier: BigNumberish = 0,
+
+  startAmount: BigNumberish = 1,
+  endAmount: BigNumberish = 1,
+  recipient?: string,
+  token = process.env.NEXT_PUBLIC_ERC20_ADDRESS
+) => {
+  return getOfferOrConsiderationItem(
+    1, // ERC20
+    token,
+    identifier,
+    startAmount,
+    endAmount,
+    recipient
+  );
+};
+
 export const getItemETH = (
   startAmount: BigNumberish = 1,
   endAmount: BigNumberish = 1,

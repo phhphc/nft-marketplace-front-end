@@ -1,7 +1,7 @@
 import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import Link from "next/link";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { sellNFT, buyTokenService } from "@Services/ApiService";
+import { sellNFT, buyToken, makeOffer } from "@Services/ApiService";
 import { NFT_COLLECTION_MODE, CURRENCY_UNITS } from "@Constants/index";
 import { useContext, useState, useEffect, useRef } from "react";
 import { AppContext } from "@Store/index";
@@ -65,7 +65,51 @@ const NFTCollectionGridItem = ({
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
 
-  const handleMakeOffer = async (item: INFTCollectionItem[]) => {};
+  const handleMakeOffer = async (item: INFTCollectionItem) => {
+    if (!web3Context.state.web3.provider) {
+      return (
+        toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please login your wallet!",
+          life: 3000,
+        })
+      );
+    }
+    if (price === 0) {
+      return (
+        toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "The price must be higher than 0!",
+          life: 3000,
+        })
+      );
+    }
+    try {
+      setVisible(false);
+      await makeOffer({
+        toast,
+        provider: web3Context.state.web3.provider,
+        myAddress: web3Context.state.web3.myAddress,
+        myWallet: web3Context.state.web3.myWallet,
+        item,
+        price: price.toString(),
+        unit: selectedUnit,
+      });
+      refetch();
+    } catch (error) {
+      toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to sell NFT!",
+          life: 3000,
+        });
+    }
+  };
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (!web3Context.state.web3.provider) {
@@ -100,13 +144,6 @@ const NFTCollectionGridItem = ({
         item,
         price: price.toString(),
         unit: selectedUnit,
-        isApprovedForAllNFTs: web3Context.state.web3.isApprovedForAllNFTs,
-      });
-      web3Context.dispatch({
-        type: WEB3_ACTION_TYPES.CHANGE,
-        payload: {
-          isApprovedForAllNFTs: true,
-        },
       });
       refetch();
     } catch (error) {
@@ -138,7 +175,7 @@ const NFTCollectionGridItem = ({
         );
       }
       if (item) {
-        await buyTokenService({
+        await buyToken({
           toast,
           orderHashes: [item[0].listings[0].order_hash],
           price: [item[0].listings[0].start_price],
@@ -302,7 +339,7 @@ const NFTCollectionGridItem = ({
                     <Button
                       label="Make offer"
                       icon="pi pi-check"
-                      onClick={() => handleMakeOffer(item)}
+                      onClick={() => handleMakeOffer(item[0])}
                       autoFocus
                     />
                   </div>
