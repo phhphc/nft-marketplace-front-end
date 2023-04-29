@@ -33,6 +33,10 @@ const NFTCollectionGridItem = ({
   refetch,
   hideSellBundle = false,
 }: INFTCollectionGridItemProps) => {
+  const canMakeOffer = (item: INFTCollectionItem[]) => {
+    return item[0].owner !== web3Context.state.web3.myAddress;
+  };
+
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
       !!item[0].listings[0] &&
@@ -56,9 +60,12 @@ const NFTCollectionGridItem = ({
   };
 
   const [price, setPrice] = useState<number>(0);
+  const [dialogMakeOffer, setDialogMakeOffer] = useState(false);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
+
+  const handleMakeOffer = async (item: INFTCollectionItem[]) => {};
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (!web3Context.state.web3.provider) {
@@ -271,6 +278,57 @@ const NFTCollectionGridItem = ({
               </p>
             )}
           </div>
+          {canMakeOffer(item) && (
+            <div>
+              <button
+                className="w-full bg-sky-500 hover:bg-sky-700 h-10 text-white rounded-md absolute bottom-0 left-0 right-0"
+                onClick={() => setDialogMakeOffer(true)}
+              >
+                Make Offer
+              </button>
+              <Dialog
+                header="Please input the price that you want to make offer"
+                visible={dialogMakeOffer}
+                style={{ width: "50vw" }}
+                onHide={() => setDialogMakeOffer(false)}
+                footer={
+                  <div>
+                    <Button
+                      label="Cancel"
+                      icon="pi pi-times"
+                      onClick={() => setDialogMakeOffer(false)}
+                      className="p-button-text"
+                    />
+                    <Button
+                      label="Make offer"
+                      icon="pi pi-check"
+                      onClick={() => handleMakeOffer(item)}
+                      autoFocus
+                    />
+                  </div>
+                }
+              >
+                <div className="flex gap-3">
+                  <InputNumber
+                    placeholder="Input the price"
+                    value={price}
+                    onValueChange={(e: any) => setPrice(e.value)}
+                    minFractionDigits={2}
+                    maxFractionDigits={5}
+                    min={0}
+                  />
+                  <Dropdown
+                    value={selectedUnit}
+                    onChange={(e) => setSelectedUnit(e.value)}
+                    options={CURRENCY_UNITS}
+                    optionLabel="name"
+                    placeholder="Select a unit"
+                    className="md:w-14rem"
+                  />
+                </div>
+              </Dialog>
+            </div>
+          )}
           {canBuy(item) && (
             <div className="flex gap-3 justify-between w-full absolute bottom-0 left-0 right-0">
               {isAddedToCart ? (

@@ -7,6 +7,7 @@ import { Toast } from "primereact/toast";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { useRouter } from "next/router";
 import UserImage from "@Components/UserProfile/UserImage";
+import MakeOfferList from "@Components/MakeOfferList/MakeOfferList";
 
 const UserProfileContainer = () => {
   const web3Context = useContext(AppContext);
@@ -24,6 +25,7 @@ const UserProfileContainer = () => {
             <Toast ref={toast} position="top-center" />
             <UserImage></UserImage>
             <UserInfor></UserInfor>
+            <MakeOfferList></MakeOfferList>
             <NFTUserProfileTabs
               nftCollectionList={nftCollectionList}
               refetch={refetch}

@@ -38,7 +38,8 @@ const UserInfor = () => {
         </Dialog>
       </div>
 
-      <div className="font-semibold text-xl mt-3">Joined date</div>
+      <div className="font-normal text-xl mt-3">Joined date</div>
+      <div className="font-normal text-xl mt-3">Bio</div>
       <div className="flex pt-3 text-lg">
         <Tooltip target=".icon-chain" position="mouse" />
         <i
