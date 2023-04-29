@@ -34,6 +34,9 @@ export interface INFTDetailProps {
 
 const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
   const { refetch } = useNFTCollectionList({});
+  const canMakeOffer = (item: INFTCollectionItem[]) => {
+    return item[0].owner !== web3Context.state.web3.myAddress;
+  };
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
       !!item[0].listings[0] &&
@@ -552,6 +555,58 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                       )}
                     </>
                   )}
+                {canMakeOffer(nftDetail) && (
+                  <div>
+                    <button
+                      onClick={() => setDialogMakeOffer(true)}
+                      className="w-60 bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg"
+                    >
+                      <i className="pi pi-tag"></i>
+                      <span className="pl-2">Make offer</span>
+                    </button>
+                    <Dialog
+                      header="Please input the price that you want to make offer"
+                      visible={dialogMakeOffer}
+                      style={{ width: "50vw" }}
+                      onHide={() => setDialogMakeOffer(false)}
+                      footer={
+                        <div>
+                          <Button
+                            label="Cancel"
+                            icon="pi pi-times"
+                            onClick={() => setDialogMakeOffer(false)}
+                            className="p-button-text"
+                          />
+                          <Button
+                            label="Make offer"
+                            icon="pi pi-check"
+                            onClick={() => handleMakeOffer(nftDetail[0])}
+                            autoFocus
+                          />
+                        </div>
+                      }
+                    >
+                      <div className="flex gap-3">
+                        <InputNumber
+                          placeholder="Input the price"
+                          value={price}
+                          onValueChange={(e: any) => setPrice(e.value)}
+                          minFractionDigits={2}
+                          maxFractionDigits={5}
+                          min={0}
+                        />
+                        <Dropdown
+                          value={selectedUnit}
+                          onChange={(e) => setSelectedUnit(e.value)}
+                          options={CURRENCY_UNITS}
+                          optionLabel="name"
+                          placeholder="Select a unit"
+                          className="md:w-14rem"
+                        />
+                      </div>
+                    </Dialog>
+                  </div>
+                )}
 
                 {!canBuy(nftDetail) && (
                   <div className="flex justify-between w-full">
@@ -610,56 +665,6 @@ const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
                       >
                         Buy Now
                       </button>
-                    </div>
-                    <div>
-                      <button
-                        onClick={() => setDialogMakeOffer(true)}
-                        className="w-60 bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg"
-                      >
-                        <i className="pi pi-tag"></i>
-                        <span className="pl-2">Make offer</span>
-                      </button>
-                      <Dialog
-                        header="Please input the price that you want to make offer"
-                        visible={dialogMakeOffer}
-                        style={{ width: "50vw" }}
-                        onHide={() => setDialogMakeOffer(false)}
-                        footer={
-                          <div>
-                            <Button
-                              label="Cancel"
-                              icon="pi pi-times"
-                              onClick={() => setDialogMakeOffer(false)}
-                              className="p-button-text"
-                            />
-                            <Button
-                              label="Make offer"
-                              icon="pi pi-check"
-                              onClick={() => handleMakeOffer(nftDetail[0])}
-                              autoFocus
-                            />
-                          </div>
-                        }
-                      >
-                        <div className="flex gap-3">
-                          <InputNumber
-                            placeholder="Input the price"
-                            value={price}
-                            onValueChange={(e: any) => setPrice(e.value)}
-                            minFractionDigits={2}
-                            maxFractionDigits={5}
-                            min={0}
-                          />
-                          <Dropdown
-                            value={selectedUnit}
-                            onChange={(e) => setSelectedUnit(e.value)}
-                            options={CURRENCY_UNITS}
-                            optionLabel="name"
-                            placeholder="Select a unit"
-                            className="md:w-14rem"
-                          />
-                        </div>
-                      </Dialog>
                     </div>
                   </div>
                 )}
