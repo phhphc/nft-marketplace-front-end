@@ -147,12 +147,17 @@ export const MAPPING_STRING_TO_BIG_NUMBER = [
 export const CURRENCY = {
   ETHER: "Ether",
   GWEI: "Gwei",
+  TETHER: "TEther"
 };
 
 export const CURRENCY_UNITS = [
   { name: CURRENCY.ETHER, value: CURRENCY.ETHER },
   { name: CURRENCY.GWEI, value: CURRENCY.GWEI },
 ];
+
+export const OFFER_CURRENCY_UNITS = [
+  { name: CURRENCY.TETHER, value: CURRENCY.TETHER },
+]
 
 export const STRING_HEX_TO_NUMBER: any = {
   itemType: 1,

@@ -1,4 +1,4 @@
-import { COLLECTION_VIEW_TYPE } from "@Constants/index";
+import { COLLECTION_VIEW_TYPE, OFFER_CURRENCY_UNITS } from "@Constants/index";
 import Link from "next/link";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { sellNFT, buyToken, makeOffer } from "@Services/ApiService";
@@ -18,6 +18,7 @@ import {
   showingPrice,
 } from "@Utils/index";
 import { Checkbox } from "primereact/checkbox";
+import { divide } from "lodash";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
@@ -89,7 +90,7 @@ const NFTCollectionGridItem = ({
       );
     }
     try {
-      setVisible(false);
+      setDialogMakeOffer(false);
       await makeOffer({
         toast,
         provider: web3Context.state.web3.provider,
@@ -324,7 +325,12 @@ const NFTCollectionGridItem = ({
                 Make Offer
               </button>
               <Dialog
-                header="Please input the price that you want to make offer"
+                header={
+                  <div>
+                    <p>Please input the price that you want to make offer</p>
+                    <p className="text-sm">* 1 TETH = 1 ETH</p>
+                  </div>
+                }
                 visible={dialogMakeOffer}
                 style={{ width: "50vw" }}
                 onHide={() => setDialogMakeOffer(false)}
@@ -355,9 +361,9 @@ const NFTCollectionGridItem = ({
                     min={0}
                   />
                   <Dropdown
-                    value={selectedUnit}
+                    value={OFFER_CURRENCY_UNITS[0].value}
                     onChange={(e) => setSelectedUnit(e.value)}
-                    options={CURRENCY_UNITS}
+                    options={OFFER_CURRENCY_UNITS}
                     optionLabel="name"
                     placeholder="Select a unit"
                     className="md:w-14rem"

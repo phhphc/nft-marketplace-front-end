@@ -14,7 +14,7 @@ import { Toast } from "primereact/toast";
 import { useContext, useState, useEffect, useRef, useMemo } from "react";
 import { sellNFT, buyToken, makeOffer } from "@Services/ApiService";
 import { WEB3_ACTION_TYPES } from "@Store/index";
-import { CURRENCY_UNITS } from "@Constants/index";
+import { CURRENCY_UNITS, OFFER_CURRENCY_UNITS } from "@Constants/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import {
   handleAddToCart,
@@ -169,7 +169,7 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
       );
     }
     try {
-      setVisible(false);
+      setDialogMakeOffer(false);
       await makeOffer({
         toast,
         provider: web3Context.state.web3.provider,
@@ -565,7 +565,14 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
                       <span className="pl-2">Make offer</span>
                     </button>
                     <Dialog
-                      header="Please input the price that you want to make offer"
+                      header={
+                        <div>
+                          <p>
+                            Please input the price that you want to make offer
+                          </p>
+                          <p className="text-sm">* 1 TETH = 1 ETH</p>
+                        </div>
+                      }
                       visible={dialogMakeOffer}
                       style={{ width: "50vw" }}
                       onHide={() => setDialogMakeOffer(false)}
@@ -596,9 +603,9 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
                           min={0}
                         />
                         <Dropdown
-                          value={selectedUnit}
+                          value={OFFER_CURRENCY_UNITS[0].value}
                           onChange={(e) => setSelectedUnit(e.value)}
-                          options={CURRENCY_UNITS}
+                          options={OFFER_CURRENCY_UNITS}
                           optionLabel="name"
                           placeholder="Select a unit"
                           className="md:w-14rem"

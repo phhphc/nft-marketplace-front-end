@@ -224,3 +224,14 @@ export interface IFormEditProfileInput {
   bio: string;
   email: string;
 }
+
+export interface IMakeOfferItem {
+  offerer: string;
+  offer: OfferItem[];
+  consideration: ConsiderationItem[];
+  orderHash: string;
+  itemName: string;
+  identifier: string;
+  itemImage: string;
+  price: string;
+}

@@ -145,12 +145,12 @@ export const makeOffer = async ({
     const erc20ContractWithSigner = erc20Contract.connect(myWallet);
 
     await erc20ContractWithSigner.mint({
-      value: unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
+      value: parseEther(price),
     });
 
     await erc20ContractWithSigner.increaseAllowance(
       mkpAddress,
-      unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price)
+      parseEther(price),
     );
 
     const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
@@ -160,8 +160,8 @@ export const makeOffer = async ({
     const offer = [
       getTestItem20(
         0,
-        unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
-        unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
+        parseEther(price),
+        parseEther(price),
         undefined,
         erc20Address
       ),
