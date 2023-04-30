@@ -596,10 +596,19 @@ export const toFulfillmentComponents = (
 ): FulfillmentComponent[] =>
   arr.map(([orderIndex, itemIndex]) => ({ orderIndex, itemIndex }));
 
-export const showingPrice = (price: string): string => {
+export const showingPrice = (
+  price: string,
+  currency?: string,
+  isOnlyShowEth = false
+): string => {
   const eth = price.slice(0, -18);
-  const gwei = price.slice(-17, -9);
-  const ethShowingPrice = eth ? `${Number(eth)} ETH` : "";
+  const gwei = price.slice(-18, -9);
+  const ethShowingPrice = eth ? `${Number(eth)} ${currency || "ETH"}` : "";
   const gweiShowingPrice = gwei ? `${Number(gwei)} GWEI` : "";
+  if (isOnlyShowEth) {
+    return (
+      (Number(eth) + Number(gwei) / 1000000000).toString() + currency || "ETH"
+    );
+  }
   return ethShowingPrice + gweiShowingPrice;
 };

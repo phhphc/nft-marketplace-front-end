@@ -150,7 +150,7 @@ export const makeOffer = async ({
 
     await erc20ContractWithSigner.increaseAllowance(
       mkpAddress,
-      parseEther(price),
+      parseEther(price)
     );
 
     const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
@@ -408,7 +408,6 @@ export const fulfillMakeOffer = async ({
 
       {
         value: toBN(price),
-        // gasLimit: 100000,
       }
     );
 
@@ -473,10 +472,7 @@ export const buyToken = async ({
         }),
 
         {
-          value: toBN(price[0]).mul(
-            orderData[0].data.data.content[0].offer.length
-          ),
-          gasLimit: 100000,
+          value: toBN(price[0]),
         }
       );
     } else {
@@ -509,7 +505,7 @@ export const buyToken = async ({
         offerArray,
         considerationArray,
         99,
-        { value: toBN(realPrice), gasLimit: 1000000 }
+        { value: toBN(realPrice) }
       );
 
       tx = await mkpContractWithSigner.fulfillAvailableOrders(
@@ -522,7 +518,7 @@ export const buyToken = async ({
         offerArray.map(toFulfillmentComponents),
         considerationArray.map(toFulfillmentComponents),
         99,
-        { value: toBN(realPrice), gasLimit: 100000 }
+        { value: toBN(realPrice) }
       );
     }
     console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);

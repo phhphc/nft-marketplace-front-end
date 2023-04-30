@@ -19,10 +19,6 @@ const UserProfileContainer = () => {
     web3Context.state.web3.myAddress
   );
 
-  console.log(
-    "🚀 ~ file: UserProfileContainer.tsx:19 ~ UserProfileContainer ~ makeOfferList:",
-    makeOfferList
-  );
   const toast = useRef<Toast>(null);
 
   return (
@@ -33,7 +29,10 @@ const UserProfileContainer = () => {
             <Toast ref={toast} position="top-center" />
             <UserImage></UserImage>
             <UserInfor></UserInfor>
-            <MakeOfferList makeOfferList={makeOfferList}></MakeOfferList>
+            <MakeOfferList
+              makeOfferList={makeOfferList}
+              makeOfferRefetch={makeOfferRefetch}
+            ></MakeOfferList>
             <NFTUserProfileTabs
               nftCollectionList={nftCollectionList}
               refetch={refetch}
