@@ -30,10 +30,10 @@ import NFTOffer from "@Components/NFTOffer/NFTOffer";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem[];
+  refetch: () => void;
 }
 
-const NFTDetail = ({ nftDetail }: INFTDetailProps) => {
-  const { refetch } = useNFTCollectionList({});
+const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
   const canMakeOffer = (item: INFTCollectionItem[]) => {
     return item[0].owner !== web3Context.state.web3.myAddress;
   };

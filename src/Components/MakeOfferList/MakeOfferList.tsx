@@ -1,24 +1,37 @@
 import { INFTCollectionItem } from "@Interfaces/index";
+import { fulfillMakeOffer } from "@Services/ApiService";
+import { AppContext } from "@Store/index";
 import { showingPrice } from "@Utils/index";
 import router from "next/router";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Tag } from "primereact/tag";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
-const MakeOfferList = () => {
+const MakeOfferList = ({ makeOfferList }: any) => {
+  const web3Context = useContext(AppContext);
   const products = [
     {
-      maker_address: "f230fh0g3",
-      order_hash: "f230fh0g3",
-      name: "Bamboo Watch",
+      makerAddress: "f230fh0g3",
+      orderHash: "f230fh0g3",
+      itemName: "Bamboo Watch",
       identifier: "2200021",
-      image: "",
-      offered_price: 65,
-      ERC20_quantity: 2,
+      itemImage: "",
+      price: "2",
     },
   ];
+
+  const data = makeOfferList.map((item: any) => {
+    return {
+      makerAddress: item.offerer,
+      orderHash: item.orderHash,
+      itemName: item.itemName,
+      itemImage: item.itemImage,
+      identifier: item.consideration[0].identifier,
+      price: item.offer[0].startAmount,
+    };
+  });
 
   const nameBodyTemplate = (rowData: INFTCollectionItem[]) => {
     return (
@@ -70,10 +83,24 @@ const MakeOfferList = () => {
   };
 
   const rejectBodyTemplate = (rowData: INFTCollectionItem[]) => {
-    return <i className="text-red-500 pi pi-times-circle cursor-pointer" onClick={rejectFulfillOrder}></i>;
+    return (
+      <i
+        className="text-red-500 pi pi-times-circle cursor-pointer"
+        onClick={rejectFulfillOrder}
+      ></i>
+    );
   };
 
-  const handleFulfillOrder = () => {};
+  const handleFulfillOrder = () => {
+    fulfillMakeOffer({
+      orderHash:
+        "0xd729e4e37f9bab0bb4f40568f87c176986ed549f29c8505a3c70720e1e5d309e",
+      price: "50000000000000",
+      myWallet: web3Context.state.web3.myWallet,
+      provider: web3Context.state.web3.provider,
+      myAddress: web3Context.state.web3.myAddress,
+    });
+  };
 
   const rejectFulfillOrder = () => {};
 

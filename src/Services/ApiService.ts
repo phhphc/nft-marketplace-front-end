@@ -23,7 +23,7 @@ import {
   toFulfillmentComponents,
 } from "@Utils/index";
 import { ICollectionItem, Order } from "@Interfaces/index";
-import { cloneDeep } from "lodash";
+import { cloneDeep, flatten } from "lodash";
 import { INFTCollectionItem } from "@Interfaces/index";
 
 const { parseEther } = ethers.utils;
@@ -62,11 +62,10 @@ interface IBuyTokenProps {
 }
 
 interface IFulfillMakeOfferProps {
-  toast: any;
   provider: any;
   myWallet: any;
   orderHash: string;
-  price: string[];
+  price: string;
   myAddress: string;
 }
 
@@ -150,7 +149,7 @@ export const makeOffer = async ({
     });
 
     await erc20ContractWithSigner.increaseAllowance(
-      myAddress,
+      mkpAddress,
       unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price)
     );
 
@@ -249,6 +248,7 @@ export const sellNFT = async ({
   unit,
 }: ISellNFTProps) => {
   try {
+    console.log(parseGwei(price));
     const erc721Address = item[0].token;
     const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
 
@@ -352,7 +352,6 @@ export const sellNFT = async ({
 };
 
 export const fulfillMakeOffer = async ({
-  toast,
   orderHash,
   price,
   myWallet,
@@ -375,7 +374,7 @@ export const fulfillMakeOffer = async ({
       },
     });
 
-    const erc721Address = orderData.data.data.content[0].token;
+    const erc721Address = orderData.data.data.content[0].consideration[0].token;
 
     const erc721Contract = new ethers.Contract(
       erc721Address,
@@ -408,21 +407,13 @@ export const fulfillMakeOffer = async ({
       }),
 
       {
-        value: toBN(price[0]),
-        gasLimit: 100000,
+        value: toBN(price),
+        // gasLimit: 100000,
       }
     );
 
     console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
     await tx.wait();
-
-    toast.current &&
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Fulfill make offer successfully!",
-        life: 3000,
-      });
   } catch (err) {
     console.dir(err);
   }
@@ -547,6 +538,53 @@ export const buyToken = async ({
   } catch (err) {
     console.dir(err);
   }
+};
+
+export const getMakeOfferList = async (myAddress: string) => {
+  const params: { [k: string]: any } = {
+    limit: 100,
+    offet: 0,
+    owner: myAddress,
+  };
+
+  const myNftsRes = await axios.get("/api/v0.1/nft", { params });
+
+  const myNfts = myNftsRes.data.data.nfts;
+
+  if (!myNfts.length) return [];
+
+  const myMakeOffersList = await Promise.all(
+    myNfts.map((item: INFTCollectionItem) =>
+      axios.get("/api/v0.1/orderV2", {
+        params: {
+          considerationIdentifier: item.identifier,
+          isCancelled: false,
+          isFulfilled: false,
+          isInvalid: false,
+        },
+      })
+    )
+  );
+
+  const result = myMakeOffersList.map((item) => item.data.data.content);
+
+  const flattenResult = flatten(result);
+
+  return flattenResult
+    .filter((item: any) => {
+      return item.offer[0].itemType === 1;
+    })
+    .map((item: any) => {
+      const itemInfo = myNfts.find(
+        (nft: INFTCollectionItem) =>
+          nft.identifier === item.consideration[0].identifier
+      );
+      return {
+        ...item,
+        itemName: itemInfo.name,
+        itemImage: itemInfo.image,
+      };
+    });
 };
 
 const handleUploadImageToPinata = async (image: any) => {

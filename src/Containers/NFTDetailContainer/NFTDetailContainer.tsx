@@ -1,5 +1,5 @@
 import NFTDetail from "@Components/NFTDetail/NFTDetail";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { Toast } from "primereact/toast";
 import { useRouter } from "next/router";
