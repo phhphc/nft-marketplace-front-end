@@ -1,7 +1,7 @@
-import { COLLECTION_VIEW_TYPE, OFFER_CURRENCY_UNITS } from "@Constants/index";
+import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import Link from "next/link";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { sellNFT, buyToken, makeOffer } from "@Services/ApiService";
+import { sellNFT, buyToken } from "@Services/ApiService";
 import { NFT_COLLECTION_MODE, CURRENCY_UNITS } from "@Constants/index";
 import { useContext, useState, useEffect, useRef } from "react";
 import { AppContext } from "@Store/index";
@@ -18,7 +18,6 @@ import {
   showingPrice,
 } from "@Utils/index";
 import { Checkbox } from "primereact/checkbox";
-import { divide } from "lodash";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
@@ -61,56 +60,9 @@ const NFTCollectionGridItem = ({
   };
 
   const [price, setPrice] = useState<number>(0);
-  const [dialogMakeOffer, setDialogMakeOffer] = useState(false);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const toast = useRef<Toast>(null);
-
-  const handleMakeOffer = async (item: INFTCollectionItem) => {
-    if (!web3Context.state.web3.provider) {
-      return (
-        toast.current &&
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Please login your wallet!",
-          life: 3000,
-        })
-      );
-    }
-    if (price === 0) {
-      return (
-        toast.current &&
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "The price must be higher than 0!",
-          life: 3000,
-        })
-      );
-    }
-    try {
-      setDialogMakeOffer(false);
-      await makeOffer({
-        toast,
-        provider: web3Context.state.web3.provider,
-        myAddress: web3Context.state.web3.myAddress,
-        myWallet: web3Context.state.web3.myWallet,
-        item,
-        price: price.toString(),
-        unit: selectedUnit,
-      });
-      refetch();
-    } catch (error) {
-      toast.current &&
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Fail to sell NFT!",
-          life: 3000,
-        });
-    }
-  };
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (!web3Context.state.web3.provider) {
@@ -158,11 +110,7 @@ const NFTCollectionGridItem = ({
     }
   };
 
-  const handleBuyToken = async (
-    myWallet: any,
-    provider: any,
-    item?: INFTCollectionItem[]
-  ) => {
+  const handleBuyToken = async (item?: INFTCollectionItem[]) => {
     try {
       if (!web3Context.state.web3.provider) {
         return (
@@ -180,8 +128,8 @@ const NFTCollectionGridItem = ({
           toast,
           orderHashes: [item[0].listings[0].order_hash],
           price: [item[0].listings[0].start_price],
-          myWallet,
-          provider,
+          myWallet: web3Context.state.web3.myWallet,
+          provider: web3Context.state.web3.provider,
         });
         refetch();
       }
@@ -316,62 +264,6 @@ const NFTCollectionGridItem = ({
               </p>
             )}
           </div>
-          {canMakeOffer(item) && (
-            <div>
-              <button
-                className="w-full bg-sky-500 hover:bg-sky-700 h-10 text-white rounded-md absolute bottom-0 left-0 right-0"
-                onClick={() => setDialogMakeOffer(true)}
-              >
-                Make Offer
-              </button>
-              <Dialog
-                header={
-                  <div>
-                    <p>Please input the price that you want to make offer</p>
-                    <p className="text-sm">* 1 TETH = 1 ETH</p>
-                  </div>
-                }
-                visible={dialogMakeOffer}
-                style={{ width: "50vw" }}
-                onHide={() => setDialogMakeOffer(false)}
-                footer={
-                  <div>
-                    <Button
-                      label="Cancel"
-                      icon="pi pi-times"
-                      onClick={() => setDialogMakeOffer(false)}
-                      className="p-button-text"
-                    />
-                    <Button
-                      label="Make offer"
-                      icon="pi pi-check"
-                      onClick={() => handleMakeOffer(item[0])}
-                      autoFocus
-                    />
-                  </div>
-                }
-              >
-                <div className="flex gap-3">
-                  <InputNumber
-                    placeholder="Input the price"
-                    value={price}
-                    onValueChange={(e: any) => setPrice(e.value)}
-                    minFractionDigits={2}
-                    maxFractionDigits={5}
-                    min={0}
-                  />
-                  <Dropdown
-                    value={OFFER_CURRENCY_UNITS[0].value}
-                    onChange={(e) => setSelectedUnit(e.value)}
-                    options={OFFER_CURRENCY_UNITS}
-                    optionLabel="name"
-                    placeholder="Select a unit"
-                    className="md:w-14rem"
-                  />
-                </div>
-              </Dialog>
-            </div>
-          )}
           {canBuy(item) && (
             <div className="flex gap-3 justify-between w-full absolute bottom-0 left-0 right-0">
               {isAddedToCart ? (
@@ -409,13 +301,7 @@ const NFTCollectionGridItem = ({
               )}
               <button
                 className="w-20 bg-red-500 hover:bg-red-700 text-white rounded-md"
-                onClick={() =>
-                  handleBuyToken(
-                    web3Context.state.web3.myWallet,
-                    web3Context.state.web3.provider,
-                    item
-                  )
-                }
+                onClick={() => handleBuyToken(item)}
               >
                 Buy Now
               </button>

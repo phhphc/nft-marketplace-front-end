@@ -1,3 +1,4 @@
+import { OFFER_CURRENCY_UNITS } from "@Constants/index";
 import { IMakeOfferItem, INFTCollectionItem } from "@Interfaces/index";
 import { fulfillMakeOffer } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
@@ -10,20 +11,14 @@ import { useContext, useState } from "react";
 
 export interface IMakeOfferListProps {
   makeOfferList: IMakeOfferItem[];
+  makeOfferRefetch: () => void;
 }
 
-const MakeOfferList = ({ makeOfferList }: IMakeOfferListProps) => {
+const MakeOfferList = ({
+  makeOfferList,
+  makeOfferRefetch,
+}: IMakeOfferListProps) => {
   const web3Context = useContext(AppContext);
-  // const products = [
-  //   {
-  //     makerAddress: "f230fh0g3",
-  //     orderHash: "f230fh0g3",
-  //     itemName: "Bamboo Watch",
-  //     identifier: "2200021",
-  //     itemImage: "",
-  //     price: "2",
-  //   },
-  // ];
 
   const data = makeOfferList.map((item: IMakeOfferItem) => {
     return {
@@ -64,7 +59,11 @@ const MakeOfferList = ({ makeOfferList }: IMakeOfferListProps) => {
   };
 
   const priceBodyTemplate = (rowData: IMakeOfferItem): string => {
-    return `${rowData?.price} TETH`;
+    return showingPrice(
+      rowData?.price || "0",
+      OFFER_CURRENCY_UNITS[0].value,
+      true
+    );
   };
 
   const fulfillBodyTemplate = (rowData: IMakeOfferItem) => {
@@ -87,14 +86,15 @@ const MakeOfferList = ({ makeOfferList }: IMakeOfferListProps) => {
     );
   };
 
-  const handleFulfillOrder = (item: IMakeOfferItem) => {
-    fulfillMakeOffer({
+  const handleFulfillOrder = async (item: IMakeOfferItem) => {
+    await fulfillMakeOffer({
       orderHash: item.orderHash,
       price: item.price,
       myWallet: web3Context.state.web3.myWallet,
       provider: web3Context.state.web3.provider,
       myAddress: web3Context.state.web3.myAddress,
     });
+    makeOfferRefetch();
   };
 
   const rejectFulfillOrder = (item: IMakeOfferItem) => {};

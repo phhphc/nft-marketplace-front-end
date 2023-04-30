@@ -107,11 +107,7 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
     }
   };
 
-  const handleBuyToken = async (
-    myWallet: any,
-    provider: any,
-    item?: INFTCollectionItem[]
-  ) => {
+  const handleBuyToken = async (item?: INFTCollectionItem[]) => {
     if (!web3Context.state.web3.provider) {
       return (
         toast.current &&
@@ -129,8 +125,8 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
           toast,
           orderHashes: [item[0].listings[0].order_hash],
           price: [item[0].listings[0].start_price],
-          myWallet,
-          provider,
+          myWallet: web3Context.state.web3.myWallet,
+          provider: web3Context.state.web3.provider,
         });
         refetch();
       }
@@ -662,13 +658,7 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
                       )}
                       <button
                         className="w-48 bg-red-500 hover:bg-red-700 text-white h-16 rounded-md text-lg"
-                        onClick={() =>
-                          handleBuyToken(
-                            web3Context.state.web3.myWallet,
-                            web3Context.state.web3.provider,
-                            nftDetail
-                          )
-                        }
+                        onClick={() => handleBuyToken(nftDetail)}
                       >
                         Buy Now
                       </button>
