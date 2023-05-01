@@ -1,13 +1,24 @@
 import { IFormEditProfileInput } from "@Interfaces/index";
+import { saveProfileService } from "@Services/ApiService";
+import { AppContext } from "@Store/index";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
-import { useRef, useState } from "react";
+import { useRef, useState, useContext } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-const EditProfileForm = () => {
+export interface IEditProfileFormProps {
+  profileRefetch: () => void;
+  onSubmitted: () => void;
+}
+
+const EditProfileForm = ({
+  profileRefetch,
+  onSubmitted,
+}: IEditProfileFormProps) => {
   const [profileImageFile, setProfileImageFile] = useState<string>("");
   const [profileBannerFile, setProfileBannerFile] = useState<string>("");
+  const web3Context = useContext(AppContext);
 
   const toast = useRef<Toast>(null);
 
@@ -33,15 +44,31 @@ const EditProfileForm = () => {
     useForm<IFormEditProfileInput>();
 
   const onSubmit = async (data: IFormEditProfileInput) => {
-    console.log({
-      ...data,
-      profileImage: data.profileImage[0],
-      profileBanner: data.profileBanner[0],
-      toast,
-    })
-    setProfileImageFile("");
-    setProfileBannerFile("");
-    reset();
+    try {
+      await saveProfileService({
+        ...data,
+        profileImage: data.profileImage[0],
+        profileBanner: data.profileBanner[0],
+        address: web3Context.state.web3.myAddress,
+        signature:
+          "0x528c15b2906218f648a19ec8967303d45cb0ef4165dd0e0d83f95d09ba175db361e3f90e24d1d5854c",
+        toast,
+      });
+    } catch (error) {
+      toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to edit profile!",
+          life: 3000,
+        });
+    } finally {
+      setProfileImageFile("");
+      setProfileBannerFile("");
+      reset();
+      profileRefetch();
+      onSubmitted();
+    }
   };
   return (
     <div id="edit-profile-form">
@@ -56,7 +83,7 @@ const EditProfileForm = () => {
                   <i className="pi pi-image text-6xl" />
                 </button>
                 <input
-                  {...register("profileImage", { required: true })}
+                  {...register("profileImage", { required: false })}
                   type="file"
                   onChange={handleChangeProfileImage}
                   accept=".jpg, .jpeg, .png"
@@ -80,7 +107,7 @@ const EditProfileForm = () => {
                   <i className="pi pi-image text-6xl" />
                 </button>
                 <input
-                  {...register("profileBanner", { required: true })}
+                  {...register("profileBanner", { required: false })}
                   type="file"
                   onChange={handleChangeProfileBanner}
                   accept=".jpg, .jpeg, .png"
@@ -105,7 +132,7 @@ const EditProfileForm = () => {
               <div>
                 <InputText
                   {...field}
-                  {...register("username", { required: true })}
+                  {...register("username", { required: false })}
                   className="w-full"
                 />
               </div>

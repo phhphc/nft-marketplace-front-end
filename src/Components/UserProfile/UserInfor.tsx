@@ -5,8 +5,14 @@ import { useContext } from "react";
 import { AppContext } from "@Store/index";
 import { Dialog } from "primereact/dialog";
 import EditProfileForm from "@Components/EditProfileForm/EditProfileForm";
+import { IProfile } from "@Interfaces/index";
 
-const UserInfor = () => {
+export interface IUserInfoProps {
+  profile: IProfile | null;
+  profileRefetch: () => void;
+}
+
+const UserInfor = ({ profile, profileRefetch }: IUserInfoProps) => {
   const web3Context = useContext(AppContext);
   const [isCopied, setIsCopied] = useState("Copy");
   const [visible, setVisible] = useState(false);
@@ -17,9 +23,11 @@ const UserInfor = () => {
   };
 
   return (
-    <div id="user-infor" className="mt-8">
+    <div id="user-infor" className="mt-16">
       <div className="flex justify-between">
-        <div className="font-semibold text-3xl">Unnammed</div>
+        <div className="font-semibold text-3xl">
+          {profile?.username ? profile.username : "Unnamed"}
+        </div>
         <i
           className="pi pi-user-edit cursor-pointer"
           style={{ fontSize: "2rem" }}
@@ -34,12 +42,19 @@ const UserInfor = () => {
           style={{ width: "50vw" }}
           onHide={() => setVisible(false)}
         >
-          <EditProfileForm></EditProfileForm>
+          <EditProfileForm
+            profileRefetch={profileRefetch}
+            onSubmitted={() => setVisible(false)}
+          ></EditProfileForm>
         </Dialog>
       </div>
 
-      <div className="font-normal text-xl mt-3">Joined date</div>
-      <div className="font-normal text-xl mt-3">Bio</div>
+      <div className="font-normal text-xl mt-3">
+        Email: {profile?.metadata?.email ? profile?.metadata?.email : ""}
+      </div>
+      <div className="font-normal text-xl mt-3">
+        Bio: {profile?.metadata?.bio ? profile?.metadata?.bio : ""}
+      </div>
       <div className="flex pt-3 text-lg">
         <Tooltip target=".icon-chain" position="mouse" />
         <i

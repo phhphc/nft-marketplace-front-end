@@ -1,12 +1,8 @@
 #list-make-offer {
-    th.image {
-        width: 5rem;
-    }
-    th.offerer,
-    th.order-hash,
-    th.name,
-    th.identifier,
-    th.price {
-        width: 14rem;
-    }
+  th.image {
+    width: 7rem;
+  }
+  th.name {
+    width: 20rem;
+  }
 }

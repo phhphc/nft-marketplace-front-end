@@ -26,6 +26,14 @@ module.exports = () => {
         source: "/api/v0.1/order/hash",
         destination: `${process.env.BACKEND_URL}/order/hash`,
       },
+      {
+        source: "/api/v0.1/profile",
+        destination: `${process.env.BACKEND_URL}/profile`,
+      },
+      {
+        source: "/api/v0.1/profile/:address*",
+        destination: `${process.env.BACKEND_URL}/profile/:address*`,
+      },
     ];
   };
   return {

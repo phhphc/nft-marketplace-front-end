@@ -22,7 +22,7 @@ import {
   stringHexToNumber,
   toFulfillmentComponents,
 } from "@Utils/index";
-import { ICollectionItem, Order } from "@Interfaces/index";
+import { ICollectionItem, IProfile, Order } from "@Interfaces/index";
 import { cloneDeep, flatten } from "lodash";
 import { INFTCollectionItem } from "@Interfaces/index";
 
@@ -94,6 +94,17 @@ interface ICreateCollectionProps {
   link: string;
   blockchain: string;
   owner: string;
+}
+
+interface ISaveProfileProps {
+  toast: any;
+  profileImage?: string;
+  profileBanner?: string;
+  username?: string;
+  bio?: string;
+  email?: string;
+  address: string;
+  signature: string;
 }
 
 export const getNFTCollectionListService = async (additionalParams: {
@@ -365,7 +376,7 @@ export const fulfillMakeOffer = async ({
 
     const mkpContractWithSigner = mkpContract.connect(myWallet);
 
-    const orderData = await axios.get("/api/v0.1/orderV2", {
+    const orderData = await axios.get("/api/v0.1/order", {
       params: {
         orderHash,
         isCancelled: false,
@@ -436,7 +447,7 @@ export const buyToken = async ({
 
     const orderData = await Promise.all(
       orderHashes.map((item) =>
-        axios.get("/api/v0.1/orderV2", {
+        axios.get("/api/v0.1/order", {
           params: {
             orderHash: item,
             isCancelled: false,
@@ -551,7 +562,7 @@ export const getMakeOfferList = async (myAddress: string) => {
 
   const myMakeOffersList = await Promise.all(
     myNfts.map((item: INFTCollectionItem) =>
-      axios.get("/api/v0.1/orderV2", {
+      axios.get("/api/v0.1/order", {
         params: {
           considerationIdentifier: item.identifier,
           isCancelled: false,
@@ -844,6 +855,84 @@ export const getCollectionByOwnerService = async (
     })
     .then((response) => {
       return response.data.data.collections || [];
+    })
+    .catch((err) => {});
+};
+
+export const saveProfileService = async ({
+  toast,
+  profileImage,
+  profileBanner,
+  username,
+  bio,
+  email,
+  address,
+  signature,
+}: ISaveProfileProps) => {
+  const metadata: { [k: string]: string } = {};
+
+  if (bio) {
+    metadata.bio = bio;
+  }
+  if (email) {
+    metadata.email = email;
+  }
+
+  if (profileImage) {
+    metadata.image_url =
+      "https://gateway.pinata.cloud/ipfs/" +
+      (await handleUploadImageToPinata(profileImage));
+  }
+
+  if (profileBanner) {
+    metadata.banner_url =
+      "https://gateway.pinata.cloud/ipfs/" +
+      (await handleUploadImageToPinata(profileBanner));
+  }
+
+  const params = JSON.stringify({
+    username: username,
+    address: address,
+    signature:
+      "0x528c15b2906218f648a19ec8967303d45cb0ef4165dd0e0d83f95d09ba175db361e3f90e24d1d5854c",
+    metadata: metadata,
+  });
+
+  axios
+    .post("api/v0.1/profile", params, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then(function (response) {
+      toast.current &&
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Save profile successfully!",
+          life: 3000,
+        });
+    })
+    .catch(function (error) {
+      console.log(error);
+      toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to save profile!",
+          life: 3000,
+        });
+    });
+};
+
+export const getProfileService = async (
+  owner: string
+): Promise<IProfile> => {
+  return axios
+    .get(`/api/v0.1/profile/${owner}`)
+    .then((response) => {
+      console.log("sddssd", response);
+      return response.data.data || [];
     })
     .catch((err) => {});
 };

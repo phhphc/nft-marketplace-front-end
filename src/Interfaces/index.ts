@@ -235,3 +235,15 @@ export interface IMakeOfferItem {
   itemImage: string;
   price: string;
 }
+
+export interface IMetaDataProfile {
+  banner_url: string;
+  bio: string;
+  email: string;
+  image_url: string;
+}
+
+export interface IProfile {
+  metadata: IMetaDataProfile;
+  username: string;
+}
