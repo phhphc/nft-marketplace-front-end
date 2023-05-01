@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import UserImage from "@Components/UserProfile/UserImage";
 import MakeOfferList from "@Components/MakeOfferList/MakeOfferList";
 import useMakeOffer from "@Hooks/useMakeOffer";
+import useProfile from "@Hooks/useProfile";
 
 const UserProfileContainer = () => {
   const web3Context = useContext(AppContext);
@@ -19,6 +20,10 @@ const UserProfileContainer = () => {
     web3Context.state.web3.myAddress
   );
 
+  const { profile, refetch: profileRefetch } = useProfile(web3Context.state.web3.myAddress);
+
+  console.log("profile", profile);
+
   const toast = useRef<Toast>(null);
 
   return (
@@ -27,8 +32,8 @@ const UserProfileContainer = () => {
         <>
           <div>
             <Toast ref={toast} position="top-center" />
-            <UserImage></UserImage>
-            <UserInfor></UserInfor>
+            <UserImage profile={profile}></UserImage>
+            <UserInfor profile={profile} profileRefetch={profileRefetch}></UserInfor>
             <MakeOfferList
               makeOfferList={makeOfferList}
               makeOfferRefetch={makeOfferRefetch}

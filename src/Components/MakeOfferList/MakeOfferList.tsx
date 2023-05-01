@@ -111,18 +111,8 @@ const MakeOfferList = ({
           >
             <Column
               field="offererAddress"
-              header="Offerer's address"
+              header="Offerer"
               className="text-ellipsis overflow-hidden offerer"
-            ></Column>
-            <Column
-              field="orderHash"
-              header="Order hash"
-              className="text-ellipsis overflow-hidden order-hash"
-            ></Column>
-            <Column
-              field="identifier"
-              header="Identifier"
-              className="text-ellipsis overflow-hidden identifier"
             ></Column>
             <Column
               field="itemName"

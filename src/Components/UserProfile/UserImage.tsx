@@ -1,11 +1,19 @@
+import { IProfile } from "@Interfaces/index";
 
+export interface IUserImageProps {
+  profile: IProfile | null;
+}
 
-const UserImage = () => {
+const UserImage = ({ profile }: IUserImageProps) => {
   return (
     <div id="user-profile">
       <div className="cover-container relative">
         <img
-          src="https://okaystartup.com/images/home4.jpg"
+          src={
+            profile?.metadata?.banner_url
+              ? profile?.metadata?.banner_url
+              : "https://okaystartup.com/images/home4.jpg"
+          }
           alt="cover-image"
           className="cover-image"
         ></img>
@@ -14,7 +22,11 @@ const UserImage = () => {
       <div className="absolute avt-frame">
         <div className="avatar-container relative">
           <img
-            src="https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
+            src={
+              profile?.metadata?.image_url
+                ? profile?.metadata?.image_url
+                : "https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
+            }
             alt=""
             className="avt-image"
           ></img>

@@ -1,7 +1,7 @@
 import { getMakeOfferList } from "@Services/ApiService";
 import { useQuery } from "react-query";
 
-const useMakeOffer = (owner: any) => {
+const useMakeOffer = (owner: string) => {
   const result = useQuery({
     queryKey: ["MakeOffer", owner],
     queryFn: () => getMakeOfferList(owner),
