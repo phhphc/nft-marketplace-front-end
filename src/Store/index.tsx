@@ -3,6 +3,7 @@ import web3Reducer from "@Reducer/web3Reducer";
 import { useEffect } from "react";
 import { Contract, ethers, Wallet } from "ethers";
 import { INFTCollectionItem } from "@Interfaces/index";
+import { ToastMessage } from "primereact/toast";
 
 export enum WEB3_ACTION_TYPES {
   CHANGE = "CHANGE",
@@ -11,6 +12,7 @@ export enum WEB3_ACTION_TYPES {
   SET_BUNDLE = "SET_BUNDLE",
   ADD_LOADING = "ADD_LOADING",
   REMOVE_LOADING = "REMOVE_LOADING",
+  ADD_TOAST = "ADD_TOAST",
 }
 
 export interface ICart {
@@ -27,6 +29,8 @@ export interface IWeb3 {
   cart: ICart[];
   listItemsSellBundle: INFTCollectionItem[];
   loading: boolean;
+  toast: boolean;
+  toastMessage: ToastMessage;
 }
 
 export interface IWeb3Action {
@@ -47,6 +51,8 @@ const initialState: IState = {
     chainId: 0,
     listItemsSellBundle: [],
     loading: false,
+    toast: false,
+    toastMessage: {},
   },
 };
 

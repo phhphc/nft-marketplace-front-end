@@ -226,13 +226,13 @@ export const makeOffer = async ({
         counter: orderComponents.counter,
       })
     );
-    toast.current &&
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Make order successfully!",
-        life: 15000,
-      });
+    // toast.current &&
+    //   toast.current.show({
+    //     severity: "success",
+    //     summary: "Success",
+    //     detail: "Make order successfully!",
+    //     life: 15000,
+    //   });
   } catch (err) {
     console.error(err);
   }

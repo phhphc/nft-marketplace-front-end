@@ -66,26 +66,24 @@ const NFTCollectionGridItem = ({
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (!web3Context.state.web3.provider) {
-      return (
-        toast.current &&
-        toast.current.show({
+      return web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.ADD_TOAST,
+        payload: {
           severity: "error",
           summary: "Error",
           detail: "Please login your wallet!",
-          life: 3000,
-        })
-      );
+        },
+      });
     }
     if (price === 0) {
-      return (
-        toast.current &&
-        toast.current.show({
+      return web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.ADD_TOAST,
+        payload: {
           severity: "error",
           summary: "Error",
           detail: "The price must be higher than 0!",
-          life: 3000,
-        })
-      );
+        },
+      });
     }
     try {
       setVisible(false);
@@ -98,30 +96,38 @@ const NFTCollectionGridItem = ({
         price: price.toString(),
         unit: selectedUnit,
       });
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.ADD_TOAST,
+        payload: {
+          severity: "success",
+          summary: "Success",
+          detail: "Sell NFT Successfully!",
+        },
+      });
       refetch();
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.ADD_TOAST,
+        payload: {
           severity: "error",
           summary: "Error",
-          detail: "Fail to sell NFT!",
-          life: 3000,
-        });
+          detail: "Fail to sell NFT",
+        },
+      });
     }
   };
 
   const handleBuyToken = async (item?: INFTCollectionItem[]) => {
     try {
       if (!web3Context.state.web3.provider) {
-        return (
-          toast.current &&
-          toast.current.show({
+        return web3Context.dispatch({
+          type: WEB3_ACTION_TYPES.ADD_TOAST,
+          payload: {
             severity: "error",
             summary: "Error",
             detail: "Please login your wallet!",
-            life: 3000,
-          })
-        );
+          },
+        });
       }
       if (item) {
         await buyToken({
@@ -131,16 +137,25 @@ const NFTCollectionGridItem = ({
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
         });
+        web3Context.dispatch({
+          type: WEB3_ACTION_TYPES.ADD_TOAST,
+          payload: {
+            severity: "success",
+            summary: "Success",
+            detail: "Buy NFT successfully!",
+          },
+        });
         refetch();
       }
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.ADD_TOAST,
+        payload: {
           severity: "error",
           summary: "Error",
-          detail: "Fail to buy NFT!",
-          life: 3000,
-        });
+          detail: "Fail to Buy NFT",
+        },
+      });
     }
   };
 

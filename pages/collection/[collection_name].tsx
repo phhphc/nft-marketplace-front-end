@@ -3,6 +3,7 @@ import NFTCollectionContainer from "@Containers/NFTCollectionContainer/NFTCollec
 import LoadingPage from "@Components/LoadingPage/LoadingPage";
 import { useContext } from "react";
 import { AppContext } from "@Store/index";
+import ToastMessage from "@Components/ToastMessage/ToastMessage";
 
 export default function NFTCollectionPage() {
   const web3Context = useContext(AppContext);
@@ -18,6 +19,11 @@ export default function NFTCollectionPage() {
         <>
           <NFTCollectionContainer />
           {web3Context.state.web3.loading && <LoadingPage />}
+          {web3Context.state.web3.toast && (
+            <ToastMessage
+              toastProps={web3Context.state.web3.toastMessage}
+            ></ToastMessage>
+          )}
         </>
       </main>
     </>

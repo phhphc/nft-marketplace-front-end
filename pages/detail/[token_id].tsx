@@ -3,6 +3,7 @@ import NFTDetailContainer from "@Containers/NFTDetailContainer/NFTDetailContaine
 import LoadingPage from "@Components/LoadingPage/LoadingPage";
 import { AppContext } from "@Store/index";
 import { useContext } from "react";
+import ToastMessage from "@Components/ToastMessage/ToastMessage";
 
 export default function NFTDetailPage() {
   const web3Context = useContext(AppContext);
@@ -18,6 +19,11 @@ export default function NFTDetailPage() {
         <>
           <NFTDetailContainer />
           {web3Context.state.web3.loading && <LoadingPage />}
+          {web3Context.state.web3.toast && (
+            <ToastMessage
+              toastProps={web3Context.state.web3.toastMessage}
+            ></ToastMessage>
+          )}
         </>
       </main>
     </>

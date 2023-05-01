@@ -39,6 +39,12 @@ const web3Reducer = (state: IWeb3, action: IWeb3Action) => {
         ...state,
         loading: false,
       };
+    case WEB3_ACTION_TYPES.ADD_TOAST:
+      return {
+        ...state,
+        toast: true,
+        toastMessage: action.payload
+      };
     default:
       return state;
   }

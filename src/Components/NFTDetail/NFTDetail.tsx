@@ -175,15 +175,24 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
         price: price.toString(),
         unit: selectedUnit,
       });
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.ADD_TOAST,
+        payload: {
+          severity: "success",
+          summary: "Success",
+          detail: "Make offer successfully!",
+        },
+      });
       refetch();
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.ADD_TOAST,
+        payload: {
           severity: "error",
           summary: "Error",
-          detail: "Fail to sell NFT!",
-          life: 3000,
-        });
+          detail: "Fail to make offer",
+        },
+      });
     }
   };
 
