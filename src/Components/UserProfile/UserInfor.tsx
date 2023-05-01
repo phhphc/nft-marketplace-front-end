@@ -45,6 +45,7 @@ const UserInfor = ({ profile, profileRefetch }: IUserInfoProps) => {
           <EditProfileForm
             profileRefetch={profileRefetch}
             onSubmitted={() => setVisible(false)}
+            profile={profile}
           ></EditProfileForm>
         </Dialog>
       </div>

@@ -1,4 +1,4 @@
-import { IFormEditProfileInput } from "@Interfaces/index";
+import { IFormEditProfileInput, IProfile } from "@Interfaces/index";
 import { saveProfileService } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { Button } from "primereact/button";
@@ -10,11 +10,13 @@ import { Controller, useForm } from "react-hook-form";
 export interface IEditProfileFormProps {
   profileRefetch: () => void;
   onSubmitted: () => void;
+  profile: IProfile | null;
 }
 
 const EditProfileForm = ({
   profileRefetch,
   onSubmitted,
+  profile,
 }: IEditProfileFormProps) => {
   const [profileImageFile, setProfileImageFile] = useState<string>("");
   const [profileBannerFile, setProfileBannerFile] = useState<string>("");
@@ -46,9 +48,11 @@ const EditProfileForm = ({
   const onSubmit = async (data: IFormEditProfileInput) => {
     try {
       await saveProfileService({
-        ...data,
-        profileImage: data.profileImage[0],
-        profileBanner: data.profileBanner[0],
+        username: data.username ? data.username : profile?.username,
+        bio: data.bio ? data.bio : profile?.metadata.bio,
+        email: data.email ? data.email : profile?.metadata.email,
+        profileImage: data.profileImage[0] ? data.profileImage[0] : profile?.metadata.image_url,
+        profileBanner: data.profileBanner[0] ? data.profileBanner[0] : profile?.metadata.banner_url,
         address: web3Context.state.web3.myAddress,
         signature:
           "0x528c15b2906218f648a19ec8967303d45cb0ef4165dd0e0d83f95d09ba175db361e3f90e24d1d5854c",

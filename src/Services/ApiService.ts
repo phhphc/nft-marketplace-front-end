@@ -879,15 +879,19 @@ export const saveProfileService = async ({
   }
 
   if (profileImage) {
-    metadata.image_url =
-      "https://gateway.pinata.cloud/ipfs/" +
-      (await handleUploadImageToPinata(profileImage));
+    typeof profileImage === "string"
+      ? (metadata.image_url = profileImage)
+      : (metadata.image_url =
+          "https://gateway.pinata.cloud/ipfs/" +
+          (await handleUploadImageToPinata(profileImage)));
   }
 
   if (profileBanner) {
-    metadata.banner_url =
-      "https://gateway.pinata.cloud/ipfs/" +
-      (await handleUploadImageToPinata(profileBanner));
+    typeof profileBanner === "string"
+      ? (metadata.banner_url = profileBanner)
+      : (metadata.banner_url =
+          "https://gateway.pinata.cloud/ipfs/" +
+          (await handleUploadImageToPinata(profileBanner)));
   }
 
   const params = JSON.stringify({
@@ -925,13 +929,10 @@ export const saveProfileService = async ({
     });
 };
 
-export const getProfileService = async (
-  owner: string
-): Promise<IProfile> => {
+export const getProfileService = async (owner: string): Promise<IProfile> => {
   return axios
     .get(`/api/v0.1/profile/${owner}`)
     .then((response) => {
-      console.log("sddssd", response);
       return response.data.data || [];
     })
     .catch((err) => {});
