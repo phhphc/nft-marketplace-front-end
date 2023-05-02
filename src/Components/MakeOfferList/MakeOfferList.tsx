@@ -12,11 +12,13 @@ import { useContext, useState } from "react";
 export interface IMakeOfferListProps {
   makeOfferList: IMakeOfferItem[];
   makeOfferRefetch: () => void;
+  nftRefetch: () => void;
 }
 
 const MakeOfferList = ({
   makeOfferList,
   makeOfferRefetch,
+  nftRefetch,
 }: IMakeOfferListProps) => {
   const web3Context = useContext(AppContext);
 
@@ -95,6 +97,7 @@ const MakeOfferList = ({
       myAddress: web3Context.state.web3.myAddress,
     });
     makeOfferRefetch();
+    nftRefetch();
   };
 
   const rejectFulfillOrder = (item: IMakeOfferItem) => {};

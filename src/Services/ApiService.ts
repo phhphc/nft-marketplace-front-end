@@ -48,6 +48,12 @@ interface IMakeOfferProps {
   unit: string;
 }
 
+interface ITransferTETHToEthProps {
+  provider: any;
+  myWallet: any;
+  price: string;
+}
+
 interface IGetOfferByTokenProps {
   tokenId: string;
   tokenAddress: string;
@@ -155,7 +161,7 @@ export const makeOffer = async ({
 
     const erc20ContractWithSigner = erc20Contract.connect(myWallet);
 
-    await erc20ContractWithSigner.mint({
+    await erc20ContractWithSigner.buy({
       value: parseEther(price),
     });
 
@@ -182,35 +188,22 @@ export const makeOffer = async ({
       getTestItem721(item.identifier, 1, 1, myAddress, item.token),
     ];
     const { chainId } = await provider.getNetwork();
-    const {
-      order,
-      orderHash,
-      value,
-      orderStatus,
-      orderComponents,
-      startTime,
-      endTime,
-      signature,
-    } = await createOrder(
-      mkpContractWithSigner,
-      chainId,
-      myWallet,
-      undefined,
-      offer,
-      consideration,
-      0 // FULL_OPEN
-    );
+    const { orderHash, value, orderComponents, startTime, endTime, signature } =
+      await createOrder(
+        mkpContractWithSigner,
+        chainId,
+        myWallet,
+        offer,
+        consideration
+      );
 
     console.log(
       transformDataRequestToSellNFT({
         orderHash,
         offerer: myAddress,
-        zone: orderComponents.zone,
-        zone_hash: orderComponents.zoneHash,
         signature,
         offer,
         consideration,
-        orderType: orderComponents.orderType,
         orderValue: value,
         startTime,
         endTime,
@@ -224,12 +217,9 @@ export const makeOffer = async ({
       transformDataRequestToSellNFT({
         orderHash,
         offerer: myAddress,
-        zone: orderComponents.zone,
-        zone_hash: orderComponents.zoneHash,
         signature,
         offer,
         consideration,
-        orderType: orderComponents.orderType,
         orderValue: value,
         startTime,
         endTime,
@@ -244,6 +234,24 @@ export const makeOffer = async ({
         detail: "Make order successfully!",
         life: 15000,
       });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const transferTETHToEth = async ({
+  provider,
+  myWallet,
+  price,
+}: ITransferTETHToEthProps) => {
+  try {
+    const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
+
+    const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
+
+    const erc20ContractWithSigner = erc20Contract.connect(myWallet);
+
+    await erc20ContractWithSigner.sell(parseEther(price));
   } catch (err) {
     console.error(err);
   }
@@ -275,6 +283,7 @@ export const sellNFT = async ({
       myAddress,
       mkpAddress
     );
+    console.log("🚀 ~ file: ApiService.ts:270 ~ isApproved:", isApproved);
 
     if (!isApproved) {
       await erc721ContractWithSigner.setApprovalForAll(mkpAddress, true);
@@ -295,35 +304,22 @@ export const sellNFT = async ({
       ),
     ];
     const { chainId } = await provider.getNetwork();
-    const {
-      order,
-      orderHash,
-      value,
-      orderStatus,
-      orderComponents,
-      startTime,
-      endTime,
-      signature,
-    } = await createOrder(
-      mkpContractWithSigner,
-      chainId,
-      myWallet,
-      undefined,
-      offer,
-      consideration,
-      0 // FULL_OPEN
-    );
+    const { orderHash, value, orderComponents, startTime, endTime, signature } =
+      await createOrder(
+        mkpContractWithSigner,
+        chainId,
+        myWallet,
+        offer,
+        consideration
+      );
 
     console.log(
       transformDataRequestToSellNFT({
         orderHash,
         offerer: myAddress,
-        zone: orderComponents.zone,
-        zone_hash: orderComponents.zoneHash,
         signature,
         offer,
         consideration,
-        orderType: orderComponents.orderType,
         orderValue: value,
         startTime,
         endTime,
@@ -337,12 +333,9 @@ export const sellNFT = async ({
       transformDataRequestToSellNFT({
         orderHash,
         offerer: myAddress,
-        zone: orderComponents.zone,
-        zone_hash: orderComponents.zoneHash,
         signature,
         offer,
         consideration,
-        orderType: orderComponents.orderType,
         orderValue: value,
         startTime,
         endTime,
@@ -406,7 +399,6 @@ export const fulfillMakeOffer = async ({
 
     const signature = orderData.data.data.content[0].signature;
 
-    orderData.data.data.content[0].totalOriginalConsiderationItems = 1;
     delete orderData.data.data.content[0].status;
     delete orderData.data.data.content[0].orderHash;
     delete orderData.data.data.content[0].signature;
@@ -464,8 +456,6 @@ export const buyToken = async ({
 
     orderData.forEach((item) => {
       const signature = item.data.data.content[0].signature;
-      // I don't know why this is 1
-      item.data.data.content[0].totalOriginalConsiderationItems = 1;
       delete item.data.data.content[0].status;
       delete item.data.data.content[0].orderHash;
       delete item.data.data.content[0].signature;
@@ -474,9 +464,7 @@ export const buyToken = async ({
     let tx;
 
     if (orderData.length === 1) {
-      tx = await mkpContractWithSigner[
-        "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
-      ](
+      tx = await mkpContractWithSigner.fulfillOrder(
         transformDataRequestToBuyNFT({
           parameters: orderData[0].data.data.content[0],
           signature: signatures[0],
@@ -484,51 +472,21 @@ export const buyToken = async ({
 
         {
           value: toBN(price[0]),
+          // gasLimit: 100000,
         }
       );
     } else {
-      const considerationArray: any = [];
-      orderData.forEach((item1, index1) => {
-        item1.data.data.content[0].consideration.forEach(
-          (item2: any, index2: any) => {
-            considerationArray.push([[index1, index2]]);
-          }
-        );
-      });
-      const offerArray: any = [];
-      orderData.forEach((item1, index1) => {
-        item1.data.data.content[0].offer.forEach((item2: any, index2: any) => {
-          offerArray.push([[index1, index2]]);
-        });
-      });
-
       const realPrice = price.reduce((acc, cur) => {
         return acc.add(cur);
       }, toBN(0));
 
-      console.log(
+      tx = await mkpContractWithSigner.fulfillOrderBatch(
         orderData.map((item, index) =>
           transformDataRequestToBuyNFT({
             parameters: item.data.data.content[0],
             signature: signatures[index],
           })
         ),
-        offerArray,
-        considerationArray,
-        99,
-        { value: toBN(realPrice) }
-      );
-
-      tx = await mkpContractWithSigner.fulfillAvailableOrders(
-        orderData.map((item, index) =>
-          transformDataRequestToBuyNFT({
-            parameters: item.data.data.content[0],
-            signature: signatures[index],
-          })
-        ),
-        offerArray.map(toFulfillmentComponents),
-        considerationArray.map(toFulfillmentComponents),
-        99,
         { value: toBN(realPrice) }
       );
     }
@@ -661,11 +619,6 @@ export const createNFTService = async ({
   };
 
   const metaDataIPFS = await axios(createNFTConfig);
-  console.log(
-    "🚀 ~ file: ApiService.ts:338 ~ metaDataIPFS:",
-    metaDataIPFS.data
-  );
-  console.log("collection token", collection);
 
   // mint NFT and send data to BE
   await provider.send("eth_requestAccounts", []);

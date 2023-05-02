@@ -164,7 +164,7 @@ export const calculateOrderHash = (orderComponents: OrderComponents) => {
   const considerationItemTypeString =
     "ConsiderationItem(uint8 itemType,address token,uint256 identifier,uint256 startAmount,uint256 endAmount,address recipient)";
   const orderComponentsPartialTypeString =
-    "OrderComponents(address offerer,address zone,OfferItem[] offer,ConsiderationItem[] consideration,uint8 orderType,uint256 startTime,uint256 endTime,bytes32 zoneHash,uint256 salt,uint256 counter)";
+    "OrderComponents(address offerer,OfferItem[] offer,ConsiderationItem[] consideration,uint256 startTime,uint256 endTime,uint256 salt,uint256 counter)";
   const orderTypeString = `${orderComponentsPartialTypeString}${considerationItemTypeString}${offerItemTypeString}`;
 
   const offerItemTypeHash = keccak256(toUtf8Bytes(offerItemTypeString));
@@ -235,16 +235,13 @@ export const calculateOrderHash = (orderComponents: OrderComponents) => {
       [
         orderTypeHash.slice(2),
         orderComponents.offerer.slice(2).padStart(64, "0"),
-        orderComponents.zone.slice(2).padStart(64, "0"),
         offerHash.slice(2),
         considerationHash.slice(2),
-        orderComponents.orderType.toString().padStart(64, "0"),
         toBN(orderComponents.startTime)
           .toHexString()
           .slice(2)
           .padStart(64, "0"),
         toBN(orderComponents.endTime).toHexString().slice(2).padStart(64, "0"),
-        orderComponents.zoneHash.slice(2),
         orderComponents.salt.slice(2).padStart(64, "0"),
         toBN(orderComponents.counter).toHexString().slice(2).padStart(64, "0"),
       ].join("")
@@ -268,10 +265,12 @@ const signOrder = async (
   orderComponents: OrderComponents,
   signer: Wallet | Contract
 ) => {
+  console.log("🚀 ~ file: index.ts:268 ~ orderComponents:", orderComponents);
+  console.log("🚀 ~ file: index.ts:268 ~ marketplace:", marketplace);
   try {
     const domainData = {
-      name: "Marketplace",
-      version: "1.2",
+      name: "Lover",
+      version: "1.0",
       chainId,
       verifyingContract: marketplace.address,
     };
@@ -297,86 +296,63 @@ export const createOrder = async (
   marketplace: Contract,
   chainId: number,
   offerer: Wallet | Contract,
-  zone: Wallet | undefined | string = undefined,
   offer: OfferItem[],
   consideration: ConsiderationItem[],
-  orderType: number,
-  timeFlag?: "NOT_STARTED" | "EXPIRED" | null,
-  signer?: Wallet,
-  zoneHash = constants.HashZero,
-  conduitKey = constants.HashZero,
-  extraCheap = false,
-  useBulkSignature = false,
-  bulkSignatureIndex?: number,
-  bulkSignatureHeight?: number
+  timeFlag?: "NOT_STARTED" | "EXPIRED" | null
 ) => {
-  const counter = await marketplace["getCounter(address)"](
-    await offerer.getAddress()
-  );
+  const counter = await marketplace.getCounter(await offerer.getAddress());
 
-  const salt = !extraCheap ? randomHex() : constants.HashZero;
+  const salt = randomHex();
   const startTime =
     timeFlag !== "NOT_STARTED" ? 0 : toBN("0xee00000000000000000000000000");
   const endTime =
     timeFlag !== "EXPIRED" ? toBN("0xff00000000000000000000000000") : 1;
-  const orderParameters = stringHexToNumber(
-    toBigNumberHex({
-      offerer: await offerer.getAddress(),
-      zone: "0x0000000000000000000000000000000000000000",
-      offer,
-      consideration,
-      totalOriginalConsiderationItems: consideration.length,
-      orderType,
-      zoneHash,
-      salt,
 
-      startTime,
-      endTime,
-    })
-  );
+  const orderParameters = {
+    offerer: await offerer.getAddress(),
+    offer,
+    consideration,
+    salt,
+    startTime,
+    endTime,
+  };
+
   const orderComponents = {
     ...orderParameters,
     counter,
   };
-  const orderHash = await getAndVerifyOrderHash(marketplace, orderComponents);
-  const { isValidated, isCancelled } = await marketplace[
-    "getOrderStatus(bytes32)"
-  ](orderHash);
-  const orderStatus = {
-    isValidated,
-    isCancelled,
-  };
-  const flatSig = await signOrder(
-    marketplace,
+
+  const orderHash = await marketplace.getOrderHash(orderComponents);
+  await calculateOrderHash(orderComponents);
+
+  const domainData = {
+    name: "Lover",
+    version: "1.0",
     chainId,
-    orderComponents,
-    signer ?? offerer
+    verifyingContract: marketplace.address,
+  };
+  console.log("🚀 ~ file: index.ts:344 ~ domainData:", domainData);
+  console.log("🚀 ~ file: index.ts:344 ~ domainData:", orderType);
+
+  const flatSig = await offerer._signTypedData(
+    domainData,
+    orderType,
+    orderComponents
   );
+  const { domainSeparator } = await marketplace.information();
+  console.log("🚀 ~ file: index.ts:353 ~ domainSeparator:", domainSeparator);
+  const digest = keccak256(
+    `0x1901${domainSeparator.slice(2)}${orderHash.slice(2)}`
+  );
+  const recoveredAddress = recoverAddress(digest, flatSig);
+  if (recoveredAddress !== (await offerer.getAddress())) {
+    throw "wrong signature";
+  }
+
   const order = {
     parameters: orderParameters,
-    signature: flatSig,
+    signature: convertSignatureToEIP2098(flatSig),
   };
-  // if (useBulkSignature) {
-  //     order.signature = await signBulkOrder(
-  //         [orderComponents],
-  //         signer ?? offerer,
-  //         bulkSignatureIndex,
-  //         bulkSignatureHeight,
-  //         extraCheap
-  //     );
-
-  //     // Verify bulk signature length
-  //     expect(
-  //         order.signature.slice(2).length / 2,
-  //         "bulk signature length should be valid (98 < length < 837)"
-  //     )
-  //         .to.be.gt(98)
-  //         .and.lt(837);
-  //     expect(
-  //         (order.signature.slice(2).length / 2 - 67) % 32,
-  //         "bulk signature length should be valid ((length - 67) % 32 < 2)"
-  //     ).to.be.lt(2);
-  // }
 
   // How much ether (at most) needs to be supplied when fulfilling the order
   const value = offer
@@ -402,13 +378,12 @@ export const createOrder = async (
 
   return {
     order,
-    orderHash,
     value,
-    orderStatus,
     orderComponents,
+    orderHash,
     startTime,
     endTime,
-    signature: flatSig,
+    signature: convertSignatureToEIP2098(flatSig),
   };
 };
 
