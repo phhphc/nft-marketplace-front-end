@@ -155,7 +155,7 @@ export const makeOffer = async ({
 
     const erc20ContractWithSigner = erc20Contract.connect(myWallet);
 
-    await erc20ContractWithSigner.mint({
+    await erc20ContractWithSigner.buy({
       value: parseEther(price),
     });
 
@@ -182,35 +182,22 @@ export const makeOffer = async ({
       getTestItem721(item.identifier, 1, 1, myAddress, item.token),
     ];
     const { chainId } = await provider.getNetwork();
-    const {
-      order,
-      orderHash,
-      value,
-      orderStatus,
-      orderComponents,
-      startTime,
-      endTime,
-      signature,
-    } = await createOrder(
-      mkpContractWithSigner,
-      chainId,
-      myWallet,
-      undefined,
-      offer,
-      consideration,
-      0 // FULL_OPEN
-    );
+    const { orderHash, value, orderComponents, startTime, endTime, signature } =
+      await createOrder(
+        mkpContractWithSigner,
+        chainId,
+        myWallet,
+        offer,
+        consideration
+      );
 
     console.log(
       transformDataRequestToSellNFT({
         orderHash,
         offerer: myAddress,
-        zone: orderComponents.zone,
-        zone_hash: orderComponents.zoneHash,
         signature,
         offer,
         consideration,
-        orderType: orderComponents.orderType,
         orderValue: value,
         startTime,
         endTime,
@@ -224,12 +211,9 @@ export const makeOffer = async ({
       transformDataRequestToSellNFT({
         orderHash,
         offerer: myAddress,
-        zone: orderComponents.zone,
-        zone_hash: orderComponents.zoneHash,
         signature,
         offer,
         consideration,
-        orderType: orderComponents.orderType,
         orderValue: value,
         startTime,
         endTime,
@@ -275,6 +259,7 @@ export const sellNFT = async ({
       myAddress,
       mkpAddress
     );
+    console.log("🚀 ~ file: ApiService.ts:270 ~ isApproved:", isApproved);
 
     if (!isApproved) {
       await erc721ContractWithSigner.setApprovalForAll(mkpAddress, true);
@@ -295,35 +280,22 @@ export const sellNFT = async ({
       ),
     ];
     const { chainId } = await provider.getNetwork();
-    const {
-      order,
-      orderHash,
-      value,
-      orderStatus,
-      orderComponents,
-      startTime,
-      endTime,
-      signature,
-    } = await createOrder(
-      mkpContractWithSigner,
-      chainId,
-      myWallet,
-      undefined,
-      offer,
-      consideration,
-      0 // FULL_OPEN
-    );
+    const { orderHash, value, orderComponents, startTime, endTime, signature } =
+      await createOrder(
+        mkpContractWithSigner,
+        chainId,
+        myWallet,
+        offer,
+        consideration
+      );
 
     console.log(
       transformDataRequestToSellNFT({
         orderHash,
         offerer: myAddress,
-        zone: orderComponents.zone,
-        zone_hash: orderComponents.zoneHash,
         signature,
         offer,
         consideration,
-        orderType: orderComponents.orderType,
         orderValue: value,
         startTime,
         endTime,
@@ -337,12 +309,9 @@ export const sellNFT = async ({
       transformDataRequestToSellNFT({
         orderHash,
         offerer: myAddress,
-        zone: orderComponents.zone,
-        zone_hash: orderComponents.zoneHash,
         signature,
         offer,
         consideration,
-        orderType: orderComponents.orderType,
         orderValue: value,
         startTime,
         endTime,
@@ -406,7 +375,6 @@ export const fulfillMakeOffer = async ({
 
     const signature = orderData.data.data.content[0].signature;
 
-    orderData.data.data.content[0].totalOriginalConsiderationItems = 1;
     delete orderData.data.data.content[0].status;
     delete orderData.data.data.content[0].orderHash;
     delete orderData.data.data.content[0].signature;
@@ -464,8 +432,6 @@ export const buyToken = async ({
 
     orderData.forEach((item) => {
       const signature = item.data.data.content[0].signature;
-      // I don't know why this is 1
-      item.data.data.content[0].totalOriginalConsiderationItems = 1;
       delete item.data.data.content[0].status;
       delete item.data.data.content[0].orderHash;
       delete item.data.data.content[0].signature;
@@ -474,9 +440,7 @@ export const buyToken = async ({
     let tx;
 
     if (orderData.length === 1) {
-      tx = await mkpContractWithSigner[
-        "fulfillOrder(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,uint256),bytes))"
-      ](
+      tx = await mkpContractWithSigner.fulfillOrder(
         transformDataRequestToBuyNFT({
           parameters: orderData[0].data.data.content[0],
           signature: signatures[0],
@@ -484,6 +448,7 @@ export const buyToken = async ({
 
         {
           value: toBN(price[0]),
+          // gasLimit: 100000,
         }
       );
     } else {
@@ -519,16 +484,13 @@ export const buyToken = async ({
         { value: toBN(realPrice) }
       );
 
-      tx = await mkpContractWithSigner.fulfillAvailableOrders(
+      tx = await mkpContractWithSigner.fulfillOrderBatch(
         orderData.map((item, index) =>
           transformDataRequestToBuyNFT({
             parameters: item.data.data.content[0],
             signature: signatures[index],
           })
         ),
-        offerArray.map(toFulfillmentComponents),
-        considerationArray.map(toFulfillmentComponents),
-        99,
         { value: toBN(realPrice) }
       );
     }
@@ -925,9 +887,7 @@ export const saveProfileService = async ({
     });
 };
 
-export const getProfileService = async (
-  owner: string
-): Promise<IProfile> => {
+export const getProfileService = async (owner: string): Promise<IProfile> => {
   return axios
     .get(`/api/v0.1/profile/${owner}`)
     .then((response) => {

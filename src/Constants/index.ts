@@ -78,13 +78,10 @@ export enum NFT_COLLECTION_MODE {
 export const orderType = {
   OrderComponents: [
     { name: "offerer", type: "address" },
-    { name: "zone", type: "address" },
     { name: "offer", type: "OfferItem[]" },
     { name: "consideration", type: "ConsiderationItem[]" },
-    { name: "orderType", type: "uint8" },
     { name: "startTime", type: "uint256" },
     { name: "endTime", type: "uint256" },
-    { name: "zoneHash", type: "bytes32" },
     { name: "salt", type: "uint256" },
     { name: "counter", type: "uint256" },
   ],
@@ -116,7 +113,6 @@ export const NORMAL_STRING_MAPPING: string[] = [
   "item_type",
   "type_number",
   "order_type",
-  "totalOriginalConsiderationItems",
   "startAmount",
   "endAmount",
   "identifier",
@@ -125,11 +121,9 @@ export const NORMAL_STRING_MAPPING: string[] = [
 ];
 
 export const TO_NUMBER_MAPPING: any = {
-  totalOriginalConsiderationItems: 1,
   item_type: 1,
   order_type: 1,
   itemType: 1,
-  orderType: 1,
   startTime: 1,
 };
 
@@ -147,7 +141,7 @@ export const MAPPING_STRING_TO_BIG_NUMBER = [
 export const CURRENCY = {
   ETHER: "Ether",
   GWEI: "Gwei",
-  TETHER: "TEther"
+  TETHER: "TEther",
 };
 
 export const CURRENCY_UNITS = [
@@ -157,12 +151,10 @@ export const CURRENCY_UNITS = [
 
 export const OFFER_CURRENCY_UNITS = [
   { name: CURRENCY.TETHER, value: CURRENCY.TETHER },
-]
+];
 
 export const STRING_HEX_TO_NUMBER: any = {
   itemType: 1,
-  orderType: 1,
-  totalOriginalConsiderationItems: 1,
 };
 
 export const NOT_ON_SALE = "NOT_ON_SALE";

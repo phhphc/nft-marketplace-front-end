@@ -20,9 +20,9 @@ const UserProfileContainer = () => {
     web3Context.state.web3.myAddress
   );
 
-  const { profile, refetch: profileRefetch } = useProfile(web3Context.state.web3.myAddress);
-
-  console.log("profile", profile);
+  const { profile, refetch: profileRefetch } = useProfile(
+    web3Context.state.web3.myAddress
+  );
 
   const toast = useRef<Toast>(null);
 
@@ -33,10 +33,14 @@ const UserProfileContainer = () => {
           <div>
             <Toast ref={toast} position="top-center" />
             <UserImage profile={profile}></UserImage>
-            <UserInfor profile={profile} profileRefetch={profileRefetch}></UserInfor>
+            <UserInfor
+              profile={profile}
+              profileRefetch={profileRefetch}
+            ></UserInfor>
             <MakeOfferList
               makeOfferList={makeOfferList}
               makeOfferRefetch={makeOfferRefetch}
+              nftRefetch={refetch}
             ></MakeOfferList>
             <NFTUserProfileTabs
               nftCollectionList={nftCollectionList}
