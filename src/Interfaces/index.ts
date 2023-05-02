@@ -102,14 +102,11 @@ export type BasicOrderParameters = {
   considerationIdentifier: BigNumber;
   considerationAmount: BigNumber;
   offerer: string;
-  zone: string;
   offerToken: string;
   offerIdentifier: BigNumber;
   offerAmount: BigNumber;
-  basicOrderType: number;
   startTime: string | BigNumber | number;
   endTime: string | BigNumber | number;
-  zoneHash: string;
   salt: string;
   offererConduitKey: string;
   fulfillerConduitKey: string;
@@ -136,22 +133,15 @@ export type ConsiderationItem = {
 
 export type OrderParameters = {
   offerer: string;
-  zone: string;
   offer: OfferItem[];
   consideration: ConsiderationItem[];
-  orderType: number;
   startTime: string | BigNumber | number;
   endTime: string | BigNumber | number;
-  zoneHash: string;
   salt: string;
   // conduitKey: string;
-  totalOriginalConsiderationItems: string | BigNumber | number;
 };
 
-export type OrderComponents = Omit<
-  OrderParameters,
-  "totalOriginalConsiderationItems"
-> & {
+export type OrderComponents = OrderParameters & {
   counter: BigNumber;
 };
 

@@ -129,7 +129,7 @@ export const erc20Abi = [
         type: "uint256",
       },
     ],
-    name: "burn",
+    name: "sell",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -197,7 +197,7 @@ export const erc20Abi = [
   },
   {
     inputs: [],
-    name: "mint",
+    name: "buy",
     outputs: [],
     stateMutability: "payable",
     type: "function",
