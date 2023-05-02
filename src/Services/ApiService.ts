@@ -795,7 +795,7 @@ ICreateCollectionProps) => {
   axios
     .post("api/v0.1/collection", params, {
       headers: {
-        "content[0]-type": "application/json",
+        "Content-Type": "application/json",
       },
     })
     .then(function (response) {
