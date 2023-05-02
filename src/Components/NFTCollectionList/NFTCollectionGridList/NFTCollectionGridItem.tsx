@@ -33,10 +33,6 @@ const NFTCollectionGridItem = ({
   refetch,
   hideSellBundle = false,
 }: INFTCollectionGridItemProps) => {
-  const canMakeOffer = (item: INFTCollectionItem[]) => {
-    return item[0].owner !== web3Context.state.web3.myAddress;
-  };
-
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
       !!item[0].listings[0] &&

@@ -60,6 +60,16 @@ const MakeOfferList = ({
     );
   };
 
+  const nftDetailBodyTemplate = (rowData: IMakeOfferItem) => {
+    return (
+      <i
+        className="text-yellow-500 pi pi-window-maximize cursor-pointer hover:text-yellow-600"
+        style={{ fontSize: "2rem" }}
+        onClick={() => router.push(`/detail/${rowData.identifier}`)}
+      ></i>
+    );
+  };
+
   const priceBodyTemplate = (rowData: IMakeOfferItem): string => {
     return showingPrice(
       rowData?.price || "0",
@@ -71,7 +81,7 @@ const MakeOfferList = ({
   const fulfillBodyTemplate = (rowData: IMakeOfferItem) => {
     return (
       <i
-        className="text-green-500 pi pi-check-circle cursor-pointer hover:text-green-600"
+        className="text-green-500 pi pi-check-circle cursor-pointer hover:text-green-700"
         style={{ fontSize: "2rem" }}
         onClick={() => handleFulfillOrder(rowData)}
       ></i>
@@ -81,7 +91,7 @@ const MakeOfferList = ({
   const rejectBodyTemplate = (rowData: IMakeOfferItem) => {
     return (
       <i
-        className="text-red-500 pi pi-times-circle cursor-pointer hover:text-red-600"
+        className="text-red-500 pi pi-times-circle cursor-pointer hover:text-red-700"
         style={{ fontSize: "2rem" }}
         onClick={() => rejectFulfillOrder(rowData)}
       ></i>
@@ -143,6 +153,11 @@ const MakeOfferList = ({
               field="reject"
               header="Reject"
               body={rejectBodyTemplate}
+            ></Column>
+            <Column
+              field=""
+              header="View detail"
+              body={nftDetailBodyTemplate}
             ></Column>
           </DataTable>
         </AccordionTab>

@@ -582,7 +582,8 @@ export const showingPrice = (
   const gweiShowingPrice = gwei ? `${Number(gwei)} GWEI` : "";
   if (isOnlyShowEth) {
     return (
-      (Number(eth) + Number(gwei) / 1000000000).toString() + currency || "ETH"
+      (Number(eth) + Number(gwei) / 1000000000).toString() + " " + currency ||
+      "ETH"
     );
   }
   return ethShowingPrice + gweiShowingPrice;
