@@ -41,7 +41,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
   return (
     <div id="nft-infor">
       <div className="flex justify-between">
-        <div className="flex pl-10">
+        <div className="flex">
           <div className="nft-name font-semibold text-3xl">
             {collectionInfo[0]?.name}
           </div>
@@ -64,7 +64,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
           </span>
         </div>
         · */}
-        <div className="pl-1">
+        <div className="">
           Created{" "}
           <span className="font-semibold pr-1">
             {moment(collectionInfo[0]?.created_at).format("MMMM Do YYYY")}
@@ -84,7 +84,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
           <span className="font-semibold">{collectionInfo[0]?.category}</span>
         </div>
       </div>
-      <div className="nft-intro pt-3">
+      <div className="pt-3">
         <p
           className={
             "w-3/5 " +
