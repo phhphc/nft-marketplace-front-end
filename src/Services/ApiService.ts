@@ -52,6 +52,7 @@ interface ITransferTETHToEthProps {
   provider: any;
   myWallet: any;
   price: string;
+  toast: any;
 }
 
 interface IGetOfferByTokenProps {
@@ -231,18 +232,25 @@ export const makeOffer = async ({
       toast.current.show({
         severity: "success",
         summary: "Success",
-        detail: "Make order successfully!",
+        detail: "Make offer successfully!",
         life: 15000,
       });
   } catch (err) {
-    console.error(err);
+    toast.current &&
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Fail to make offer!",
+        life: 15000,
+      });
   }
 };
 
-export const transferTETHToEth = async ({
+export const transferTethToEth = async ({
   provider,
   myWallet,
   price,
+  toast,
 }: ITransferTETHToEthProps) => {
   try {
     const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
@@ -251,9 +259,26 @@ export const transferTETHToEth = async ({
 
     const erc20ContractWithSigner = erc20Contract.connect(myWallet);
 
-    await erc20ContractWithSigner.sell(parseEther(price));
+    const tx = await erc20ContractWithSigner.sell(parseEther(price));
+
+    await tx.wait();
+
+    toast.current &&
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Transfer successfully!",
+        life: 5000,
+      });
   } catch (err) {
     console.error(err);
+    toast.current &&
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Fail to Transfer!",
+        life: 5000,
+      });
   }
 };
 
@@ -348,7 +373,7 @@ export const sellNFT = async ({
         severity: "success",
         summary: "Success",
         detail: "Sell NFT successfully!",
-        life: 15000,
+        life: 5000,
       });
   } catch (err) {
     console.error(err);
@@ -491,6 +516,7 @@ export const buyToken = async ({
       );
     }
     console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
+
     await tx.wait();
 
     toast.current &&
@@ -498,7 +524,7 @@ export const buyToken = async ({
         severity: "success",
         summary: "Success",
         detail: "Buy NFT successfully!",
-        life: 3000,
+        life: 5000,
       });
   } catch (err) {
     console.dir(err);

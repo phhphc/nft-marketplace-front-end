@@ -181,7 +181,7 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Fail to sell NFT!",
+          detail: "Fail to make offer!",
           life: 3000,
         });
     }
@@ -552,10 +552,10 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
                     </>
                   )}
                 {canMakeOffer(nftDetail) && (
-                  <div>
+                  <div className="mb-3">
                     <button
                       onClick={() => setDialogMakeOffer(true)}
-                      className="w-60 bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg"
+                      className="w-72 bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg"
                     >
                       <i className="pi pi-tag"></i>
                       <span className="pl-2">Make offer</span>
@@ -611,9 +611,9 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
                   </div>
                 )}
 
-                {!canBuy(nftDetail) && (
+                {canBuy(nftDetail) && (
                   <div className="flex justify-between w-full">
-                    <div className="flex gap-3 justify-between">
+                    <div className="flex gap-10 justify-between">
                       {isAddedToCart ? (
                         <div
                           onClick={() =>
@@ -657,7 +657,7 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
                         </div>
                       )}
                       <button
-                        className="w-48 bg-red-500 hover:bg-red-700 text-white h-16 rounded-md text-lg"
+                        className="w-72 bg-red-500 hover:bg-red-700 text-white h-16 rounded-md text-lg"
                         onClick={() => handleBuyToken(nftDetail)}
                       >
                         Buy Now

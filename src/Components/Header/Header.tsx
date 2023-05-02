@@ -13,10 +13,12 @@ import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { handleRemoveFromCart, showingPrice } from "@Utils/index";
 import { Toast } from "primereact/toast";
-import { buyToken, transferTETHToEth } from "@Services/ApiService";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { buyToken, transferTethToEth } from "@Services/ApiService";
 import { erc20Abi } from "@Constants/erc20Abi";
+import { Tag } from "primereact/tag";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import { InputNumber } from "primereact/inputnumber";
 
 const Header = () => {
   const toast = useRef<Toast>(null);
@@ -25,7 +27,10 @@ const Header = () => {
   // Wallet
   const [walletConnected, setWalletConnected] = useState(false);
   const [walletModalVisible, setWalletModalVisible] = useState(false);
-  const [balance, setBalance] = useState(0);
+  const [ethBalance, setEthBalance] = useState(0);
+  const [erc20Balance, setErc20Balance] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [price, setPrice] = useState<number>(0);
 
   const handleConnectWallet = async () => {
     // If metamask is installed
@@ -82,17 +87,15 @@ const Header = () => {
           web3Context.state.web3.myWallet as any
         );
 
-        const erc20Number = await erc20ContractWithSigner.balanceOf(
+        const erc20Balance = await erc20ContractWithSigner.balanceOf(
           web3Context.state.web3.myAddress
         );
-        console.log(
-          "🚀 ~ file: Header.tsx:82 ~ getMoney ~ erc20Number:",
-          Number(ethers.utils.formatEther(erc20Number))
-        );
-        setBalance(Number(ethers.utils.formatEther(ETHBalance)));
+        setEthBalance(Number(ethers.utils.formatEther(ETHBalance)));
+        setErc20Balance(Number(ethers.utils.formatEther(erc20Balance)));
       } else {
         setWalletConnected(false);
-        setBalance(0);
+        setEthBalance(0);
+        setErc20Balance(0);
       }
     };
     getMoney();
@@ -204,6 +207,27 @@ const Header = () => {
     }
   };
 
+  const handleTransferTethToEth = async (price: Number) => {
+    setVisible(false);
+    setWalletModalVisible(false);
+    try {
+      await transferTethToEth({
+        provider: web3Context.state.web3.provider,
+        myWallet: web3Context.state.web3.myWallet,
+        price: String(price),
+        toast,
+      });
+    } catch (error) {
+      toast.current &&
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to transfer!",
+          life: 3000,
+        });
+    }
+  };
+
   return (
     <div id="header" className="fixed top-0 right-0 left-0 h-24 z-10">
       <Toast ref={toast} position="top-center" />
@@ -307,9 +331,62 @@ const Header = () => {
                       Log out
                     </button>
                   </div>
-                  <div className="mt-6 py-3 flex flex-col border rounded-lg justify-center">
-                    <span className="text-center">Total balance</span>
-                    <span className="text-center font-bold">${balance}</span>
+                  <div className="mt-6 py-3 flex flex-col gap-1 border rounded-lg justify-center">
+                    <div className="text-center">
+                      <Tag
+                        severity="success"
+                        value="Total blance"
+                        rounded
+                        className="w-1/3 h-8 text-sm"
+                      ></Tag>
+                    </div>
+                    <div className="text-center font-bold">
+                      {ethBalance} ETH
+                    </div>
+                    <div className="text-center font-bold">
+                      {erc20Balance} TETH
+                    </div>
+                  </div>
+                  <div className="mt-5">
+                    <Button
+                      label="Transfer TETH to ETH"
+                      icon="pi pi-reply"
+                      className=""
+                      onClick={() => setVisible(true)}
+                    />
+                    <Dialog
+                      header="Please input the amount of TETH you want to transfer to ETH"
+                      visible={visible}
+                      style={{ width: "50vw" }}
+                      onHide={() => setVisible(false)}
+                      footer={
+                        <div>
+                          <Button
+                            label="Cancel"
+                            icon="pi pi-times"
+                            onClick={() => setVisible(false)}
+                            className="p-button-text"
+                          />
+                          <Button
+                            label="Transfer"
+                            icon="pi pi-check"
+                            onClick={() => handleTransferTethToEth(price)}
+                            autoFocus
+                          />
+                        </div>
+                      }
+                    >
+                      <div className="flex gap-3">
+                        <InputNumber
+                          placeholder="Input TETH"
+                          value={price}
+                          onValueChange={(e: any) => setPrice(e.value)}
+                          minFractionDigits={1}
+                          maxFractionDigits={5}
+                          min={0}
+                        />
+                      </div>
+                    </Dialog>
                   </div>
                 </div>
               </Sidebar>
@@ -455,17 +532,6 @@ const Header = () => {
                 }
               >
                 Purchase
-              </button>
-              <button
-                onClick={() =>
-                  transferTETHToEth({
-                    provider: web3Context.state.web3.provider,
-                    myWallet: web3Context.state.web3.myWallet,
-                    price: "0.1",
-                  })
-                }
-              >
-                Click me pls
               </button>
             </div>
           </Sidebar>

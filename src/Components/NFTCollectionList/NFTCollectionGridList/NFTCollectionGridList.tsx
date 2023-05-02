@@ -47,6 +47,8 @@ const NFTCollectionGridList = ({
 
   useEffect(() => {
     setItems(nftCollectionList.slice(0, size));
+    setFirst(0);
+    setRows(12);
   }, [nftCollectionList]);
 
   const web3Context = useContext(AppContext);

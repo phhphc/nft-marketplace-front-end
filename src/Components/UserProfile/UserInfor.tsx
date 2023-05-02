@@ -60,7 +60,7 @@ const UserInfor = ({ profile, profileRefetch }: IUserInfoProps) => {
         <Tooltip target=".icon-chain" position="mouse" />
         <i
           role="button"
-          className="icon-chain pi pi-paperclip pt-1"
+          className="icon-chain pi pi-tag pt-1"
           data-pr-tooltip="Chain: Ethereum"
         />
         <Tooltip target=".chain-address" position="top" content={isCopied} />
