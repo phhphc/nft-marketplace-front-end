@@ -13,9 +13,10 @@ import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { handleRemoveFromCart, showingPrice } from "@Utils/index";
 import { Toast } from "primereact/toast";
-import { buyToken } from "@Services/ApiService";
+import { buyToken, transferTETHToEth } from "@Services/ApiService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { erc20Abi } from "@Constants/erc20Abi";
 
 const Header = () => {
   const toast = useRef<Toast>(null);
@@ -59,18 +60,49 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if (web3Context.state.web3.provider !== null) {
-      setWalletConnected(true);
-      web3Context.state.web3.provider
-        .getBalance(web3Context.state.web3.myAddress)
-        .then((result: any) => {
-          setBalance(Number(ethers.utils.formatEther(result)));
-        });
-    } else {
-      setWalletConnected(false);
-      setBalance(0);
-    }
-  }, [web3Context.state.web3.provider]);
+    const getMoney = async () => {
+      if (
+        web3Context.state.web3.provider &&
+        web3Context.state.web3.myWallet &&
+        web3Context.state.web3.myAddress
+      ) {
+        setWalletConnected(true);
+        const ETHBalance = await web3Context.state.web3.provider.getBalance(
+          web3Context.state.web3.myAddress
+        );
+        const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
+
+        const erc20Contract = new ethers.Contract(
+          erc20Address,
+          erc20Abi,
+          web3Context.state.web3.provider
+        );
+
+        const erc20ContractWithSigner = erc20Contract.connect(
+          web3Context.state.web3.myWallet as any
+        );
+
+        const erc20Number = await erc20ContractWithSigner.balanceOf(
+          web3Context.state.web3.myAddress
+        );
+        console.log(
+          "🚀 ~ file: Header.tsx:82 ~ getMoney ~ erc20Number:",
+          Number(ethers.utils.formatEther(erc20Number))
+        );
+        setBalance(Number(ethers.utils.formatEther(ETHBalance)));
+      } else {
+        setWalletConnected(false);
+        setBalance(0);
+      }
+    };
+    getMoney();
+  }, [
+    web3Context.state.web3.provider,
+    web3Context.state.web3.provider?.getBalance(
+      web3Context.state.web3.myAddress
+    ),
+    web3Context.state.web3.myAddress,
+  ]);
 
   useEffect(() => {
     setInterval(() => {
@@ -423,6 +455,17 @@ const Header = () => {
                 }
               >
                 Purchase
+              </button>
+              <button
+                onClick={() =>
+                  transferTETHToEth({
+                    provider: web3Context.state.web3.provider,
+                    myWallet: web3Context.state.web3.myWallet,
+                    price: "0.1",
+                  })
+                }
+              >
+                Click me pls
               </button>
             </div>
           </Sidebar>

@@ -48,6 +48,12 @@ interface IMakeOfferProps {
   unit: string;
 }
 
+interface ITransferTETHToEthProps {
+  provider: any;
+  myWallet: any;
+  price: string;
+}
+
 interface IGetOfferByTokenProps {
   tokenId: string;
   tokenAddress: string;
@@ -228,6 +234,24 @@ export const makeOffer = async ({
         detail: "Make order successfully!",
         life: 15000,
       });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const transferTETHToEth = async ({
+  provider,
+  myWallet,
+  price,
+}: ITransferTETHToEthProps) => {
+  try {
+    const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
+
+    const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
+
+    const erc20ContractWithSigner = erc20Contract.connect(myWallet);
+
+    await erc20ContractWithSigner.sell(parseEther(price));
   } catch (err) {
     console.error(err);
   }
@@ -452,37 +476,9 @@ export const buyToken = async ({
         }
       );
     } else {
-      const considerationArray: any = [];
-      orderData.forEach((item1, index1) => {
-        item1.data.data.content[0].consideration.forEach(
-          (item2: any, index2: any) => {
-            considerationArray.push([[index1, index2]]);
-          }
-        );
-      });
-      const offerArray: any = [];
-      orderData.forEach((item1, index1) => {
-        item1.data.data.content[0].offer.forEach((item2: any, index2: any) => {
-          offerArray.push([[index1, index2]]);
-        });
-      });
-
       const realPrice = price.reduce((acc, cur) => {
         return acc.add(cur);
       }, toBN(0));
-
-      console.log(
-        orderData.map((item, index) =>
-          transformDataRequestToBuyNFT({
-            parameters: item.data.data.content[0],
-            signature: signatures[index],
-          })
-        ),
-        offerArray,
-        considerationArray,
-        99,
-        { value: toBN(realPrice) }
-      );
 
       tx = await mkpContractWithSigner.fulfillOrderBatch(
         orderData.map((item, index) =>
@@ -623,11 +619,6 @@ export const createNFTService = async ({
   };
 
   const metaDataIPFS = await axios(createNFTConfig);
-  console.log(
-    "🚀 ~ file: ApiService.ts:338 ~ metaDataIPFS:",
-    metaDataIPFS.data
-  );
-  console.log("collection token", collection);
 
   // mint NFT and send data to BE
   await provider.send("eth_requestAccounts", []);
