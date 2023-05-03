@@ -8,13 +8,7 @@ import { INFTActivity, INFTEvent } from "@Interfaces/index";
 export interface INFTActivityProps {}
 
 const NFTActivites: INFTActivity[] = [
-  {
-    event: "f230fh0g3",
-    price: "Bamboo Watch",
-    from: "bamboo-watch.jpg",
-    to: "Accessories",
-    date: "26/04/2023"
-  },
+  
 ];
 
 const NFTActivity = () => {
@@ -47,11 +41,13 @@ const NFTActivity = () => {
             scrollHeight="20rem"
             className="mt-5"
           >
-            <Column field="event" header="Event" />
+            <Column field="name" header="Event" />
             <Column field="price" header="Price" />
+            <Column field="quantity" header="Quantity" />
             <Column field="from" header="From" />
             <Column field="to" header="To" />
             <Column field="date" header="Date" />
+            <Column field="link" header="View on Etherscan" />
           </DataTable>
         </AccordionTab>
       </Accordion>

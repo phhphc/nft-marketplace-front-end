@@ -22,7 +22,7 @@ import {
   stringHexToNumber,
   toFulfillmentComponents,
 } from "@Utils/index";
-import { ICollectionItem, IProfile, Order } from "@Interfaces/index";
+import { ICollectionItem, INFTActivity, IProfile, Order } from "@Interfaces/index";
 import { cloneDeep, flatten } from "lodash";
 import { INFTCollectionItem } from "@Interfaces/index";
 
@@ -913,6 +913,32 @@ export const getProfileService = async (owner: string): Promise<IProfile> => {
     .get(`/api/v0.1/profile/${owner}`)
     .then((response) => {
       return response.data.data || [];
+    })
+    .catch((err) => {});
+};
+
+export const getEventNFTByTokenService = async (
+  token: string, token_id: string
+): Promise<INFTActivity[]> => {
+  return axios
+    .get("/api/v0.1/event", {
+      params: { token: token , token_id: token_id},
+    })
+    .then((response) => {
+      return response.data.data.events || [];
+    })
+    .catch((err) => {});
+};
+
+export const getEventNFTByOwnerService = async (
+  owner: string
+): Promise<INFTActivity[]> => {
+  return axios
+    .get("/api/v0.1/event", {
+      params: { owner: owner },
+    })
+    .then((response) => {
+      return response.data.data.events || [];
     })
     .catch((err) => {});
 };

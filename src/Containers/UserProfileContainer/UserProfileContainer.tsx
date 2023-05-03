@@ -1,15 +1,14 @@
 import NFTUserProfileTabs from "@Components/NFTUserProfileTabs/NFTUserProfileTabs";
-import NFTImageUserProfile from "@Components/UserProfile/UserImage";
 import UserInfor from "@Components/UserProfile/UserInfor";
 import { useContext, useRef } from "react";
 import { AppContext } from "@Store/index";
 import { Toast } from "primereact/toast";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
-import { useRouter } from "next/router";
 import UserImage from "@Components/UserProfile/UserImage";
 import MakeOfferList from "@Components/MakeOfferList/MakeOfferList";
 import useMakeOffer from "@Hooks/useMakeOffer";
 import useProfile from "@Hooks/useProfile";
+import UserProfileTabs from "@Components/UserProfileTabs/UserProfileTabs";
 
 const UserProfileContainer = () => {
   const web3Context = useContext(AppContext);
@@ -37,15 +36,13 @@ const UserProfileContainer = () => {
               profile={profile}
               profileRefetch={profileRefetch}
             ></UserInfor>
-            <MakeOfferList
+            <UserProfileTabs
+              nftCollectionList={nftCollectionList}
+              refetch={refetch}
               makeOfferList={makeOfferList}
               makeOfferRefetch={makeOfferRefetch}
               nftRefetch={refetch}
-            ></MakeOfferList>
-            <NFTUserProfileTabs
-              nftCollectionList={nftCollectionList}
-              refetch={refetch}
-            />
+            ></UserProfileTabs>
           </div>
         </>
       ) : (

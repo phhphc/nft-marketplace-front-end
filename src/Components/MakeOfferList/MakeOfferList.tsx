@@ -114,54 +114,50 @@ const MakeOfferList = ({
 
   return (
     <div id="list-make-offer">
-      <Accordion activeIndex={0} className="mt-6">
-        <AccordionTab header=" List of NFTs are offered">
-          <DataTable
-            value={data}
-            scrollHeight="20rem"
-            stripedRows
-            tableStyle={{ width: "50rem" }}
-          >
-            <Column
-              field="offererAddress"
-              header="Offerer"
-              className="text-ellipsis overflow-hidden offerer"
-            ></Column>
-            <Column
-              field="itemName"
-              header="Name"
-              className="text-ellipsis overflow-hidden name"
-              body={nameBodyTemplate}
-            ></Column>
-            <Column
-              header="Image"
-              body={imageBodyTemplate}
-              className="image"
-            ></Column>
-            <Column
-              field="price"
-              header="Offered price"
-              body={priceBodyTemplate}
-              className="price"
-            ></Column>
-            <Column
-              field="fulfill"
-              header="Approve"
-              body={fulfillBodyTemplate}
-            ></Column>
-            <Column
-              field="reject"
-              header="Reject"
-              body={rejectBodyTemplate}
-            ></Column>
-            <Column
-              field=""
-              header="View detail"
-              body={nftDetailBodyTemplate}
-            ></Column>
-          </DataTable>
-        </AccordionTab>
-      </Accordion>
+      <DataTable
+        value={data}
+        scrollHeight="20rem"
+        stripedRows
+        tableStyle={{ width: "50rem" }}
+      >
+        <Column
+          field="offererAddress"
+          header="Offerer"
+          className="text-ellipsis overflow-hidden offerer"
+        ></Column>
+        <Column
+          field="itemName"
+          header="Name"
+          className="text-ellipsis overflow-hidden name"
+          body={nameBodyTemplate}
+        ></Column>
+        <Column
+          header="Image"
+          body={imageBodyTemplate}
+          className="image"
+        ></Column>
+        <Column
+          field="price"
+          header="Offered price"
+          body={priceBodyTemplate}
+          className="price"
+        ></Column>
+        <Column
+          field="fulfill"
+          header="Approve"
+          body={fulfillBodyTemplate}
+        ></Column>
+        <Column
+          field="reject"
+          header="Reject"
+          body={rejectBodyTemplate}
+        ></Column>
+        <Column
+          field=""
+          header="View detail"
+          body={nftDetailBodyTemplate}
+        ></Column>
+      </DataTable>
     </div>
   );
 };

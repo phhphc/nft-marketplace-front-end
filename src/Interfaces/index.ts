@@ -180,32 +180,23 @@ export interface ICollectionItem {
   image: string;
 }
 
-export interface INFTActivity {
-  event: string;
-  price: string;
-  from: string;
-  to: string;
-  date: string;
-}
-
 export interface INFTEvent {
   label: string;
   value: string;
 }
 
-export interface INFTListings {
+export interface INFTActivity {
+  name: string;
+  token: string;
+  token_id: string;
+  quantity: number;
   price: string;
-  quantity: string;
-  expiration: string;
   from: string;
+  to: string;
+  date: Date;
+  link: string;
 }
 
-export interface INFTOffers {
-  price: string;
-  quantity: string;
-  expiration: string;
-  from: string;
-}
 
 export interface IFormEditProfileInput {
   profileImage: string;
