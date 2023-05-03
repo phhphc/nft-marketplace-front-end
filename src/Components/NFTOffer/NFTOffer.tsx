@@ -1,17 +1,12 @@
-import { INFTOffers } from "@Interfaces/index";
+import { INFTActivity } from "@Interfaces/index";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 
 export interface INFTOffersProps {}
 
-const NFTOffers: INFTOffers[] = [
-  {
-    price: "0.045 ETH",
-    quantity: "1",
-    expiration: "in 24 hours",
-    from: "0xc45",
-  },
+const NFTOffers: INFTActivity[] = [
+  
 ];
 
 const NFTOffer = () => {
@@ -27,8 +22,8 @@ const NFTOffer = () => {
           >
             <Column field="price" header="Price" />
             <Column field="quantity" header="Quantity" />
-            <Column field="expiration" header="Expiration" />
             <Column field="from" header="From" />
+            <Column field="date" header="Date" />
           </DataTable>
         </AccordionTab>
       </Accordion>
