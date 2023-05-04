@@ -34,6 +34,10 @@ module.exports = () => {
         source: "/api/v0.1/profile/:address*",
         destination: `${process.env.BACKEND_URL}/profile/:address*`,
       },
+      {
+        source: "/api/v0.1/event",
+        destination: `${process.env.BACKEND_URL}/event`,
+      },
     ];
   };
   return {

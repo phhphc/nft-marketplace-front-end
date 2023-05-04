@@ -158,3 +158,11 @@ export const STRING_HEX_TO_NUMBER: any = {
 };
 
 export const NOT_ON_SALE = "NOT_ON_SALE";
+
+export const NFT_EVENT_NAME = {
+  SALE: "Sale",
+  LISTING: "Listing",
+  OFFER: "Offer",
+  TRANSFER: "Transfer",
+  MINTED: "Minted"
+}

@@ -46,6 +46,14 @@ const MakeOfferList = ({
     );
   };
 
+  const offererBodyTemplate = (rowData: IMakeOfferItem) => {
+    return (
+      <div className="text-ellipsis overflow-hidden">
+        {rowData.offererAddress}
+      </div>
+    );
+  };
+
   const imageBodyTemplate = (rowData: IMakeOfferItem) => {
     return (
       <img
@@ -63,7 +71,7 @@ const MakeOfferList = ({
   const nftDetailBodyTemplate = (rowData: IMakeOfferItem) => {
     return (
       <i
-        className="text-yellow-500 pi pi-window-maximize cursor-pointer hover:text-yellow-600"
+        className="text-yellow-500 pi pi-book cursor-pointer hover:text-yellow-600"
         style={{ fontSize: "2rem" }}
         onClick={() => router.push(`/detail/${rowData.identifier}`)}
       ></i>
@@ -91,7 +99,7 @@ const MakeOfferList = ({
   const rejectBodyTemplate = (rowData: IMakeOfferItem) => {
     return (
       <i
-        className="text-red-500 pi pi-times-circle cursor-pointer hover:text-red-700"
+        className="text-red-500 pi pi-times-circle pi-book cursor-pointer hover:text-red-700"
         style={{ fontSize: "2rem" }}
         onClick={() => rejectFulfillOrder(rowData)}
       ></i>
@@ -114,22 +122,18 @@ const MakeOfferList = ({
 
   return (
     <div id="list-make-offer">
-      <DataTable
-        value={data}
-        scrollHeight="20rem"
-        stripedRows
-        tableStyle={{ width: "50rem" }}
-      >
+      <DataTable value={data} scrollable scrollHeight="20rem" stripedRows>
         <Column
-          field="offererAddress"
           header="Offerer"
-          className="text-ellipsis overflow-hidden offerer"
+          className="w-20"
+          body={offererBodyTemplate}
         ></Column>
         <Column
           field="itemName"
           header="Name"
           className="text-ellipsis overflow-hidden name"
           body={nameBodyTemplate}
+          sortable
         ></Column>
         <Column
           header="Image"
@@ -141,6 +145,7 @@ const MakeOfferList = ({
           header="Offered price"
           body={priceBodyTemplate}
           className="price"
+          sortable
         ></Column>
         <Column
           field="fulfill"

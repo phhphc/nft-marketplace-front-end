@@ -4,7 +4,7 @@ import { faInfoCircle, faBars } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
 import { Accordion, AccordionTab } from "primereact/accordion";
-import { INFTCollectionItem } from "@Interfaces/index";
+import { INFTActivity, INFTCollectionItem } from "@Interfaces/index";
 import { AppContext } from "@Store/index";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
@@ -14,7 +14,11 @@ import { Toast } from "primereact/toast";
 import { useContext, useState, useEffect, useRef, useMemo } from "react";
 import { sellNFT, buyToken, makeOffer } from "@Services/ApiService";
 import { WEB3_ACTION_TYPES } from "@Store/index";
-import { CURRENCY_UNITS, OFFER_CURRENCY_UNITS } from "@Constants/index";
+import {
+  CURRENCY_UNITS,
+  NFT_EVENT_NAME,
+  OFFER_CURRENCY_UNITS,
+} from "@Constants/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import {
   handleAddToCart,
@@ -30,10 +34,20 @@ import NFTOffer from "@Components/NFTOffer/NFTOffer";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem[];
+  nftActivity: INFTActivity[];
   refetch: () => void;
 }
 
-const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
+const NFTDetail = ({ nftDetail, refetch, nftActivity }: INFTDetailProps) => {
+  const nftListing = nftActivity.filter(
+    (nft) => nft.name.toLowerCase() === NFT_EVENT_NAME.LISTING.toLowerCase()
+  );
+  const nftOffer = nftActivity.filter(
+    (nft) => nft.name.toLowerCase() === NFT_EVENT_NAME.OFFER.toLowerCase()
+  );
+  const nftSale = nftActivity.filter(
+    (nft) => nft.name.toLowerCase() === NFT_EVENT_NAME.SALE.toLowerCase()
+  );
   const canMakeOffer = (item: INFTCollectionItem[]) => {
     return item[0].owner !== web3Context.state.web3.myAddress;
   };
@@ -739,14 +753,18 @@ const NFTDetail = ({ nftDetail, refetch }: INFTDetailProps) => {
               </div>
             </div>
 
-            <NFTPriceHistory></NFTPriceHistory>
-            <NFTListing></NFTListing>
-            <NFTOffer></NFTOffer>
+            <NFTPriceHistory nftSale={nftSale}></NFTPriceHistory>
+            <NFTListing nftListing={nftListing}></NFTListing>
+            <NFTOffer nftOffer={nftOffer}></NFTOffer>
           </div>
         </div>
       </div>
       <div className="mt-8">
-        <NFTActivity></NFTActivity>
+        <Accordion activeIndex={0}>
+          <AccordionTab header="Item Activity">
+            <NFTActivity nftActivity={nftActivity}></NFTActivity>
+          </AccordionTab>
+        </Accordion>
       </div>
     </div>
   );
