@@ -4,6 +4,7 @@ import { INFTCollectionItem } from "@Interfaces/index";
 import { Toast } from "primereact/toast";
 import { useRouter } from "next/router";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
+import useNFTActivity from "@Hooks/useNFTActivity";
 
 const NFTDetailContainer = () => {
   const { nftCollectionList, refetch } = useNFTCollectionList({});
@@ -13,6 +14,10 @@ const NFTDetailContainer = () => {
 
   const router = useRouter();
   const tokenID = router.query.token_id as string;
+
+  const { nftActivity } = useNFTActivity({
+    token_id: tokenID,
+  });
 
   useEffect(() => {
     tokenID &&
@@ -28,7 +33,7 @@ const NFTDetailContainer = () => {
       {nftDetail && (
         <>
           <Toast ref={toast} position="top-center" />
-          <NFTDetail nftDetail={nftDetail} refetch={refetch} />
+          <NFTDetail nftDetail={nftDetail} refetch={refetch} nftActivity={nftActivity}/>
         </>
       )}
     </>

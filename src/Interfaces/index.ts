@@ -190,13 +190,13 @@ export interface INFTActivity {
   token: string;
   token_id: string;
   quantity: number;
+  type: "single" | "bundle";
   price: string;
   from: string;
   to: string;
   date: Date;
   link: string;
 }
-
 
 export interface IFormEditProfileInput {
   profileImage: string;
@@ -208,6 +208,7 @@ export interface IFormEditProfileInput {
 
 export interface IMakeOfferItem {
   offerer: string;
+  offererAddress: string;
   offer: OfferItem[];
   consideration: ConsiderationItem[];
   orderHash: string;

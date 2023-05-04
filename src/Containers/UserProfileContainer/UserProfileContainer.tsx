@@ -9,6 +9,7 @@ import MakeOfferList from "@Components/MakeOfferList/MakeOfferList";
 import useMakeOffer from "@Hooks/useMakeOffer";
 import useProfile from "@Hooks/useProfile";
 import UserProfileTabs from "@Components/UserProfileTabs/UserProfileTabs";
+import useNFTActivityByOwner from "@Hooks/useNFTActivityByOwner";
 
 const UserProfileContainer = () => {
   const web3Context = useContext(AppContext);
@@ -20,6 +21,10 @@ const UserProfileContainer = () => {
   );
 
   const { profile, refetch: profileRefetch } = useProfile(
+    web3Context.state.web3.myAddress
+  );
+
+  const { nftActivity } = useNFTActivityByOwner(
     web3Context.state.web3.myAddress
   );
 
@@ -42,6 +47,7 @@ const UserProfileContainer = () => {
               makeOfferList={makeOfferList}
               makeOfferRefetch={makeOfferRefetch}
               nftRefetch={refetch}
+              nftActivity={nftActivity}
             ></UserProfileTabs>
           </div>
         </>

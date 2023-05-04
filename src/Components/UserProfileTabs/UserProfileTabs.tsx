@@ -1,6 +1,7 @@
 import MakeOfferList from "@Components/MakeOfferList/MakeOfferList";
+import NFTActivity from "@Components/NFTActivity/NFTActivity";
 import NFTUserProfileTabs from "@Components/NFTUserProfileTabs/NFTUserProfileTabs";
-import { IMakeOfferItem, INFTCollectionItem } from "@Interfaces/index";
+import { IMakeOfferItem, INFTActivity, INFTCollectionItem } from "@Interfaces/index";
 import { TabView, TabPanel } from "primereact/tabview";
 
 export interface IUserProfileTabsProps {
@@ -9,6 +10,7 @@ export interface IUserProfileTabsProps {
   makeOfferList: IMakeOfferItem[];
   makeOfferRefetch: () => void;
   nftRefetch: () => void;
+  nftActivity: INFTActivity[];
 }
 
 const UserProfileTabs = ({
@@ -17,6 +19,7 @@ const UserProfileTabs = ({
   makeOfferList,
   makeOfferRefetch,
   nftRefetch,
+  nftActivity,
 }: IUserProfileTabsProps) => {
   return (
     <div className="mt-5">
@@ -27,7 +30,9 @@ const UserProfileTabs = ({
             refetch={refetch}
           />
         </TabPanel>
-        <TabPanel header="My Activities"></TabPanel>
+        <TabPanel header="My Activities">
+          <NFTActivity nftActivity={nftActivity}></NFTActivity>
+        </TabPanel>
         <TabPanel header="Offers received">
           <MakeOfferList
             makeOfferList={makeOfferList}

@@ -1,10 +1,16 @@
+import { CURRENCY_UNITS } from "@Constants/index";
+import { INFTActivity } from "@Interfaces/index";
+import { showingPrice } from "@Utils/index";
+import moment from "moment";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Chart } from "primereact/chart";
 import { useEffect, useState } from "react";
 
-export interface INFTPriceHistoryProps {}
+export interface INFTPriceHistoryProps {
+  nftSale: INFTActivity[];
+}
 
-const NFTPriceHistory = () => {
+const NFTPriceHistory = ({ nftSale }: INFTPriceHistoryProps) => {
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
 
@@ -16,11 +22,13 @@ const NFTPriceHistory = () => {
     );
     const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
     const data = {
-      labels: ["January", "February", "March", "April", "May", "June", "July"],
+      labels: nftSale.map((nft) =>
+        moment(nft.date).format("DD/MM/yyyy - h:mm A")
+      ),
       datasets: [
         {
           label: "NFT price",
-          data: [1, 2, 3],
+          data: nftSale.map((nft) => Number(nft.price) / 1000000000000000000),
           fill: false,
           borderColor: documentStyle.getPropertyValue("--blue-500"),
           tension: 0.4,
@@ -64,7 +72,7 @@ const NFTPriceHistory = () => {
 
     setChartData(data);
     setChartOptions(options);
-  }, []);
+  }, [nftSale]);
 
   return (
     <div id="nft-price-history">
