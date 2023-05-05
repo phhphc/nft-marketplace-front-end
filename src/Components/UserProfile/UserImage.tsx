@@ -1,7 +1,7 @@
 import { IProfile } from "@Interfaces/index";
 
 export interface IUserImageProps {
-  profile: IProfile | null;
+  profile: IProfile;
 }
 
 const UserImage = ({ profile }: IUserImageProps) => {

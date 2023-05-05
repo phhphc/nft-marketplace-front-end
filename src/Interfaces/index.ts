@@ -219,13 +219,14 @@ export interface IMakeOfferItem {
 }
 
 export interface IMetaDataProfile {
-  banner_url: string;
-  bio: string;
-  email: string;
-  image_url: string;
+  banner_url?: string;
+  bio?: string;
+  email?: string;
+  image_url?: string;
 }
 
 export interface IProfile {
-  metadata: IMetaDataProfile;
-  username: string;
+  address?: string;
+  metadata?: IMetaDataProfile;
+  username?: string;
 }
