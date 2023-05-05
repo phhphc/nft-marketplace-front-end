@@ -31,6 +31,7 @@ import NFTActivity from "@Components/NFTActivity/NFTActivity";
 import NFTPriceHistory from "@Components/NFTPriceHistory/NFTPriceHistory";
 import NFTListing from "@Components/NFTListing/NFTListing";
 import NFTOffer from "@Components/NFTOffer/NFTOffer";
+import NFTPredictPrice from "@Components/NFTPredictPrice/NFTPredictPrice";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem[];
@@ -761,7 +762,7 @@ const NFTDetail = ({
                 )}
               </div>
             </div>
-
+            <NFTPredictPrice nftListing={nftListing} nftOffer={nftOffer} />
             <NFTPriceHistory nftSale={nftSale}></NFTPriceHistory>
             <NFTListing nftListing={nftListing}></NFTListing>
             <NFTOffer nftOffer={nftOffer}></NFTOffer>
