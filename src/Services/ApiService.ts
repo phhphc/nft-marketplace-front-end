@@ -116,18 +116,26 @@ interface ISaveProfileProps {
 export const getNFTCollectionListService = async (additionalParams: {
   [k: string]: any;
 }): Promise<any> => {
-  const params: { [k: string]: any } = {
-    limit: 100,
-    offet: 0,
-    ...additionalParams,
-  };
+  let offset = 0;
 
-  return axios
-    .get("/api/v0.1/nft", { params })
-    .then((response) => {
-      return response.data.data.nfts || [];
-    })
-    .catch((err) => {});
+  let result: any = [];
+
+  while (true) {
+    const params: { [k: string]: any } = {
+      limit: 100,
+      offset,
+      ...additionalParams,
+    };
+
+    const res = await axios.get("/api/v0.1/nft", { params });
+    if (!res.data.data.nfts?.length) break;
+
+    result = result.concat(res.data.data.nfts);
+
+    offset += 100;
+  }
+
+  return result;
 };
 
 export const getOfferByToken = async ({
