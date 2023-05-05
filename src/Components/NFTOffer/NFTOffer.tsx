@@ -27,7 +27,7 @@ const NFTOffer = ({ nftOffer }: INFTOffersProps) => {
     );
   };
   const timeBodyTemplate = (rowData: INFTActivity) => {
-    return moment(rowData.date).startOf("hour").fromNow();
+    return moment(rowData.date).startOf("minute").fromNow();
   };
 
   return (

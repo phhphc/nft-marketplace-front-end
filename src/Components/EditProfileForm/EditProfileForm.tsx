@@ -99,7 +99,7 @@ const EditProfileForm = ({
   };
   return (
     <div id="edit-profile-form">
-      <Toast ref={toast} position="top-right" />
+      <Toast ref={toast} position="top-center" />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex justify-around">
           <div className="pt-4 relative">
@@ -197,7 +197,10 @@ const EditProfileForm = ({
               <div>
                 <InputText
                   {...field}
-                  {...register("email", { required: false })}
+                  {...register("email", {
+                    required: false,
+                  })}
+                  type="email"
                   className="w-full"
                   defaultValue={profile?.metadata?.email || ""}
                 />

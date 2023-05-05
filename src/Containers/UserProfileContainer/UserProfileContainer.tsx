@@ -24,7 +24,7 @@ const UserProfileContainer = () => {
     web3Context.state.web3.myAddress
   );
 
-  const { nftActivity } = useNFTActivityByOwner(
+  const { nftActivity, refetch: nftActivityRefetch} = useNFTActivityByOwner(
     web3Context.state.web3.myAddress
   );
 
@@ -48,6 +48,7 @@ const UserProfileContainer = () => {
               makeOfferRefetch={makeOfferRefetch}
               nftRefetch={refetch}
               nftActivity={nftActivity}
+              nftActivityRefetch={nftActivityRefetch}
             ></UserProfileTabs>
           </div>
         </>
