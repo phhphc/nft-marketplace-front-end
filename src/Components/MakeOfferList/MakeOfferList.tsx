@@ -1,6 +1,6 @@
 import { OFFER_CURRENCY_UNITS } from "@Constants/index";
 import { IMakeOfferItem, INFTCollectionItem } from "@Interfaces/index";
-import { fulfillMakeOffer } from "@Services/ApiService";
+import { cancelOrder, fulfillMakeOffer } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { showingPrice } from "@Utils/index";
 import router from "next/router";
@@ -13,12 +13,14 @@ export interface IMakeOfferListProps {
   makeOfferList: IMakeOfferItem[];
   makeOfferRefetch: () => void;
   nftRefetch: () => void;
+  nftActivityRefetch: () => void;
 }
 
 const MakeOfferList = ({
   makeOfferList,
   makeOfferRefetch,
   nftRefetch,
+  nftActivityRefetch,
 }: IMakeOfferListProps) => {
   const web3Context = useContext(AppContext);
 
@@ -116,9 +118,12 @@ const MakeOfferList = ({
     });
     makeOfferRefetch();
     nftRefetch();
+    nftActivityRefetch();
   };
 
-  const rejectFulfillOrder = (item: IMakeOfferItem) => {};
+  const rejectFulfillOrder = async (item: IMakeOfferItem) => {
+    
+  };
 
   return (
     <div id="list-make-offer">

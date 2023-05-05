@@ -35,10 +35,16 @@ import NFTOffer from "@Components/NFTOffer/NFTOffer";
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem[];
   nftActivity: INFTActivity[];
+  nftActivityRefetch: () => void;
   refetch: () => void;
 }
 
-const NFTDetail = ({ nftDetail, refetch, nftActivity }: INFTDetailProps) => {
+const NFTDetail = ({
+  nftDetail,
+  refetch,
+  nftActivity,
+  nftActivityRefetch,
+}: INFTDetailProps) => {
   const nftListing = nftActivity.filter(
     (nft) => nft.name.toLowerCase() === NFT_EVENT_NAME.LISTING.toLowerCase()
   );
@@ -110,6 +116,7 @@ const NFTDetail = ({ nftDetail, refetch, nftActivity }: INFTDetailProps) => {
         unit: selectedUnit,
       });
       refetch();
+      nftActivityRefetch();
     } catch (error) {
       toast.current &&
         toast.current.show({
@@ -143,6 +150,7 @@ const NFTDetail = ({ nftDetail, refetch, nftActivity }: INFTDetailProps) => {
           provider: web3Context.state.web3.provider,
         });
         refetch();
+        nftActivityRefetch();
       }
     } catch (error) {
       toast.current &&
@@ -190,6 +198,7 @@ const NFTDetail = ({ nftDetail, refetch, nftActivity }: INFTDetailProps) => {
         unit: selectedUnit,
       });
       refetch();
+      nftActivityRefetch();
     } catch (error) {
       toast.current &&
         toast.current.show({

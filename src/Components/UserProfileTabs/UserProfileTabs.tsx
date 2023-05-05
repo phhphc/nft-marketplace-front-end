@@ -11,6 +11,7 @@ export interface IUserProfileTabsProps {
   makeOfferRefetch: () => void;
   nftRefetch: () => void;
   nftActivity: INFTActivity[];
+  nftActivityRefetch: () => void;
 }
 
 const UserProfileTabs = ({
@@ -20,6 +21,7 @@ const UserProfileTabs = ({
   makeOfferRefetch,
   nftRefetch,
   nftActivity,
+  nftActivityRefetch
 }: IUserProfileTabsProps) => {
   return (
     <div className="mt-5">
@@ -37,6 +39,7 @@ const UserProfileTabs = ({
           <MakeOfferList
             makeOfferList={makeOfferList}
             makeOfferRefetch={makeOfferRefetch}
+            nftActivityRefetch={nftActivityRefetch}
             nftRefetch={refetch}
           ></MakeOfferList>
         </TabPanel>

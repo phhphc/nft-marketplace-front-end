@@ -1,6 +1,6 @@
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MultiSelect } from "primereact/multiselect";
 import { INFTActivity, INFTEvent } from "@Interfaces/index";
 import { showingPrice } from "@Utils/index";
@@ -22,6 +22,10 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
     { label: "Offers", value: "offer" },
     { label: "Transfers", value: "transfer" },
   ];
+
+  useEffect(() => {
+    setData(nftActivity);
+  }, [nftActivity]);
 
   const handleFilterEvent = (events: any) => {
     setSelectedEvent(events);
@@ -64,7 +68,7 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
     );
   };
   const timeBodyTemplate = (rowData: INFTActivity) => {
-    return moment(rowData.date).startOf("hour").fromNow();
+    return moment(rowData.date).startOf("minute").fromNow();
   };
   const viewingEtherscanBodyTemplate = (rowData: INFTActivity) => {
     return rowData.link ? (

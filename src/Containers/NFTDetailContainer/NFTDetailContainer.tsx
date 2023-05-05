@@ -15,7 +15,7 @@ const NFTDetailContainer = () => {
   const router = useRouter();
   const tokenID = router.query.token_id as string;
 
-  const { nftActivity } = useNFTActivity({
+  const { nftActivity, refetch: nftActivityRefetch } = useNFTActivity({
     token_id: tokenID,
   });
 
@@ -33,7 +33,7 @@ const NFTDetailContainer = () => {
       {nftDetail && (
         <>
           <Toast ref={toast} position="top-center" />
-          <NFTDetail nftDetail={nftDetail} refetch={refetch} nftActivity={nftActivity}/>
+          <NFTDetail nftDetail={nftDetail} refetch={refetch} nftActivity={nftActivity} nftActivityRefetch={nftActivityRefetch}/>
         </>
       )}
     </>
