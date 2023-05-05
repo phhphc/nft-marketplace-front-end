@@ -11,24 +11,12 @@ import {
   createOrder,
   transformDataRequestToSellNFT,
   randomBN,
-  toAddress,
   getTestItem20,
 } from "@Utils/index";
 import { CURRENCY } from "@Constants/index";
-import {
-  parseGwei,
-  toBN,
-  transformDataRequestToBuyNFT,
-  stringHexToNumber,
-  toFulfillmentComponents,
-} from "@Utils/index";
-import {
-  ICollectionItem,
-  INFTActivity,
-  IProfile,
-  Order,
-} from "@Interfaces/index";
-import { cloneDeep, flatten } from "lodash";
+import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
+import { ICollectionItem, INFTActivity, IProfile } from "@Interfaces/index";
+import { flatten } from "lodash";
 import { INFTCollectionItem } from "@Interfaces/index";
 
 const { parseEther } = ethers.utils;
@@ -79,6 +67,12 @@ interface IFulfillMakeOfferProps {
   orderHash: string;
   price: string;
   myAddress: string;
+}
+
+interface ICancelOrderProps {
+  provider: any;
+  myWallet: any;
+  orderHash: string;
 }
 
 interface ICreateNFTServiceProps {
@@ -297,7 +291,6 @@ export const sellNFT = async ({
   unit,
 }: ISellNFTProps) => {
   try {
-    console.log(parseGwei(price));
     const erc721Address = item[0].token;
     const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
 
@@ -485,7 +478,6 @@ export const buyToken = async ({
     );
 
     orderData.forEach((item) => {
-      const signature = item.data.data.content[0].signature;
       delete item.data.data.content[0].status;
       delete item.data.data.content[0].orderHash;
       delete item.data.data.content[0].signature;
@@ -531,6 +523,44 @@ export const buyToken = async ({
         detail: "Buy NFT successfully!",
         life: 5000,
       });
+  } catch (err) {
+    console.dir(err);
+  }
+};
+
+export const cancelOrder = async ({
+  orderHash,
+  myWallet,
+  provider,
+}: ICancelOrderProps) => {
+  try {
+    const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+
+    const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
+
+    const mkpContractWithSigner = mkpContract.connect(myWallet);
+
+    const orderData = await axios.get("/api/v0.1/order", {
+      params: {
+        orderHash,
+        isCancelled: false,
+        isFulfilled: false,
+        isInvalid: false,
+      },
+    });
+
+    delete orderData.data.data.content[0].status;
+    delete orderData.data.data.content[0].orderHash;
+    delete orderData.data.data.content[0].signature;
+
+    const tx = await mkpContractWithSigner.cancel(
+      transformDataRequestToBuyNFT([
+        { counter: 1, ...orderData.data.data.content[0] },
+      ])
+    );
+
+    console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
+    await tx.wait();
   } catch (err) {
     console.dir(err);
   }
@@ -886,43 +916,29 @@ export const saveProfileService = async ({
     metadata: metadata,
   });
 
-  axios
-    .post("api/v0.1/profile", params, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then(function (response) {
-      toast.current &&
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Save profile successfully!",
-          life: 3000,
-        });
-    })
-    .catch(function (error) {
-      console.log(error);
-      toast.current &&
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Fail to save profile!",
-          life: 3000,
-        });
-    });
+  await axios.post("api/v0.1/profile", params, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 export const getProfileService = async (owner: string): Promise<IProfile> => {
-  return axios
-    .get(`/api/v0.1/profile/${owner}`)
-    .then((response) => {
-      return response.data.data || [];
-    })
-    .catch((err) => {});
+  if (owner)
+    return axios
+      .get(`/api/v0.1/profile/${owner}`)
+      .then((response) => {
+        return response.data.data || { address: "", username: "" };
+      })
+      .catch((err) => ({ address: "", username: "" }));
+  else return { address: "", username: "" };
 };
 
-export const getEventNFTService = async ({token, token_id, name}: any): Promise<INFTActivity[]> => {
+export const getEventNFTService = async ({
+  token,
+  token_id,
+  name,
+}: any): Promise<INFTActivity[]> => {
   return axios
     .get("/api/v0.1/event", {
       params: { token, token_id, name },

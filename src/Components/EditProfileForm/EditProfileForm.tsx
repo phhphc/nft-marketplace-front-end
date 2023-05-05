@@ -10,7 +10,7 @@ import { Controller, useForm } from "react-hook-form";
 export interface IEditProfileFormProps {
   profileRefetch: () => void;
   onSubmitted: () => void;
-  profile: IProfile | null;
+  profile: IProfile;
 }
 
 const EditProfileForm = ({
@@ -18,26 +18,38 @@ const EditProfileForm = ({
   onSubmitted,
   profile,
 }: IEditProfileFormProps) => {
-  const [profileImageFile, setProfileImageFile] = useState<string>("");
-  const [profileBannerFile, setProfileBannerFile] = useState<string>("");
+  const [isDeletedProfileImageFile, setIsDeletedProfileImageFile] =
+    useState<boolean>(false);
+  const [isDeletedProfileBannerFile, setIsDeletedProfileBannerFile] =
+    useState<boolean>(false);
+  const [profileImageFile, setProfileImageFile] = useState<string>(
+    profile?.metadata?.image_url || ""
+  );
+  const [profileBannerFile, setProfileBannerFile] = useState<string>(
+    profile?.metadata?.banner_url || ""
+  );
   const web3Context = useContext(AppContext);
 
   const toast = useRef<Toast>(null);
 
   function handleChangeProfileImage(e: any) {
+    setIsDeletedProfileImageFile(false);
     setProfileImageFile(URL.createObjectURL(e.target.files[0]));
   }
 
   function removeProfileImage() {
+    setIsDeletedProfileImageFile(true);
     setProfileImageFile("");
     resetField("profileImage");
   }
 
   function handleChangeProfileBanner(e: any) {
+    setIsDeletedProfileBannerFile(false);
     setProfileBannerFile(URL.createObjectURL(e.target.files[0]));
   }
 
   function removeProfileBanner() {
+    setIsDeletedProfileBannerFile(true);
     setProfileBannerFile("");
     resetField("profileBanner");
   }
@@ -48,16 +60,27 @@ const EditProfileForm = ({
   const onSubmit = async (data: IFormEditProfileInput) => {
     try {
       await saveProfileService({
-        username: data.username ? data.username : profile?.username,
-        bio: data.bio ? data.bio : profile?.metadata.bio,
-        email: data.email ? data.email : profile?.metadata.email,
-        profileImage: data.profileImage[0] ? data.profileImage[0] : profile?.metadata.image_url,
-        profileBanner: data.profileBanner[0] ? data.profileBanner[0] : profile?.metadata.banner_url,
+        username: data.username,
+        bio: data.bio,
+        email: data.email,
+        profileImage: !isDeletedProfileImageFile
+          ? data.profileImage[0] || profile?.metadata?.image_url
+          : undefined,
+        profileBanner: !isDeletedProfileBannerFile
+          ? data.profileBanner[0] || profile?.metadata?.banner_url
+          : undefined,
         address: web3Context.state.web3.myAddress,
         signature:
           "0x528c15b2906218f648a19ec8967303d45cb0ef4165dd0e0d83f95d09ba175db361e3f90e24d1d5854c",
         toast,
       });
+      toast.current &&
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Save profile successfully!",
+          life: 3000,
+        });
     } catch (error) {
       toast.current &&
         toast.current.show({
@@ -76,7 +99,7 @@ const EditProfileForm = ({
   };
   return (
     <div id="edit-profile-form">
-      <Toast ref={toast} position="top-center" />
+      <Toast ref={toast} position="top-right" />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex justify-around">
           <div className="pt-4 relative">
@@ -138,6 +161,7 @@ const EditProfileForm = ({
                   {...field}
                   {...register("username", { required: false })}
                   className="w-full"
+                  defaultValue={profile?.username || ""}
                 />
               </div>
             </div>
@@ -152,7 +176,12 @@ const EditProfileForm = ({
               <label className="text-lg font-medium">Bio</label>
 
               <div>
-                <InputText {...field} className="w-full" />
+                <InputText
+                  {...field}
+                  {...register("bio", { required: false })}
+                  className="w-full"
+                  defaultValue={profile?.metadata?.bio || ""}
+                />
               </div>
             </div>
           )}
@@ -166,7 +195,12 @@ const EditProfileForm = ({
               <label className="text-lg font-medium">Email</label>
 
               <div>
-                <InputText {...field} className="w-full" />
+                <InputText
+                  {...field}
+                  {...register("email", { required: false })}
+                  className="w-full"
+                  defaultValue={profile?.metadata?.email || ""}
+                />
               </div>
             </div>
           )}

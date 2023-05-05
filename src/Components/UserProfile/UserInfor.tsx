@@ -8,7 +8,7 @@ import EditProfileForm from "@Components/EditProfileForm/EditProfileForm";
 import { IProfile } from "@Interfaces/index";
 
 export interface IUserInfoProps {
-  profile: IProfile | null;
+  profile: IProfile;
   profileRefetch: () => void;
 }
 
@@ -44,7 +44,9 @@ const UserInfor = ({ profile, profileRefetch }: IUserInfoProps) => {
         >
           <EditProfileForm
             profileRefetch={profileRefetch}
-            onSubmitted={() => setVisible(false)}
+            onSubmitted={() => {
+              setVisible(false);
+            }}
             profile={profile}
           ></EditProfileForm>
         </Dialog>
