@@ -164,5 +164,7 @@ export const NFT_EVENT_NAME = {
   LISTING: "Listing",
   OFFER: "Offer",
   TRANSFER: "Transfer",
-  MINTED: "Minted"
-}
+  MINTED: "Minted",
+};
+
+export const SUPPORTED_NETWORK = [11155111];

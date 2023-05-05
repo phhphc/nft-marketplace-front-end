@@ -3,6 +3,7 @@ import web3Reducer from "@Reducer/web3Reducer";
 import { useEffect } from "react";
 import { Contract, ethers, Wallet } from "ethers";
 import { INFTCollectionItem } from "@Interfaces/index";
+import { SUPPORTED_NETWORK } from "@Constants/index";
 
 export enum WEB3_ACTION_TYPES {
   CHANGE = "CHANGE",
@@ -81,16 +82,22 @@ const AppProvider = ({ children }: IAppProvider) => {
 
       const signer = provider.getSigner();
       const { chainId } = await provider.getNetwork();
-      dispatch({
-        type: WEB3_ACTION_TYPES.CHANGE,
-        payload: {
-          provider,
-          myAddress: await signer.getAddress(),
-          cart,
-          myWallet: signer,
-          chainId,
-        },
-      });
+      if (
+        SUPPORTED_NETWORK.some(
+          (networkChainId: number) => networkChainId === chainId
+        )
+      ) {
+        dispatch({
+          type: WEB3_ACTION_TYPES.CHANGE,
+          payload: {
+            provider,
+            myAddress: await signer.getAddress(),
+            cart,
+            myWallet: signer,
+            chainId,
+          },
+        });
+      }
     };
     if (window?.ethereum?._state?.isUnlocked) {
       fetchData();
@@ -107,6 +114,18 @@ const AppProvider = ({ children }: IAppProvider) => {
   useEffect(() => {
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", () => {
+        dispatch({
+          type: WEB3_ACTION_TYPES.CHANGE,
+          payload: {
+            cart: [],
+            listItemsSellBundle: [],
+            loading: false,
+          },
+        });
+        localStorage.setItem("shoppingCart", JSON.stringify([]));
+        window.location.reload();
+      });
+      window.ethereum.on("chainChanged", () => {
         dispatch({
           type: WEB3_ACTION_TYPES.CHANGE,
           payload: {
