@@ -11,7 +11,6 @@ export interface IMainLayoutProps {
 
 const MainLayout = ({ children }: IMainLayoutProps) => {
   const web3Context = useContext(AppContext);
-  console.log(web3Context.state.web3.chainId);
   return (
     <div>
       <Header />

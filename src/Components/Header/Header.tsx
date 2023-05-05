@@ -37,7 +37,6 @@ const Header = () => {
     if (window.ethereum) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const addresses = await provider.send("eth_requestAccounts", []);
-      console.log("CONNECT WALLET");
       web3Context.dispatch({
         type: WEB3_ACTION_TYPES.CHANGE,
         payload: {
