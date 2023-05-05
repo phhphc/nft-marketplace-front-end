@@ -44,6 +44,18 @@ const NFTPriceHistory = ({ nftSale }: INFTPriceHistoryProps) => {
             color: textColor,
           },
         },
+        tooltip: {
+          callbacks: {
+            label: function (context: any) {
+              let label = context.dataset.label || "";
+
+              if (label && context.parsed.y !== null) {
+                label += ": " + context.parsed.y + " ETH";
+              }
+              return label;
+            },
+          },
+        },
       },
       scales: {
         x: {
