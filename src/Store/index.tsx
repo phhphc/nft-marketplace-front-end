@@ -1,9 +1,10 @@
-import { createContext, useReducer, Dispatch } from "react";
+import { createContext, useReducer, Dispatch, useRef } from "react";
 import web3Reducer from "@Reducer/web3Reducer";
 import { useEffect } from "react";
 import { Contract, ethers, Wallet } from "ethers";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { SUPPORTED_NETWORK } from "@Constants/index";
+import { Toast } from "primereact/toast";
 
 export enum WEB3_ACTION_TYPES {
   CHANGE = "CHANGE",
@@ -28,6 +29,7 @@ export interface IWeb3 {
   cart: ICart[];
   listItemsSellBundle: INFTCollectionItem[];
   loading: boolean;
+  toast: any;
 }
 
 export interface IWeb3Action {
@@ -48,6 +50,9 @@ const initialState: IState = {
     chainId: 0,
     listItemsSellBundle: [],
     loading: false,
+    toast: {
+      current: null,
+    },
   },
 };
 
@@ -71,6 +76,7 @@ export interface IAppProvider {
 
 const AppProvider = ({ children }: IAppProvider) => {
   const [state, dispatch] = useReducer(mainReducer, initialState);
+  const toast = useRef(null);
 
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("shoppingCart") || "[]");
@@ -95,6 +101,7 @@ const AppProvider = ({ children }: IAppProvider) => {
             cart,
             myWallet: signer,
             chainId,
+            toast,
           },
         });
       }
@@ -146,6 +153,7 @@ const AppProvider = ({ children }: IAppProvider) => {
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
+      <Toast ref={toast} position="top-center" />
       {children}
     </AppContext.Provider>
   );

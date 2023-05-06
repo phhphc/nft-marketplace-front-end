@@ -94,6 +94,13 @@ const NFTCollectionGridItem = ({
         price: price.toString(),
         unit: selectedUnit,
       });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Sell NFT successfully!",
+          life: 5000,
+        });
       refetch();
     } catch (error) {
       toast.current &&

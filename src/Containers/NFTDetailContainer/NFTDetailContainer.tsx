@@ -1,5 +1,5 @@
 import NFTDetail from "@Components/NFTDetail/NFTDetail";
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext, useMemo } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { Toast } from "primereact/toast";
 import { useRouter } from "next/router";
@@ -8,7 +8,6 @@ import useNFTActivity from "@Hooks/useNFTActivity";
 
 const NFTDetailContainer = () => {
   const { nftCollectionList, refetch } = useNFTCollectionList({});
-  const [nftDetail, setNftDetail] = useState<INFTCollectionItem[]>();
 
   const toast = useRef<Toast>(null);
 
@@ -19,21 +18,25 @@ const NFTDetailContainer = () => {
     token_id: tokenID,
   });
 
-  useEffect(() => {
-    tokenID &&
-      setNftDetail(
-        nftCollectionList.filter((item: INFTCollectionItem[]) =>
+  const nftDetail = useMemo(() => {
+    return tokenID
+      ? nftCollectionList.filter((item: INFTCollectionItem[]) =>
           item.map((nft) => nft.identifier).includes(tokenID)
         )[0]
-      );
-  }, [nftCollectionList.length]);
+      : [];
+  }, [nftCollectionList, tokenID]);
 
   return (
     <>
       {nftDetail && (
         <>
           <Toast ref={toast} position="top-center" />
-          <NFTDetail nftDetail={nftDetail} refetch={refetch} nftActivity={nftActivity} nftActivityRefetch={nftActivityRefetch}/>
+          <NFTDetail
+            nftDetail={nftDetail}
+            refetch={refetch}
+            nftActivity={nftActivity}
+            nftActivityRefetch={nftActivityRefetch}
+          />
         </>
       )}
     </>
