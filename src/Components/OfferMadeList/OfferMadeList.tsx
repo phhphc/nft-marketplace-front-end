@@ -1,30 +1,29 @@
 import { OFFER_CURRENCY_UNITS } from "@Constants/index";
-import { IMakeOfferItem, INFTCollectionItem } from "@Interfaces/index";
-import { cancelOrder, fulfillMakeOffer } from "@Services/ApiService";
+import { IMakeOfferItem } from "@Interfaces/index";
+import { cancelOrder } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { showingPrice } from "@Utils/index";
 import router from "next/router";
-import { Accordion, AccordionTab } from "primereact/accordion";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 
-export interface IMakeOfferListProps {
-  makeOfferList: IMakeOfferItem[];
-  makeOfferRefetch: () => void;
+export interface IOfferMadeListProps {
+  offerMadeList: IMakeOfferItem[];
+  offerMadeListRefetch: () => void;
   nftRefetch: () => void;
   nftActivityRefetch: () => void;
 }
 
-const MakeOfferList = ({
-  makeOfferList,
-  makeOfferRefetch,
+const OfferMadeList = ({
+  offerMadeList,
+  offerMadeListRefetch,
   nftRefetch,
   nftActivityRefetch,
-}: IMakeOfferListProps) => {
+}: IOfferMadeListProps) => {
   const web3Context = useContext(AppContext);
 
-  const data = makeOfferList.map((item: IMakeOfferItem) => {
+  const data = offerMadeList.map((item: IMakeOfferItem) => {
     return {
       offererAddress: item.offerer,
       orderHash: item.orderHash,
@@ -49,11 +48,7 @@ const MakeOfferList = ({
   };
 
   const offererBodyTemplate = (rowData: IMakeOfferItem) => {
-    return (
-      <div className="text-ellipsis overflow-hidden">
-        {rowData.offererAddress}
-      </div>
-    );
+    return <div className="text-ellipsis overflow-hidden">You</div>;
   };
 
   const imageBodyTemplate = (rowData: IMakeOfferItem) => {
@@ -88,57 +83,46 @@ const MakeOfferList = ({
     );
   };
 
-  const fulfillBodyTemplate = (rowData: IMakeOfferItem) => {
-    return (
-      <i
-        className="text-green-500 pi pi-check-circle cursor-pointer hover:text-green-700"
-        style={{ fontSize: "2rem" }}
-        onClick={() => handleFulfillOrder(rowData)}
-      ></i>
-    );
-  };
-
-  const rejectBodyTemplate = (rowData: IMakeOfferItem) => {
+  const cancelBodyTemplate = (rowData: IMakeOfferItem) => {
     return (
       <i
         className="text-red-500 pi pi-times-circle pi-book cursor-pointer hover:text-red-700"
         style={{ fontSize: "2rem" }}
-        onClick={() => rejectFulfillOrder(rowData)}
+        onClick={() => handleCancelOrder(rowData)}
       ></i>
     );
   };
 
-  const handleFulfillOrder = async (item: IMakeOfferItem) => {
+  const handleCancelOrder = async (item: IMakeOfferItem) => {
     try {
-      await fulfillMakeOffer({
-        orderHash: item.orderHash,
-        price: item.price,
-        myWallet: web3Context.state.web3.myWallet,
-        provider: web3Context.state.web3.provider,
-        myAddress: web3Context.state.web3.myAddress,
-      });
-      web3Context.state.web3.toast.current &&
-        web3Context.state.web3.toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Approve offer successfully!",
-          life: 5000,
+      if (item) {
+        await cancelOrder({
+          orderHash: item.orderHash,
+          myWallet: web3Context.state.web3.myWallet,
+          provider: web3Context.state.web3.provider,
+          myAddress: web3Context.state.web3.myAddress,
         });
-      makeOfferRefetch();
-      nftRefetch();
-      nftActivityRefetch();
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Cancel offer successfully!",
+            life: 5000,
+          });
+        offerMadeListRefetch();
+        nftRefetch();
+        nftActivityRefetch();
+      }
     } catch (error) {
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Fail to approve offer!",
+          detail: "Fail to cancel offer!",
           life: 5000,
         });
     }
   };
-
-  const rejectFulfillOrder = async (item: IMakeOfferItem) => {};
 
   return (
     <div id="list-make-offer">
@@ -167,16 +151,7 @@ const MakeOfferList = ({
           className="price"
           sortable
         ></Column>
-        <Column
-          field="fulfill"
-          header="Approve"
-          body={fulfillBodyTemplate}
-        ></Column>
-        {/* <Column
-          field="reject"
-          header="Reject"
-          body={rejectBodyTemplate}
-        ></Column> */}
+        <Column header="Cancel" body={cancelBodyTemplate}></Column>
         <Column
           field=""
           header="View detail"
@@ -187,4 +162,4 @@ const MakeOfferList = ({
   );
 };
 
-export default MakeOfferList;
+export default OfferMadeList;

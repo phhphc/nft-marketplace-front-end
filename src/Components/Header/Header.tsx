@@ -137,15 +137,7 @@ const Header = () => {
     return Math.round(
       cartItemList
         ? cartItemList.reduce(
-            (acc, cur) =>
-              acc +
-              Number(
-                cur.reduce(
-                  (accChild, curChild) =>
-                    accChild + Number(curChild.listings[0]?.start_price || 0),
-                  0
-                )
-              ),
+            (acc, cur) => acc + Number(cur[0].listings[0]?.start_price || 0),
             0
           )
         : 0
@@ -488,15 +480,9 @@ const Header = () => {
                       </div>
                     </div>
                     <span className="price text-sm">
-                      {cartItem.length == 1
-                        ? showingPrice(
-                            cartItem[0].listings[0]?.start_price || "0"
-                          )
-                        : showingPrice(
-                            String(
-                              Number(cartItem[0].listings[0]?.start_price) * 2
-                            ) || "0"
-                          )}
+                      {showingPrice(
+                        cartItem[0].listings[0]?.start_price || "0"
+                      )}
                     </span>
                     <button
                       className="delete-cart-btn hidden hover:text-white"
