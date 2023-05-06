@@ -228,8 +228,7 @@ export const makeOffer = async ({
         counter: orderComponents.counter,
       })
     );
-  } catch (err) {
-  }
+  } catch (err) {}
 };
 
 export const transferTethToEth = async ({
@@ -529,10 +528,55 @@ export const cancelOrder = async ({
   }
 };
 
-export const getMakeOfferList = async (myAddress: string) => {
+export const getOfferMadeList = async (myAddress: string) => {
+  let offset = 0;
+  let nfts: any = [];
+
+  while (true) {
+    const params: { [k: string]: any } = {
+      limit: 100,
+      offset,
+    };
+    const nftRes = await axios.get("/api/v0.1/nft", { params });
+    if (!nftRes.data.data.nfts?.length) break;
+    nfts = nfts.concat(nftRes.data.data.nfts);
+    offset += 100;
+  }
+  if (!nfts.length) return [];
+
+  let offerMadeList: any = [];
+  const offerRes = await axios.get("/api/v0.1/order", {
+    params: {
+      offerer: myAddress,
+      isCancelled: false,
+      isFulfilled: false,
+      isInvalid: false,
+    },
+  });
+  offerMadeList = offerRes.data.data.content;
+
+  const flattenResult = flatten(offerMadeList);
+  return flattenResult
+    .filter((item: any) => {
+      return item.offer[0].itemType === 1;
+    })
+    .map((item: any) => {
+      const itemInfo = nfts.find(
+        (nft: INFTCollectionItem) =>
+          nft.identifier === item.consideration[0].identifier
+      );
+      return {
+        ...item,
+        itemName: itemInfo.name,
+        itemImage: itemInfo.image,
+      };
+    });
+};
+
+export const getOfferReceivedList = async (myAddress: string) => {
   const params: { [k: string]: any } = {
     limit: 100,
-    offet: 0,
+    offset: 0,
     owner: myAddress,
   };
 
@@ -667,8 +711,7 @@ export const createNFTService = async ({
         gasLimit: 1000000,
       }
     );
-  } catch (error) {
-  }
+  } catch (error) {}
 };
 
 export const createNFTCollectionService = async ({
@@ -759,10 +802,8 @@ ICreateCollectionProps) => {
         "Content-Type": "application/json",
       },
     })
-    .then(function (response) {
-    })
-    .catch(function (error) {
-    });
+    .then(function (response) {})
+    .catch(function (error) {});
 };
 
 export const getAllCollectionListService = async (

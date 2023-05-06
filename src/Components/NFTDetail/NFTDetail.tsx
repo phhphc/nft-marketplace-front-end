@@ -11,7 +11,7 @@ import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { useContext, useState, useEffect, useRef, useMemo } from "react";
-import { sellNFT, buyToken, makeOffer } from "@Services/ApiService";
+import { sellNFT, buyToken, makeOffer, cancelOrder } from "@Services/ApiService";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import {
   CURRENCY_UNITS,
@@ -72,6 +72,13 @@ const NFTDetail = ({
   const canDownload = (item: INFTCollectionItem[]) => {
     return item[0].owner === web3Context.state.web3.myAddress;
   };
+  const isSelling = (item: INFTCollectionItem[]) => {
+    return (
+      !canBuy(item) &&
+      !canSell(item) &&
+      item[0].owner === web3Context.state.web3.myAddress
+    );
+  };
 
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
@@ -79,8 +86,6 @@ const NFTDetail = ({
   const endTime = useMemo(() => {
     return new Date(Number(nftDetail[0].listings?.[0]?.end_time));
   }, []);
-
-  console.log('nftDetail',nftDetail);
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (price === 0) {
@@ -191,6 +196,35 @@ const NFTDetail = ({
           severity: "error",
           summary: "Error",
           detail: "Fail to make offer!",
+          life: 5000,
+        });
+    }
+  };
+
+  const handleCancelOrder = async (item?: INFTCollectionItem[]) => {
+    try {
+      if (item) {
+        await cancelOrder({
+          orderHash: item[0].listings[0].order_hash,
+          myWallet: web3Context.state.web3.myWallet,
+          provider: web3Context.state.web3.provider,
+          myAddress: web3Context.state.web3.myAddress,
+        });
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Cancel sale successfully!",
+            life: 5000,
+          });
+        refetch();
+      }
+    } catch (error) {
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to cancel sale!",
           life: 5000,
         });
     }
@@ -565,11 +599,15 @@ const NFTDetail = ({
                   <div className="mb-3">
                     <button
                       onClick={() => setDialogMakeOffer(true)}
-                      className="w-72 bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg"
+                      className="w-full bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg"
                     >
-                      <i className="pi pi-tag"></i>
-                      <span className="pl-2">Make offer</span>
+                      <i
+                        className="pi pi-tag pr-3"
+                        style={{ fontSize: "1.5rem" }}
+                      ></i>
+                      Make offer
                     </button>
+
                     <Dialog
                       header={
                         <div>
@@ -622,28 +660,26 @@ const NFTDetail = ({
                 )}
 
                 {canBuy(nftDetail) && (
-                  <div className="flex justify-between w-full">
-                    <div className="flex gap-10 justify-between">
+                  <div>
+                    <div className="flex gap-3">
                       {isAddedToCart ? (
-                        <div
+                        <button
                           onClick={() =>
                             handleRemoveFromCart(
                               web3Context,
                               nftDetail[0].listings[0].order_hash
                             )
                           }
-                          className="flex justify-center gap-2 w-72 bg-red-100 hover:bg-red-300 h-16 pt-4 rounded-md cursor-pointer"
+                          className="w-1/2 bg-red-100 hover:bg-red-300 h-16 rounded-md text-xl text-red-600"
                         >
                           <i
-                            className="pi pi-shopping-cart text-red-600"
+                            className="pi pi-shopping-cart text-red-600 pr-3"
                             style={{ fontSize: "2rem" }}
                           ></i>
-                          <div className="pl-1 pt-1 text-red-600 text-lg">
-                            Remove from cart
-                          </div>
-                        </div>
+                          Remove from cart
+                        </button>
                       ) : (
-                        <div
+                        <button
                           onClick={() =>
                             handleAddToCart(
                               web3Context,
@@ -655,19 +691,17 @@ const NFTDetail = ({
                               ).toString()
                             )
                           }
-                          className="flex justify-center gap-2 w-72 bg-red-100 hover:bg-red-300 h-16 pt-4 rounded-md cursor-pointer"
+                          className="w-1/2 bg-red-100 hover:bg-red-300 h-16 rounded-md text-lg text-red-600"
                         >
                           <i
-                            className="pi pi-cart-plus text-red-600"
+                            className="pi pi-cart-plus text-red-600 pr-3"
                             style={{ fontSize: "2rem" }}
                           ></i>
-                          <div className="pl-1 pt-1 text-red-600 text-lg">
-                            Add to cart
-                          </div>
-                        </div>
+                          Add to cart
+                        </button>
                       )}
                       <button
-                        className="w-72 bg-red-500 hover:bg-red-700 text-white h-16 rounded-md text-lg"
+                        className="w-1/2 bg-red-500 hover:bg-red-700 text-white h-16 rounded-md text-lg"
                         onClick={() => handleBuyToken(nftDetail)}
                       >
                         Buy Now
@@ -678,17 +712,18 @@ const NFTDetail = ({
 
                 {canSell(nftDetail) && (
                   <div>
-                    <div className="flex justify-evenly">
+                    <div className="flex gap-3">
                       <button
-                        className="w-2/5 bg-green-500 hover:bg-green-700 h-16 text-white rounded-md text-xl"
+                        className="w-1/2 bg-green-500 hover:bg-green-700 h-16 text-white rounded-md text-xl"
                         onClick={() => setVisible(true)}
                       >
                         Sell
                       </button>
                       <button
                         onClick={() => downloadItem(nftDetail)}
-                        className="w-2/5 bg-yellow-500 hover:bg-yellow-600 h-16 text-white rounded-md text-xl"
+                        className="w-1/2 bg-fuchsia-500 hover:bg-fuchsia-600 h-16 text-white rounded-md text-xl"
                       >
+                        <i className="pi pi-download pr-3"></i>
                         Download your NFT
                       </button>
                     </div>
@@ -736,14 +771,23 @@ const NFTDetail = ({
                   </div>
                 )}
 
-                {!canSell(nftDetail) && canDownload(nftDetail) && (
+                {isSelling(nftDetail) && canDownload(nftDetail) && (
                   <div>
-                    <button
-                      onClick={() => downloadItem(nftDetail)}
-                      className="w-2/5 bg-yellow-500 hover:bg-yellow-600 h-16 text-white rounded-md text-xl"
-                    >
-                      Download your NFT
-                    </button>
+                    <div className="flex gap-3">
+                      <button
+                        className="w-1/2 bg-yellow-500 hover:bg-yellow-700 h-16 text-white rounded-md text-xl"
+                        onClick={() => handleCancelOrder(nftDetail)}
+                      >
+                        Cancel sale
+                      </button>
+                      <button
+                        onClick={() => downloadItem(nftDetail)}
+                        className="w-1/2 bg-fuchsia-500 hover:bg-fuchsia-600 h-16 text-white rounded-md text-xl"
+                      >
+                        <i className="pi pi-download pr-3"></i>
+                        Download your NFT
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

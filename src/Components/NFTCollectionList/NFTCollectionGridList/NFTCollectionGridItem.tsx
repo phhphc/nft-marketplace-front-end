@@ -1,7 +1,7 @@
 import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import Link from "next/link";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { sellNFT, buyToken } from "@Services/ApiService";
+import { sellNFT, buyToken, cancelOrder } from "@Services/ApiService";
 import { NFT_COLLECTION_MODE, CURRENCY_UNITS } from "@Constants/index";
 import { useContext, useState, useEffect, useRef } from "react";
 import { AppContext } from "@Store/index";
@@ -32,7 +32,6 @@ const NFTCollectionGridItem = ({
   refetch,
   hideSellBundle = false,
 }: INFTCollectionGridItemProps) => {
-  
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
       !!item[0].listings[0] &&
@@ -127,6 +126,33 @@ const NFTCollectionGridItem = ({
           life: 5000,
         });
     }
+  };
+
+  const handleCancelOrder = async (item?: INFTCollectionItem[]) => {
+    try {
+      if (item) {
+        await cancelOrder({
+          orderHash: item[0].listings[0].order_hash,
+          myWallet: web3Context.state.web3.myWallet,
+          provider: web3Context.state.web3.provider,
+          myAddress: web3Context.state.web3.myAddress,
+        });
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Cancel sale successfully!",
+            life: 5000,
+          });
+        refetch();
+      }
+    } catch (error) {web3Context.state.web3.toast.current &&
+      web3Context.state.web3.toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Fail to cancel sale!",
+        life: 5000,
+      });}
   };
 
   const [visible, setVisible] = useState(false);
@@ -342,11 +368,12 @@ const NFTCollectionGridItem = ({
             </div>
           )}
           {isSelling(item) && (
-            <div className="w-full bg-yellow-500 h-10 text-white rounded-md text-center absolute bottom-0 left-0 right-0">
-              <span className="inline-grid h-full items-center ">
-                Your NFT is selling
-              </span>
-            </div>
+            <button
+              className="w-full bg-yellow-500 hover:bg-yellow-700 h-10 text-white rounded-md absolute bottom-0 left-0 right-0"
+              onClick={() => handleCancelOrder(item)}
+            >
+              Cancel sale
+            </button>
           )}
         </div>
       )}

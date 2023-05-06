@@ -1,14 +1,21 @@
-import MakeOfferList from "@Components/MakeOfferList/MakeOfferList";
+import OfferReceivedList from "@Components/OfferReceivedList/OfferReceivedList";
 import NFTActivity from "@Components/NFTActivity/NFTActivity";
 import NFTUserProfileTabs from "@Components/NFTUserProfileTabs/NFTUserProfileTabs";
-import { IMakeOfferItem, INFTActivity, INFTCollectionItem } from "@Interfaces/index";
+import {
+  IMakeOfferItem,
+  INFTActivity,
+  INFTCollectionItem,
+} from "@Interfaces/index";
 import { TabView, TabPanel } from "primereact/tabview";
+import OfferMadeList from "@Components/OfferMadeList/OfferMadeList";
 
 export interface IUserProfileTabsProps {
   nftCollectionList: INFTCollectionItem[][];
   refetch: () => void;
-  makeOfferList: IMakeOfferItem[];
-  makeOfferRefetch: () => void;
+  offerReceivedList: IMakeOfferItem[];
+  offerReceivedListRefetch: () => void;
+  offerMadeList: IMakeOfferItem[];
+  offerMadeListRefetch: () => void;
   nftRefetch: () => void;
   nftActivity: INFTActivity[];
   nftActivityRefetch: () => void;
@@ -17,11 +24,13 @@ export interface IUserProfileTabsProps {
 const UserProfileTabs = ({
   nftCollectionList,
   refetch,
-  makeOfferList,
-  makeOfferRefetch,
+  offerReceivedList,
+  offerReceivedListRefetch,
+  offerMadeList,
+  offerMadeListRefetch,
   nftRefetch,
   nftActivity,
-  nftActivityRefetch
+  nftActivityRefetch,
 }: IUserProfileTabsProps) => {
   return (
     <div className="mt-5">
@@ -36,12 +45,20 @@ const UserProfileTabs = ({
           <NFTActivity nftActivity={nftActivity}></NFTActivity>
         </TabPanel>
         <TabPanel header="Offers received">
-          <MakeOfferList
-            makeOfferList={makeOfferList}
-            makeOfferRefetch={makeOfferRefetch}
+          <OfferReceivedList
+            offerReceivedList={offerReceivedList}
+            offerReceivedListRefetch={offerReceivedListRefetch}
             nftActivityRefetch={nftActivityRefetch}
             nftRefetch={refetch}
-          ></MakeOfferList>
+          ></OfferReceivedList>
+        </TabPanel>
+        <TabPanel header="Offers made">
+          <OfferMadeList
+            offerMadeList={offerMadeList}
+            offerMadeListRefetch={offerMadeListRefetch}
+            nftActivityRefetch={nftActivityRefetch}
+            nftRefetch={refetch}
+          ></OfferMadeList>
         </TabPanel>
       </TabView>
     </div>
