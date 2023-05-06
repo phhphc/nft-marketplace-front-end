@@ -85,8 +85,8 @@ const NFTDetail = ({
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (!web3Context.state.web3.provider) {
       return (
-        toast.current &&
-        toast.current.show({
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Please login your wallet!",
@@ -96,8 +96,8 @@ const NFTDetail = ({
     }
     if (price === 0) {
       return (
-        toast.current &&
-        toast.current.show({
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "The price must be higher than 0!",
@@ -116,6 +116,13 @@ const NFTDetail = ({
         price: price.toString(),
         unit: selectedUnit,
       });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Sell NFT successfully!",
+          life: 5000,
+        });
       refetch();
       nftActivityRefetch();
     } catch (error) {

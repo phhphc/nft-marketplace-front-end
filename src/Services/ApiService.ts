@@ -73,6 +73,7 @@ interface ICancelOrderProps {
   provider: any;
   myWallet: any;
   orderHash: string;
+  myAddress: string;
 }
 
 interface ICreateNFTServiceProps {
@@ -374,13 +375,6 @@ export const sellNFT = async ({
         counter: orderComponents.counter,
       })
     );
-    toast.current &&
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Sell NFT successfully!",
-        life: 5000,
-      });
   } catch (err) {
     console.error(err);
   }
@@ -540,6 +534,7 @@ export const cancelOrder = async ({
   orderHash,
   myWallet,
   provider,
+  myAddress,
 }: ICancelOrderProps) => {
   try {
     const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
@@ -557,13 +552,21 @@ export const cancelOrder = async ({
       },
     });
 
+    const counter = await mkpContractWithSigner.getCounter(myAddress);
+
     delete orderData.data.data.content[0].status;
     delete orderData.data.data.content[0].orderHash;
     delete orderData.data.data.content[0].signature;
 
+    console.log(
+      transformDataRequestToBuyNFT([
+        { counter, ...orderData.data.data.content[0] },
+      ])
+    );
+
     const tx = await mkpContractWithSigner.cancel(
       transformDataRequestToBuyNFT([
-        { counter: 1, ...orderData.data.data.content[0] },
+        { counter, ...orderData.data.data.content[0] },
       ])
     );
 
