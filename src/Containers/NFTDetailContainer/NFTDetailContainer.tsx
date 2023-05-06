@@ -1,15 +1,12 @@
 import NFTDetail from "@Components/NFTDetail/NFTDetail";
 import { useState, useEffect, useRef, useContext, useMemo } from "react";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { Toast } from "primereact/toast";
 import { useRouter } from "next/router";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import useNFTActivity from "@Hooks/useNFTActivity";
 
 const NFTDetailContainer = () => {
   const { nftCollectionList, refetch } = useNFTCollectionList({});
-
-  const toast = useRef<Toast>(null);
 
   const router = useRouter();
   const tokenID = router.query.token_id as string;
@@ -30,7 +27,6 @@ const NFTDetailContainer = () => {
     <>
       {nftDetail && (
         <>
-          <Toast ref={toast} position="top-center" />
           <NFTDetail
             nftDetail={nftDetail}
             refetch={refetch}

@@ -109,21 +109,36 @@ const MakeOfferList = ({
   };
 
   const handleFulfillOrder = async (item: IMakeOfferItem) => {
-    await fulfillMakeOffer({
-      orderHash: item.orderHash,
-      price: item.price,
-      myWallet: web3Context.state.web3.myWallet,
-      provider: web3Context.state.web3.provider,
-      myAddress: web3Context.state.web3.myAddress,
-    });
-    makeOfferRefetch();
-    nftRefetch();
-    nftActivityRefetch();
+    try {
+      await fulfillMakeOffer({
+        orderHash: item.orderHash,
+        price: item.price,
+        myWallet: web3Context.state.web3.myWallet,
+        provider: web3Context.state.web3.provider,
+        myAddress: web3Context.state.web3.myAddress,
+      });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Approve offer successfully!",
+          life: 5000,
+        });
+      makeOfferRefetch();
+      nftRefetch();
+      nftActivityRefetch();
+    } catch (error) {
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to approve offer!",
+          life: 5000,
+        });
+    }
   };
 
-  const rejectFulfillOrder = async (item: IMakeOfferItem) => {
-    
-  };
+  const rejectFulfillOrder = async (item: IMakeOfferItem) => {};
 
   return (
     <div id="list-make-offer">
@@ -157,11 +172,11 @@ const MakeOfferList = ({
           header="Approve"
           body={fulfillBodyTemplate}
         ></Column>
-        <Column
+        {/* <Column
           field="reject"
           header="Reject"
           body={rejectBodyTemplate}
-        ></Column>
+        ></Column> */}
         <Column
           field=""
           header="View detail"

@@ -9,7 +9,6 @@ import { IBlockchain, ICollection, IFormNewNFTInput } from "@Interfaces/index";
 import { createNFTService } from "@Services/ApiService";
 import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { ICollectionItem } from "@Interfaces/index";
-import { Toast } from "primereact/toast";
 
 export interface ICreateNFTProps {
   collectionList: ICollectionItem[];
@@ -17,7 +16,6 @@ export interface ICreateNFTProps {
 
 const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
   const web3Context = useContext(AppContext);
-  const toast = useRef<Toast>(null);
 
   let collections: ICollectionItem[];
   if (collectionList) {
@@ -46,20 +44,36 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
     useForm<IFormNewNFTInput>();
 
   const onSubmit = async (data: IFormNewNFTInput) => {
-    await createNFTService({
-      ...data,
-      toast,
-      featuredImage: data.featuredImage[0],
-      provider: web3Context.state.web3.provider,
-      myWallet: web3Context.state.web3.myWallet,
-    });
-    reset();
-    setFeaturedFile("");
+    try {
+      await createNFTService({
+        ...data,
+        featuredImage: data.featuredImage[0],
+        provider: web3Context.state.web3.provider,
+        myWallet: web3Context.state.web3.myWallet,
+      });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Create NFT successfully!",
+          life: 5000,
+        });
+    } catch (error) {
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to create NFT!",
+          life: 5000,
+        });
+    } finally {
+      reset();
+      setFeaturedFile("");
+    }
   };
 
   return (
     <div className="create-nft w-1/2 ml-auto mr-auto">
-      <Toast ref={toast} position="top-center" />
       <h1 className="text-4xl font-semibold pt-6">Create NFT</h1>
       <div className="pt-6 pb-1 text-sm">
         <span className="text-red-500">*</span> Required fields

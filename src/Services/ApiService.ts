@@ -22,7 +22,6 @@ import { INFTCollectionItem } from "@Interfaces/index";
 const { parseEther } = ethers.utils;
 
 interface ISellNFTProps {
-  toast: any;
   provider: any;
   myAddress: string;
   myWallet: any;
@@ -32,7 +31,6 @@ interface ISellNFTProps {
 }
 
 interface IMakeOfferProps {
-  toast: any;
   provider: any;
   myAddress: string;
   myWallet: any;
@@ -45,7 +43,6 @@ interface ITransferTETHToEthProps {
   provider: any;
   myWallet: any;
   price: string;
-  toast: any;
 }
 
 interface IGetOfferByTokenProps {
@@ -54,7 +51,6 @@ interface IGetOfferByTokenProps {
 }
 
 interface IBuyTokenProps {
-  toast: any;
   provider: any;
   myWallet: any;
   orderHashes: string[];
@@ -77,7 +73,6 @@ interface ICancelOrderProps {
 }
 
 interface ICreateNFTServiceProps {
-  toast: any;
   featuredImage: any;
   name: string;
   url: string;
@@ -90,7 +85,6 @@ interface ICreateNFTServiceProps {
 }
 
 interface ICreateCollectionProps {
-  toast: any;
   logoImage: string;
   featuredImage: string;
   bannerImage: string;
@@ -104,7 +98,6 @@ interface ICreateCollectionProps {
 }
 
 interface ISaveProfileProps {
-  toast: any;
   profileImage?: string;
   profileBanner?: string;
   username?: string;
@@ -154,7 +147,6 @@ export const getOfferByToken = async ({
 };
 
 export const makeOffer = async ({
-  toast,
   provider,
   myAddress,
   myWallet,
@@ -236,21 +228,7 @@ export const makeOffer = async ({
         counter: orderComponents.counter,
       })
     );
-    toast.current &&
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Make offer successfully!",
-        life: 15000,
-      });
   } catch (err) {
-    toast.current &&
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Fail to make offer!",
-        life: 15000,
-      });
   }
 };
 
@@ -258,7 +236,6 @@ export const transferTethToEth = async ({
   provider,
   myWallet,
   price,
-  toast,
 }: ITransferTETHToEthProps) => {
   try {
     const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
@@ -270,28 +247,12 @@ export const transferTethToEth = async ({
     const tx = await erc20ContractWithSigner.sell(parseEther(price));
 
     await tx.wait();
-
-    toast.current &&
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Transfer successfully!",
-        life: 5000,
-      });
   } catch (err) {
     console.error(err);
-    toast.current &&
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Fail to Transfer!",
-        life: 5000,
-      });
   }
 };
 
 export const sellNFT = async ({
-  toast,
   provider,
   myAddress,
   myWallet,
@@ -447,7 +408,6 @@ export const fulfillMakeOffer = async ({
 };
 
 export const buyToken = async ({
-  toast,
   orderHashes,
   price,
   myWallet,
@@ -517,14 +477,6 @@ export const buyToken = async ({
     console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
 
     await tx.wait();
-
-    toast.current &&
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Buy NFT successfully!",
-        life: 5000,
-      });
   } catch (err) {
     console.dir(err);
   }
@@ -644,7 +596,6 @@ const handleUploadImageToPinata = async (image: any) => {
 };
 
 export const createNFTService = async ({
-  toast,
   featuredImage,
   name,
   // url,
@@ -716,26 +667,11 @@ export const createNFTService = async ({
         gasLimit: 1000000,
       }
     );
-    toast.current &&
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Create NFT successfully!",
-        life: 3000,
-      });
   } catch (error) {
-    toast.current &&
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Fail to create NFT!",
-        life: 3000,
-      });
   }
 };
 
 export const createNFTCollectionService = async ({
-  toast,
   logoImage,
   // featuredImage,
   bannerImage,
@@ -824,22 +760,8 @@ ICreateCollectionProps) => {
       },
     })
     .then(function (response) {
-      toast.current &&
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Create collection successfully!",
-          life: 3000,
-        });
     })
     .catch(function (error) {
-      toast.current &&
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Fail to create collection!",
-          life: 3000,
-        });
     });
 };
 
@@ -885,7 +807,6 @@ export const getCollectionByOwnerService = async (
 };
 
 export const saveProfileService = async ({
-  toast,
   profileImage,
   profileBanner,
   username,

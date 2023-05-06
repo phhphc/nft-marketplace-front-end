@@ -7,7 +7,7 @@ const useProfile = (owner: string) => {
     queryFn: () => getProfileService(owner),
     staleTime: Infinity,
   });
-  const profile = result.data || null;
+  const profile = result.data || {};
   return { ...result, profile };
 };
 
