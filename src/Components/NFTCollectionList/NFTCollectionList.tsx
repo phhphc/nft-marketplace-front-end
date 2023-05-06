@@ -92,9 +92,9 @@ const NFTCollectionList = ({
         viewType={viewType}
         handleChangeView={handleChangeView}
       />
-      <div className="grid mt-6 grid-cols-5 gap-4">
-        <NFTCollectionFilter />
-        <div className="md:col-start-2 col-end-6 col-start-1">
+      <div className="grid grid-cols-5 mt-6 gap-4">
+        {/* <NFTCollectionFilter /> */}
+        <div className="md:col-start-1 col-end-6 col-start-1">
           {viewType === COLLECTION_VIEW_TYPE.LIST ? (
             <NFTCollectionTableList
               refetch={refetch}

@@ -2,7 +2,6 @@ import NFTUserProfileTabs from "@Components/NFTUserProfileTabs/NFTUserProfileTab
 import UserInfor from "@Components/UserProfile/UserInfor";
 import { useContext, useRef } from "react";
 import { AppContext } from "@Store/index";
-import { Toast } from "primereact/toast";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import UserImage from "@Components/UserProfile/UserImage";
 import MakeOfferList from "@Components/MakeOfferList/MakeOfferList";
@@ -10,6 +9,7 @@ import useMakeOffer from "@Hooks/useMakeOffer";
 import useProfile from "@Hooks/useProfile";
 import UserProfileTabs from "@Components/UserProfileTabs/UserProfileTabs";
 import useNFTActivityByOwner from "@Hooks/useNFTActivityByOwner";
+import { Message } from "primereact/message";
 
 const UserProfileContainer = () => {
   const web3Context = useContext(AppContext);
@@ -24,18 +24,15 @@ const UserProfileContainer = () => {
     web3Context.state.web3.myAddress
   );
 
-  const { nftActivity, refetch: nftActivityRefetch} = useNFTActivityByOwner(
+  const { nftActivity, refetch: nftActivityRefetch } = useNFTActivityByOwner(
     web3Context.state.web3.myAddress
   );
-
-  const toast = useRef<Toast>(null);
 
   return (
     <>
       {web3Context.state.web3.provider ? (
         <>
           <div>
-            <Toast ref={toast} position="top-center" />
             <UserImage profile={profile}></UserImage>
             <UserInfor
               profile={profile}
@@ -53,7 +50,11 @@ const UserProfileContainer = () => {
           </div>
         </>
       ) : (
-        <>Please login</>
+        <Message
+          severity="warn"
+          text="You must to login your wallet!"
+          className="flex h-40"
+        />
       )}
     </>
   );

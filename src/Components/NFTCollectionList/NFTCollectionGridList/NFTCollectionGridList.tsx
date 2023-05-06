@@ -7,7 +7,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { sellNFT } from "@Services/ApiService";
 import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
-import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
@@ -30,7 +29,6 @@ const NFTCollectionGridList = ({
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
-  const toast = useRef<Toast>(null);
 
   const size = 12;
   const [first, setFirst] = useState(0);
@@ -57,7 +55,6 @@ const NFTCollectionGridList = ({
     try {
       setVisible(false);
       await sellNFT({
-        toast,
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
         myWallet: web3Context.state.web3.myWallet,
@@ -65,14 +62,22 @@ const NFTCollectionGridList = ({
         price: price.toString(),
         unit: selectedUnit,
       });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Sell bundle NFT successfully!",
+          life: 5000,
+        });
+      web3Context.state.web3.listItemsSellBundle = [];
       refetch();
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Fail to sell NFT as bundle!",
-          life: 3000,
+          life: 5000,
         });
     }
   };
@@ -83,8 +88,14 @@ const NFTCollectionGridList = ({
         <div>
           {web3Context.state.web3.listItemsSellBundle.length > 0 &&
             !hideSellBundle && (
-              <div className="flex justify-end mb-8">
-                <Button onClick={() => setVisible(true)}>Sell as bundle</Button>
+              <div className="fixed bottom-0 right-0 z-10 bg-slate-100 w-full">
+                <Button
+                  onClick={() => setVisible(true)}
+                  className="left-1/2 text-center"
+                >
+                  Sell as bundle
+                </Button>
+
                 <Dialog
                   header="Please input the price that you want to sell as bundle"
                   visible={visible}
@@ -128,7 +139,6 @@ const NFTCollectionGridList = ({
                 </Dialog>
               </div>
             )}
-
           <div
             className={`grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 xl:gap-x-8 col-span-4 nft-collection-grid-list ${
               viewType === COLLECTION_VIEW_TYPE.LARGE_GRID

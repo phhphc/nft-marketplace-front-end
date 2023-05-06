@@ -12,7 +12,6 @@ import { WEB3_ACTION_TYPES } from "@Store/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { handleRemoveFromCart, showingPrice } from "@Utils/index";
-import { Toast } from "primereact/toast";
 import { buyToken, transferTethToEth } from "@Services/ApiService";
 import { erc20Abi } from "@Constants/erc20Abi";
 import { Tag } from "primereact/tag";
@@ -21,7 +20,6 @@ import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 
 const Header = () => {
-  const toast = useRef<Toast>(null);
   const web3Context = useContext(AppContext);
 
   // Wallet
@@ -172,36 +170,31 @@ const Header = () => {
   ) => {
     setCartModalVisible(false);
     try {
-      if (!web3Context.state.web3.provider) {
-        return (
-          toast.current &&
-          toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Please login your wallet!",
-            life: 3000,
-          })
-        );
-      }
       if (cart.length) {
         await buyToken({
-          toast,
           orderHashes: cart.map((item) => item.orderHash),
           price: cart.map((item) => item.price),
           myWallet,
           provider,
         });
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Buy NFT successfully!",
+            life: 5000,
+          });
         handleRemoveAllFromCart();
         window.location.reload();
       }
     } catch (error) {
       handleRemoveAllFromCart();
-      toast.current &&
-        toast.current.show({
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Fail to buy NFT!",
-          life: 3000,
+          life: 5000,
         });
     }
   };
@@ -214,22 +207,27 @@ const Header = () => {
         provider: web3Context.state.web3.provider,
         myWallet: web3Context.state.web3.myWallet,
         price: String(price),
-        toast,
       });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Transfer successfully!",
+          life: 5000,
+        });
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Fail to transfer!",
-          life: 3000,
+          life: 5000,
         });
     }
   };
 
   return (
     <div id="header" className="fixed top-0 right-0 left-0 h-24 z-10">
-      <Toast ref={toast} position="top-center" />
       <div className="flex h-full w-full bg-gray-100 shadow items-center justify-between px-10">
         {/* Logo */}
         <Link href="/" id="logo">

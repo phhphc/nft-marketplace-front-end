@@ -9,7 +9,6 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
-import { Toast } from "primereact/toast";
 import { Galleria } from "primereact/galleria";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import {
@@ -33,6 +32,7 @@ const NFTCollectionGridItem = ({
   refetch,
   hideSellBundle = false,
 }: INFTCollectionGridItemProps) => {
+  
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
       !!item[0].listings[0] &&
@@ -58,35 +58,22 @@ const NFTCollectionGridItem = ({
   const [price, setPrice] = useState<number>(0);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
-  const toast = useRef<Toast>(null);
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
-    if (!web3Context.state.web3.provider) {
-      return (
-        toast.current &&
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Please login your wallet!",
-          life: 3000,
-        })
-      );
-    }
     if (price === 0) {
       return (
-        toast.current &&
-        toast.current.show({
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "The price must be higher than 0!",
-          life: 3000,
+          life: 5000,
         })
       );
     }
     try {
       setVisible(false);
       await sellNFT({
-        toast,
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
         myWallet: web3Context.state.web3.myWallet,
@@ -103,46 +90,41 @@ const NFTCollectionGridItem = ({
         });
       refetch();
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Fail to sell NFT!",
-          life: 3000,
+          life: 5000,
         });
     }
   };
 
   const handleBuyToken = async (item?: INFTCollectionItem[]) => {
     try {
-      if (!web3Context.state.web3.provider) {
-        return (
-          toast.current &&
-          toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Please login your wallet!",
-            life: 3000,
-          })
-        );
-      }
       if (item) {
         await buyToken({
-          toast,
           orderHashes: [item[0].listings[0].order_hash],
           price: [item[0].listings[0].start_price],
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
         });
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Buy NFT successfully!",
+            life: 5000,
+          });
         refetch();
       }
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Fail to buy NFT!",
-          life: 3000,
+          life: 5000,
         });
     }
   };
@@ -206,7 +188,6 @@ const NFTCollectionGridItem = ({
 
   return (
     <div key={item[0].name} className="relative nft-collection-item">
-      <Toast ref={toast} position="top-center" />
       <div className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none">
         <div className="relative">
           {canSell(item) && !hideSellBundle && (
@@ -250,7 +231,7 @@ const NFTCollectionGridItem = ({
       </div>
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
-          <div className="p-3 h-20">
+          <div className="p-3 h-28">
             {item.length == 1 ? (
               <h3 className="font-bold uppercase break-words text-sm">
                 {item[0].name || "Item name"}
@@ -263,7 +244,6 @@ const NFTCollectionGridItem = ({
             {item[0].listings && (
               <p className="flex gap-1 text-sm font-medium text-gray-900 pt-1">
                 {showingPrice(item[0].listings[0]?.start_price || "0")}
-                {item.length > 1 && " / 1 item"}
               </p>
             )}
           </div>

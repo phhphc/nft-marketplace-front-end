@@ -11,7 +11,6 @@ import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { CURRENCY_UNITS } from "@Constants/index";
 import { sellNFT } from "@Services/ApiService";
-import { Toast } from "primereact/toast";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 
 export interface INFTCollectionTableListProps {
@@ -25,7 +24,6 @@ const NFTCollectionTableList = ({
   refetch,
   hideSellBundle = false,
 }: INFTCollectionTableListProps) => {
-  const toast = useRef<Toast>(null);
   const web3Context = useContext(AppContext);
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
@@ -126,7 +124,6 @@ const NFTCollectionTableList = ({
   const handleSellBundle = async () => {
     try {
       await sellNFT({
-        toast,
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
         myWallet: web3Context.state.web3.myWallet,
@@ -134,15 +131,22 @@ const NFTCollectionTableList = ({
         price: price.toString(),
         unit: selectedUnit,
       });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Sell bundle NFT successfully!",
+          life: 5000,
+        });
       refetch();
       setVisible(false);
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Fail to sell NFT as bundle!",
-          life: 3000,
+          life: 5000,
         });
     }
   };

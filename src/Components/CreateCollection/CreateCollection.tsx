@@ -12,7 +12,6 @@ import {
 } from "@Interfaces/index";
 import { createNFTCollectionService } from "@Services/ApiService";
 import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
-import { Toast } from "primereact/toast";
 
 const CreateCollection = () => {
   const categories: ICategory[] = [
@@ -38,11 +37,6 @@ const CreateCollection = () => {
     setLogoFile(URL.createObjectURL(e.target.files[0]));
   }
 
-  const [featuredFile, setFeaturedFile] = useState("");
-  function handleChangeFeatured(e: any) {
-    setFeaturedFile(URL.createObjectURL(e.target.files[0]));
-  }
-
   const [bannerFile, setBannerFile] = useState("");
   function handleChangeBanner(e: any) {
     setBannerFile(URL.createObjectURL(e.target.files[0]));
@@ -53,11 +47,6 @@ const CreateCollection = () => {
     resetField("logoImage");
   }
 
-  function removeFeaturedImage() {
-    setFeaturedFile("");
-    resetField("featuredImage");
-  }
-
   function removeBannerImage() {
     setBannerFile("");
     resetField("bannerImage");
@@ -65,7 +54,6 @@ const CreateCollection = () => {
 
   const web3Context = useContext(AppContext);
   const owner = web3Context.state.web3.myAddress;
-  const toast = useRef<Toast>(null);
 
   const { register, resetField, control, handleSubmit, reset } =
     useForm<IFormCollectionInput>();
@@ -73,20 +61,25 @@ const CreateCollection = () => {
   const onSubmit = async (data: IFormCollectionInput) => {
     try {
       await createNFTCollectionService({
-        toast,
         ...data,
         logoImage: data.logoImage[0],
-        // featuredImage: data.featuredImage[0],
         bannerImage: data.bannerImage[0],
         owner,
       });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Create collection successfully!",
+          life: 5000,
+        });
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "You have rejected the transaction!",
-          life: 3000,
+          detail: "Fail to create collection!",
+          life: 5000,
         });
     } finally {
       reset();
@@ -97,7 +90,6 @@ const CreateCollection = () => {
 
   return (
     <div className="create-collection w-5/12 ml-auto mr-auto">
-      <Toast ref={toast} position="top-center" />
       <h1 className="text-4xl font-semibold pt-6">Create a Collection</h1>
       <div className="pt-6 pb-1 text-sm">
         <span className="text-red-500">*</span> Required fields

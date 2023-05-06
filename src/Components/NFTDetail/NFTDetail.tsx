@@ -10,7 +10,6 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
-import { Toast } from "primereact/toast";
 import { useContext, useState, useEffect, useRef, useMemo } from "react";
 import { sellNFT, buyToken, makeOffer } from "@Services/ApiService";
 import { WEB3_ACTION_TYPES } from "@Store/index";
@@ -76,24 +75,14 @@ const NFTDetail = ({
 
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
-  const toast = useRef<Toast>(null);
 
   const endTime = useMemo(() => {
     return new Date(Number(nftDetail[0].listings?.[0]?.end_time));
   }, []);
 
+  console.log('nftDetail',nftDetail);
+
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
-    if (!web3Context.state.web3.provider) {
-      return (
-        web3Context.state.web3.toast.current &&
-        web3Context.state.web3.toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Please login your wallet!",
-          life: 3000,
-        })
-      );
-    }
     if (price === 0) {
       return (
         web3Context.state.web3.toast.current &&
@@ -101,14 +90,13 @@ const NFTDetail = ({
           severity: "error",
           summary: "Error",
           detail: "The price must be higher than 0!",
-          life: 3000,
+          life: 5000,
         })
       );
     }
     try {
       setVisible(false);
       await sellNFT({
-        toast,
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
         myWallet: web3Context.state.web3.myWallet,
@@ -126,78 +114,61 @@ const NFTDetail = ({
       refetch();
       nftActivityRefetch();
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Fail to sell NFT!",
-          life: 3000,
+          life: 5000,
         });
     }
   };
 
   const handleBuyToken = async (item?: INFTCollectionItem[]) => {
-    if (!web3Context.state.web3.provider) {
-      return (
-        toast.current &&
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Please login your wallet!",
-          life: 3000,
-        })
-      );
-    }
     try {
       if (item) {
         await buyToken({
-          toast,
           orderHashes: [item[0].listings[0].order_hash],
           price: [item[0].listings[0].start_price],
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
         });
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Buy NFT successfully!",
+            life: 5000,
+          });
         refetch();
         nftActivityRefetch();
       }
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Fail to buy NFT!",
-          life: 3000,
+          life: 5000,
         });
     }
   };
 
   const handleMakeOffer = async (item: INFTCollectionItem) => {
-    if (!web3Context.state.web3.provider) {
-      return (
-        toast.current &&
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Please login your wallet!",
-          life: 3000,
-        })
-      );
-    }
     if (price === 0) {
       return (
-        toast.current &&
-        toast.current.show({
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "The price must be higher than 0!",
-          life: 3000,
+          life: 5000,
         })
       );
     }
     try {
       setDialogMakeOffer(false);
       await makeOffer({
-        toast,
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
         myWallet: web3Context.state.web3.myWallet,
@@ -205,15 +176,22 @@ const NFTDetail = ({
         price: price.toString(),
         unit: selectedUnit,
       });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Make offer successfully!",
+          life: 5000,
+        });
       refetch();
       nftActivityRefetch();
     } catch (error) {
-      toast.current &&
-        toast.current.show({
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Fail to make offer!",
-          life: 3000,
+          life: 5000,
         });
     }
   };
@@ -276,7 +254,6 @@ const NFTDetail = ({
   return (
     <div id="nft-detail">
       <div className="grid grid-cols-5 gap-4">
-        <Toast ref={toast} position="top-center" />
         <div id="left-side" className="col-span-2">
           <div className="mt-5">
             {nftDetail.length == 1 ? (
@@ -498,7 +475,10 @@ const NFTDetail = ({
           <h2 className="text-lg flex justify-start items-center space-x-1">
             <div>Owned by</div>
             <span className="text-blue-500">
-              {nftDetail[selectedItemIndex].owner}
+              {nftDetail[selectedItemIndex].owner ===
+              web3Context.state.web3.myAddress
+                ? "You"
+                : nftDetail[selectedItemIndex].owner}
             </span>
           </h2>
           {/* <div className="flex flex-start space-x-8 pt-5 pb-8">
@@ -576,7 +556,6 @@ const NFTDetail = ({
                               nftDetail[selectedItemIndex].listings[0]
                                 ?.start_price || "0"
                             )}
-                            {nftDetail.length > 1 && " / 1 item"}
                           </div>
                         </div>
                       )}
