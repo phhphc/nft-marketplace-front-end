@@ -57,6 +57,14 @@ const NFTPredictPrice = ({ nftListing, nftOffer }: INFTPredictPriceProps) => {
         predictData.push({x:2, y:Math.max(...listingPrices)})
         predictData.push({x:2, y:Math.min(...offerPrices)})
       }
+      if(Math.min(...listingPrices) <= Math.min(...offerPrices) && Math.max(...listingPrices) >= Math.max(...offerPrices)) {
+        predictData.push({x:2, y:Math.max(...offerPrices)})
+        predictData.push({x:2, y:Math.min(...offerPrices)})
+      }
+      if(Math.min(...listingPrices) >= Math.min(...offerPrices) && Math.max(...listingPrices) <= Math.max(...offerPrices)) {
+        predictData.push({x:2, y:Math.max(...listingPrices)})
+        predictData.push({x:2, y:Math.min(...listingPrices)})
+      }
     }
     
     let datasets = [
