@@ -328,84 +328,9 @@ export const sellNFT = async ({
       mkpAddress,
       true
     );
-<<<<<<< Updated upstream
 
-    const erc721ContractWithSigner = erc721Contract.connect(myWallet);
-
-    const isApproved = await erc721ContractWithSigner.isApprovedForAll(
-      myAddress,
-      mkpAddress
-    );
-    console.log("🚀 ~ file: ApiService.ts:270 ~ isApproved:", isApproved);
-
-    if (!isApproved) {
-      const approvalForAll = await erc721ContractWithSigner.setApprovalForAll(
-        mkpAddress,
-        true
-      );
-      await approvalForAll.wait();
-    }
-
-    const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
-
-    const mkpContractWithSigner = mkpContract.connect(myWallet);
-
-    const offer = item.map((nft) =>
-      getTestItem721(nft.identifier, 1, 1, undefined, nft.token)
-    );
-    const consideration = [
-      getItemETH(
-        unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
-        unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
-        myAddress
-      ),
-    ];
-    const { chainId } = await provider.getNetwork();
-    const { orderHash, value, orderComponents, startTime, endTime, signature } =
-      await createOrder(
-        mkpContractWithSigner,
-        chainId,
-        myWallet,
-        offer,
-        consideration
-      );
-
-    console.log(
-      transformDataRequestToSellNFT({
-        orderHash,
-        offerer: myAddress,
-        signature,
-        offer,
-        consideration,
-        orderValue: value,
-        startTime,
-        endTime,
-        salt: orderComponents.salt,
-        counter: orderComponents.counter,
-      })
-    );
-
-    await axios.post(
-      "/api/v0.1/order",
-      transformDataRequestToSellNFT({
-        orderHash,
-        offerer: myAddress,
-        signature,
-        offer,
-        consideration,
-        orderValue: value,
-        startTime,
-        endTime,
-        salt: orderComponents.salt,
-        counter: orderComponents.counter,
-      })
-    );
-  } catch (err) {
-    console.error(err);
-=======
     await approvalForAll.wait();
     afterApprove && afterApprove();
->>>>>>> Stashed changes
   }
 
   const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
@@ -509,48 +434,9 @@ export const fulfillMakeOffer = async ({
       mkpAddress,
       true
     );
-<<<<<<< Updated upstream
 
-    const erc721ContractWithSigner = erc721Contract.connect(myWallet);
-
-    const isApproved = await erc721ContractWithSigner.isApprovedForAll(
-      myAddress,
-      mkpAddress
-    );
-
-    if (!isApproved) {
-      const approvalForAll = await erc721ContractWithSigner.setApprovalForAll(
-        mkpAddress,
-        true
-      );
-      await approvalForAll.wait();
-    }
-
-    const signature = orderData.data.data.content[0].signature;
-
-    delete orderData.data.data.content[0].status;
-    delete orderData.data.data.content[0].orderHash;
-    delete orderData.data.data.content[0].signature;
-
-    const tx = await mkpContractWithSigner.fulfillOrder(
-      transformDataRequestToBuyNFT({
-        parameters: orderData.data.data.content[0],
-        signature: signature,
-      }),
-
-      {
-        value: toBN(price),
-      }
-    );
-
-    console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);
-    await tx.wait();
-  } catch (err) {
-    console.dir(err);
-=======
     await approvalForAll.wait();
     afterApprove && afterApprove();
->>>>>>> Stashed changes
   }
 
   const signature = orderData.data.data.content[0].signature;
