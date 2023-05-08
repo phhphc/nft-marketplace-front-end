@@ -89,7 +89,7 @@ const NFTDetail = ({
   const [isAddedToCart, setIsAddedToCart] = useState(false);
 
   const endTime = useMemo(() => {
-    return new Date(Number(nftDetail[0].listings?.[0]?.end_time));
+    return new Date(Number(nftDetail[0]?.listings?.[0]?.end_time));
   }, []);
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
