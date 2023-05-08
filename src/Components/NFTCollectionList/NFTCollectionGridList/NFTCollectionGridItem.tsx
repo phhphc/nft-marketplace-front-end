@@ -17,6 +17,9 @@ import {
   showingPrice,
 } from "@Utils/index";
 import { Checkbox } from "primereact/checkbox";
+import { ethers } from "ethers";
+import { erc721Abi } from "@Constants/erc721Abi";
+import axios from "axios";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
@@ -57,7 +60,6 @@ const NFTCollectionGridItem = ({
   const [price, setPrice] = useState<number>(0);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
-
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (price === 0) {
       return (
@@ -146,13 +148,15 @@ const NFTCollectionGridItem = ({
           });
         refetch();
       }
-    } catch (error) {web3Context.state.web3.toast.current &&
-      web3Context.state.web3.toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Fail to cancel sale!",
-        life: 5000,
-      });}
+    } catch (error) {
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to cancel sale!",
+          life: 5000,
+        });
+    }
   };
 
   const [visible, setVisible] = useState(false);

@@ -15,6 +15,8 @@ const UserProfileContainer = () => {
 
   const { nftCollectionList, refetch } = useNFTCollectionList({
     owner: web3Context.state.web3.myAddress as string,
+    provider: web3Context.state.web3.provider, 
+    myWallet: web3Context.state.web3.myWallet
   });
 
   const { offerReceivedList, refetch: offerReceivedListRefetch } = useOfferReceivedList(

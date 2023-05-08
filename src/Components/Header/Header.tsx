@@ -118,7 +118,8 @@ const Header = () => {
   }, []);
 
   // Cart
-  const { nftCollectionList } = useNFTCollectionList({});
+  const { nftCollectionList } = useNFTCollectionList({provider: web3Context.state.web3.provider, 
+    myWallet: web3Context.state.web3.myWallet});
   const [cartModalVisible, setCartModalVisible] = useState(false);
   // const totalPrice = useMemo(() => {
   //   return Math.round(

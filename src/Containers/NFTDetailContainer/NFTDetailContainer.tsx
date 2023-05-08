@@ -4,9 +4,14 @@ import { INFTCollectionItem } from "@Interfaces/index";
 import { useRouter } from "next/router";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import useNFTActivity from "@Hooks/useNFTActivity";
+import { AppContext } from "@Store/index";
 
 const NFTDetailContainer = () => {
-  const { nftCollectionList, refetch } = useNFTCollectionList({});
+  const web3Context = useContext(AppContext);
+  const { nftCollectionList, refetch } = useNFTCollectionList({
+    provider: web3Context.state.web3.provider,
+    myWallet: web3Context.state.web3.myWallet,
+  });
 
   const router = useRouter();
   const tokenID = router.query.token_id as string;
