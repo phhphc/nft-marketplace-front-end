@@ -1,4 +1,11 @@
-import { createContext, useReducer, Dispatch, useRef } from "react";
+import {
+  createContext,
+  useReducer,
+  Dispatch,
+  useRef,
+  useState,
+  use,
+} from "react";
 import web3Reducer from "@Reducer/web3Reducer";
 import { useEffect } from "react";
 import { Contract, ethers, Wallet } from "ethers";
@@ -88,6 +95,7 @@ const AppProvider = ({ children }: IAppProvider) => {
 
       const signer = provider.getSigner();
       const { chainId } = await provider.getNetwork();
+
       if (
         SUPPORTED_NETWORK.some(
           (networkChainId: number) => networkChainId === chainId
@@ -150,6 +158,27 @@ const AppProvider = ({ children }: IAppProvider) => {
   useEffect(() => {
     localStorage.setItem("shoppingCart", JSON.stringify(state.web3.cart));
   }, [state.web3.cart]);
+
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (state.web3.provider) {
+        const { chainId } = await state.web3.provider.getNetwork();
+        if (
+          SUPPORTED_NETWORK.some(
+            (networkChainId: number) => networkChainId === chainId
+          )
+        ) {
+          dispatch({
+            type: WEB3_ACTION_TYPES.CHANGE,
+            payload: {
+              chainId,
+            },
+          });
+        }
+      }
+    };
+    fetchChainId();
+  }, [state.web3.provider]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

@@ -38,10 +38,6 @@ module.exports = () => {
         source: "/api/v0.1/event",
         destination: `${process.env.BACKEND_URL}/event`,
       },
-      {
-        source: "/api/ipfs/:address*",
-        destination: `${process.env.PINATA_URL}/ipfs/:address*`,
-      },
     ];
   };
   return {

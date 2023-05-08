@@ -81,6 +81,12 @@ const NFTCollectionGridItem = ({
         item,
         price: price.toString(),
         unit: selectedUnit,
+        beforeApprove: () => {
+          web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
+        },
+        afterApprove: () => {
+          web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
+        },
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -91,6 +97,7 @@ const NFTCollectionGridItem = ({
         });
       refetch();
     } catch (error) {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
           severity: "error",
@@ -200,6 +207,7 @@ const NFTCollectionGridItem = ({
         }}
       >
         <img
+          crossOrigin="anonymous"
           src={selectedItem.image}
           alt={selectedItem.name}
           style={{ width: "100%" }}
@@ -235,6 +243,7 @@ const NFTCollectionGridItem = ({
               }}
             >
               <img
+                crossOrigin="anonymous"
                 src={
                   item[0].image != "<nil>" && item[0].image != ""
                     ? item[0].image
