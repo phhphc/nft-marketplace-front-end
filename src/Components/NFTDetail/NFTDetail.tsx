@@ -614,7 +614,7 @@ const NFTDetail = ({
                           <p>
                             Please input the price that you want to make offer
                           </p>
-                          <p className="text-sm">* 1 TETH = 1 ETH</p>
+                          <p className="text-sm italic text-rose-500">* 1 TETH = 1 ETH</p>
                         </div>
                       }
                       visible={dialogMakeOffer}

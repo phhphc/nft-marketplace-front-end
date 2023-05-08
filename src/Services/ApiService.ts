@@ -43,6 +43,7 @@ interface ITransferTETHToEthProps {
   provider: any;
   myWallet: any;
   price: string;
+  unit: string;
 }
 
 interface IGetOfferByTokenProps {
@@ -231,10 +232,11 @@ export const makeOffer = async ({
   } catch (err) {}
 };
 
-export const transferTethToEth = async ({
+export const transferCurrency = async ({
   provider,
   myWallet,
   price,
+  unit,
 }: ITransferTETHToEthProps) => {
   try {
     const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
@@ -243,7 +245,12 @@ export const transferTethToEth = async ({
 
     const erc20ContractWithSigner = erc20Contract.connect(myWallet);
 
-    const tx = await erc20ContractWithSigner.sell(parseEther(price));
+    const tx =
+      unit === CURRENCY.TETHER
+        ? await erc20ContractWithSigner.sell(parseEther(price))
+        : await erc20ContractWithSigner.buy({
+            value: parseEther(price),
+          });
 
     await tx.wait();
   } catch (err) {
@@ -277,8 +284,12 @@ export const sellNFT = async ({
     );
     console.log("🚀 ~ file: ApiService.ts:270 ~ isApproved:", isApproved);
 
-    if (!isApproved) {
-      await erc721ContractWithSigner.setApprovalForAll(mkpAddress, true);
+    if (true) {
+      const approvalForAll = await erc721ContractWithSigner.setApprovalForAll(
+        mkpAddress,
+        true
+      );
+      await approvalForAll.wait();
     }
 
     const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
@@ -378,8 +389,12 @@ export const fulfillMakeOffer = async ({
       mkpAddress
     );
 
-    if (!isApproved) {
-      await erc721ContractWithSigner.setApprovalForAll(mkpAddress, true);
+    if (true) {
+      const approvalForAll = await erc721ContractWithSigner.setApprovalForAll(
+        mkpAddress,
+        true
+      );
+      await approvalForAll.wait();
     }
 
     const signature = orderData.data.data.content[0].signature;
@@ -706,10 +721,10 @@ export const createNFTService = async ({
     await myNftContractWithSigner.mint(
       await myWallet.getAddress(),
       nftId,
-      tokenUri,
-      {
-        gasLimit: 1000000,
-      }
+      tokenUri
+      // {
+      //   gasLimit: 1000000,
+      // }
     );
   } catch (error) {}
 };

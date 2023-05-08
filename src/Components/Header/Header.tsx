@@ -12,12 +12,14 @@ import { WEB3_ACTION_TYPES } from "@Store/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { handleRemoveFromCart, showingPrice } from "@Utils/index";
-import { buyToken, transferTethToEth } from "@Services/ApiService";
+import { buyToken, transferCurrency } from "@Services/ApiService";
 import { erc20Abi } from "@Constants/erc20Abi";
 import { Tag } from "primereact/tag";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
+import { Dropdown } from "primereact/dropdown";
+import { CURRENCY_TRANSFER } from "@Constants/index";
 
 const Header = () => {
   const web3Context = useContext(AppContext);
@@ -29,6 +31,7 @@ const Header = () => {
   const [erc20Balance, setErc20Balance] = useState(0);
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
+  const [selectedUnit, setSelectedUnit] = useState<string>("");
 
   const handleConnectWallet = async () => {
     // If metamask is installed
@@ -102,6 +105,8 @@ const Header = () => {
       web3Context.state.web3.myAddress
     ),
     web3Context.state.web3.myAddress,
+    ethBalance,
+    erc20Balance,
   ]);
 
   useEffect(() => {
@@ -191,14 +196,15 @@ const Header = () => {
     }
   };
 
-  const handleTransferTethToEth = async (price: Number) => {
+  const handleTransferCurrency = async (price: Number, unit: string) => {
     setVisible(false);
     setWalletModalVisible(false);
     try {
-      await transferTethToEth({
+      await transferCurrency({
         provider: web3Context.state.web3.provider,
         myWallet: web3Context.state.web3.myWallet,
         price: String(price),
+        unit: unit,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -337,14 +343,25 @@ const Header = () => {
                     </div>
                   </div>
                   <div className="mt-5">
-                    <Button
-                      label="Transfer TETH to ETH"
-                      icon="pi pi-reply"
-                      className=""
+                    <button
+                      className="bg-violet-500 hover:bg-violet-600 h-16 rounded-md text-xl w-full text-white"
                       onClick={() => setVisible(true)}
-                    />
+                    >
+                      Transfer ETH{" "}
+                      <span>
+                        <i className="pi pi-arrow-right-arrow-left pl-2 pr-2"></i>
+                        TETH
+                      </span>
+                    </button>
                     <Dialog
-                      header="Please input the amount of TETH you want to transfer to ETH"
+                      header={
+                        <div>
+                          <p>Please input the type you want to transfer</p>
+                          <p className="text-sm italic text-rose-500">
+                            * 1 TETH = 1 ETH
+                          </p>
+                        </div>
+                      }
                       visible={visible}
                       style={{ width: "50vw" }}
                       onHide={() => setVisible(false)}
@@ -359,15 +376,27 @@ const Header = () => {
                           <Button
                             label="Transfer"
                             icon="pi pi-check"
-                            onClick={() => handleTransferTethToEth(price)}
+                            onClick={() =>
+                              handleTransferCurrency(price, selectedUnit)
+                            }
                             autoFocus
                           />
                         </div>
                       }
                     >
                       <div className="flex gap-3">
+                        <Dropdown
+                          value={selectedUnit}
+                          onChange={(e) => {
+                            setSelectedUnit(e.value), console.log(e.value);
+                          }}
+                          options={CURRENCY_TRANSFER}
+                          optionLabel="name"
+                          placeholder="Select a transfer type"
+                          className="md:w-14rem"
+                        />
                         <InputNumber
-                          placeholder="Input TETH"
+                          placeholder="Input balance"
                           value={price}
                           onValueChange={(e: any) => setPrice(e.value)}
                           minFractionDigits={1}

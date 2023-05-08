@@ -153,6 +153,11 @@ export const OFFER_CURRENCY_UNITS = [
   { name: CURRENCY.TETHER, value: CURRENCY.TETHER },
 ];
 
+export const CURRENCY_TRANSFER = [
+  { name: CURRENCY.ETHER + " To " + CURRENCY.TETHER, value: CURRENCY.ETHER },
+  { name: CURRENCY.TETHER + " To " + CURRENCY.ETHER, value: CURRENCY.TETHER },
+];
+
 export const STRING_HEX_TO_NUMBER: any = {
   itemType: 1,
 };
