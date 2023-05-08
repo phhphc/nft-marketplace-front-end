@@ -122,7 +122,7 @@ const NFTPredictPrice = ({ nftListing, nftOffer }: INFTPredictPriceProps) => {
 
     setChartData(data);
     setChartOptions(options);
-  }, []);
+  }, [nftListing, nftOffer]);
 
   return (
     <div id="nft-predict-price">
