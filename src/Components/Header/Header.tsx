@@ -118,8 +118,10 @@ const Header = () => {
   }, []);
 
   // Cart
-  const { nftCollectionList } = useNFTCollectionList({provider: web3Context.state.web3.provider, 
-    myWallet: web3Context.state.web3.myWallet});
+  const { nftCollectionList } = useNFTCollectionList({
+    provider: web3Context.state.web3.provider,
+    myWallet: web3Context.state.web3.myWallet,
+  });
   const [cartModalVisible, setCartModalVisible] = useState(false);
   // const totalPrice = useMemo(() => {
   //   return Math.round(
@@ -201,12 +203,24 @@ const Header = () => {
     setVisible(false);
     setWalletModalVisible(false);
     try {
-      await transferCurrency({
-        provider: web3Context.state.web3.provider,
-        myWallet: web3Context.state.web3.myWallet,
-        price: String(price),
-        unit: unit,
-      });
+      if (price && unit) {
+        await transferCurrency({
+          provider: web3Context.state.web3.provider,
+          myWallet: web3Context.state.web3.myWallet,
+          price: String(price),
+          unit: unit,
+        });
+      } else {
+        return (
+          web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please input the value!",
+            life: 5000,
+          })
+        );
+      }
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
           severity: "success",
@@ -515,7 +529,7 @@ const Header = () => {
                       )}
                     </span>
                     <button
-                      className="delete-cart-btn hidden hover:text-white"
+                      className="delete-cart-btn hidden"
                       onClick={() =>
                         handleRemoveFromCart(
                           web3Context,

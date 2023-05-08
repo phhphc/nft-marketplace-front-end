@@ -322,7 +322,7 @@ export const sellNFT = async ({
     );
     console.log("🚀 ~ file: ApiService.ts:270 ~ isApproved:", isApproved);
 
-    if (true) {
+    if (!isApproved) {
       const approvalForAll = await erc721ContractWithSigner.setApprovalForAll(
         mkpAddress,
         true
@@ -427,7 +427,7 @@ export const fulfillMakeOffer = async ({
       mkpAddress
     );
 
-    if (true) {
+    if (!isApproved) {
       const approvalForAll = await erc721ContractWithSigner.setApprovalForAll(
         mkpAddress,
         true
