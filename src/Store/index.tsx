@@ -96,23 +96,17 @@ const AppProvider = ({ children }: IAppProvider) => {
       const signer = provider.getSigner();
       const { chainId } = await provider.getNetwork();
 
-      if (
-        SUPPORTED_NETWORK.some(
-          (networkChainId: number) => networkChainId === chainId
-        )
-      ) {
-        dispatch({
-          type: WEB3_ACTION_TYPES.CHANGE,
-          payload: {
-            provider,
-            myAddress: await signer.getAddress(),
-            cart,
-            myWallet: signer,
-            chainId,
-            toast,
-          },
-        });
-      }
+      dispatch({
+        type: WEB3_ACTION_TYPES.CHANGE,
+        payload: {
+          provider,
+          myAddress: await signer.getAddress(),
+          cart,
+          myWallet: signer,
+          chainId,
+          toast,
+        },
+      });
     };
     if (window?.ethereum?._state?.isUnlocked) {
       fetchData();
