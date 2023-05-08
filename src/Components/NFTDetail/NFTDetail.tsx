@@ -60,28 +60,28 @@ const NFTDetail = ({
     (nft) => nft.name.toLowerCase() === NFT_EVENT_NAME.SALE.toLowerCase()
   );
   const canMakeOffer = (item: INFTCollectionItem[]) => {
-    return item[0].owner !== web3Context.state.web3.myAddress;
+    return item[0]?.owner !== web3Context.state.web3.myAddress;
   };
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
-      !!item[0].listings[0] &&
-      item[0].owner !== web3Context.state.web3.myAddress
+      !!item[0]?.listings[0] &&
+      item[0]?.owner !== web3Context.state.web3.myAddress
     );
   };
   const canSell = (item: INFTCollectionItem[]) => {
     return (
-      item[0].listings.length === 0 &&
-      item[0].owner === web3Context.state.web3.myAddress
+      item[0]?.listings.length === 0 &&
+      item[0]?.owner === web3Context.state.web3.myAddress
     );
   };
   const canDownload = (item: INFTCollectionItem[]) => {
-    return item[0].owner === web3Context.state.web3.myAddress;
+    return item[0]?.owner === web3Context.state.web3.myAddress;
   };
   const isSelling = (item: INFTCollectionItem[]) => {
     return (
       !canBuy(item) &&
       !canSell(item) &&
-      item[0].owner === web3Context.state.web3.myAddress
+      item[0]?.owner === web3Context.state.web3.myAddress
     );
   };
 
@@ -334,8 +334,8 @@ const NFTDetail = ({
                 <span>Description</span>
               </div>
               <div className="table-content p-5">
-                {nftDetail[selectedItemIndex].description != "<nil>"
-                  ? nftDetail[selectedItemIndex].description
+                {nftDetail[selectedItemIndex]?.description != "<nil>"
+                  ? nftDetail[selectedItemIndex]?.description
                   : ""}
               </div>
             </div>
@@ -491,13 +491,13 @@ const NFTDetail = ({
                     <span>Token</span>
 
                     <span className="text-blue-500 w-28 overflow-hidden text-ellipsis">
-                      {nftDetail[selectedItemIndex].token}
+                      {nftDetail[selectedItemIndex]?.token}
                     </span>
                   </div>
                   <div className="w-full flex justify-between">
                     <span>Identifier</span>
                     <span className="text-blue-500 w-28 overflow-hidden text-ellipsis">
-                      {nftDetail[selectedItemIndex].identifier}
+                      {nftDetail[selectedItemIndex]?.identifier}
                     </span>
                   </div>
                   <div className="w-full flex justify-between">
@@ -516,15 +516,15 @@ const NFTDetail = ({
         <div id="right-side" className="col-span-3">
           <div className="flex justify-between"></div>
           <h1 className="h-14 text-4xl flex items-center font-semibold mt-2 mb-1">
-            {nftDetail[selectedItemIndex].name.toUpperCase()}
+            {nftDetail[selectedItemIndex]?.name.toUpperCase()}
           </h1>
           <h2 className="text-lg flex justify-start items-center space-x-1">
             <div>Owned by</div>
             <span className="text-blue-500">
-              {nftDetail[selectedItemIndex].owner ===
+              {nftDetail[selectedItemIndex]?.owner ===
               web3Context.state.web3.myAddress
                 ? "You"
-                : nftDetail[selectedItemIndex].owner}
+                : nftDetail[selectedItemIndex]?.owner}
             </span>
           </h2>
           {/* <div className="flex flex-start space-x-8 pt-5 pb-8">
@@ -551,7 +551,7 @@ const NFTDetail = ({
         </div> */}
           <div className="flex flex-col gap-7">
             <div className="boxes w-full border rounded-lg mt-5">
-              {nftDetail[selectedItemIndex].listings &&
+              {nftDetail[selectedItemIndex]?.listings &&
                 moment(endTime).format() !== "Invalid date" && (
                   <div className="time-box flex flex-col border-b p-5 text-lg">
                     <div className="space-x-2 ">
@@ -594,12 +594,12 @@ const NFTDetail = ({
                           Bundle: {nftDetail.length} items
                         </span>
                       )}
-                      {nftDetail[selectedItemIndex].listings[0] && (
+                      {nftDetail[selectedItemIndex]?.listings[0] && (
                         <div className="flex gap-3 mb-3 text-lg">
                           <div>Price:</div>
                           <div className="font-medium text-gray-900 uppercase self-center">
                             {showingPrice(
-                              nftDetail[selectedItemIndex].listings[0]
+                              nftDetail[selectedItemIndex]?.listings[0]
                                 ?.start_price || "0"
                             )}
                           </div>
