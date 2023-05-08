@@ -26,6 +26,7 @@ const Header = () => {
 
   // Wallet
   const [walletConnected, setWalletConnected] = useState(false);
+  const [refetch, setRefetch] = useState<number>(0);
   const [walletModalVisible, setWalletModalVisible] = useState(false);
   const [ethBalance, setEthBalance] = useState(0);
   const [erc20Balance, setErc20Balance] = useState(0);
@@ -90,6 +91,7 @@ const Header = () => {
         const erc20Balance = await erc20ContractWithSigner.balanceOf(
           web3Context.state.web3.myAddress
         );
+
         setEthBalance(Number(ethers.utils.formatEther(ETHBalance)));
         setErc20Balance(Number(ethers.utils.formatEther(erc20Balance)));
       } else {
@@ -107,6 +109,7 @@ const Header = () => {
     web3Context.state.web3.myAddress,
     ethBalance,
     erc20Balance,
+    refetch,
   ]);
 
   useEffect(() => {
@@ -228,6 +231,7 @@ const Header = () => {
           detail: "Transfer successfully!",
           life: 5000,
         });
+      setRefetch((prev) => prev + 1);
     } catch (error) {
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({

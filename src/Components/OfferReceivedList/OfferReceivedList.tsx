@@ -1,7 +1,7 @@
 import { OFFER_CURRENCY_UNITS } from "@Constants/index";
 import { IMakeOfferItem } from "@Interfaces/index";
 import { fulfillMakeOffer } from "@Services/ApiService";
-import { AppContext } from "@Store/index";
+import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { showingPrice } from "@Utils/index";
 import router from "next/router";
 import { Column } from "primereact/column";
@@ -115,6 +115,12 @@ const OfferReceivedList = ({
         myWallet: web3Context.state.web3.myWallet,
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
+        beforeApprove: () => {
+          web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
+        },
+        afterApprove: () => {
+          web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
+        },
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -127,6 +133,7 @@ const OfferReceivedList = ({
       nftRefetch();
       nftActivityRefetch();
     } catch (error) {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
           severity: "error",

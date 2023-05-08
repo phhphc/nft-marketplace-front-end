@@ -11,7 +11,12 @@ import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { useContext, useState, useEffect, useRef, useMemo } from "react";
-import { sellNFT, buyToken, makeOffer, cancelOrder } from "@Services/ApiService";
+import {
+  sellNFT,
+  buyToken,
+  makeOffer,
+  cancelOrder,
+} from "@Services/ApiService";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import {
   CURRENCY_UNITS,
@@ -108,6 +113,12 @@ const NFTDetail = ({
         item,
         price: price.toString(),
         unit: selectedUnit,
+        beforeApprove: () => {
+          web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
+        },
+        afterApprove: () => {
+          web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
+        },
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -119,6 +130,7 @@ const NFTDetail = ({
       refetch();
       nftActivityRefetch();
     } catch (error) {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
           severity: "error",
@@ -614,7 +626,9 @@ const NFTDetail = ({
                           <p>
                             Please input the price that you want to make offer
                           </p>
-                          <p className="text-sm italic text-rose-500">* 1 TETH = 1 ETH</p>
+                          <p className="text-sm italic text-rose-500">
+                            * 1 TETH = 1 ETH
+                          </p>
                         </div>
                       }
                       visible={dialogMakeOffer}

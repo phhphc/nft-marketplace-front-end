@@ -61,6 +61,12 @@ const NFTCollectionGridList = ({
         item: web3Context.state.web3.listItemsSellBundle,
         price: price.toString(),
         unit: selectedUnit,
+        beforeApprove: () => {
+          web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
+        },
+        afterApprove: () => {
+          web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
+        },
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -72,6 +78,7 @@ const NFTCollectionGridList = ({
       web3Context.state.web3.listItemsSellBundle = [];
       refetch();
     } catch (error) {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
           severity: "error",
