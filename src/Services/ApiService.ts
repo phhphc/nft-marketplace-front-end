@@ -107,9 +107,13 @@ interface ISaveProfileProps {
   signature: string;
 }
 
-export const getNFTCollectionListService = async (additionalParams: {
-  [k: string]: any;
-}): Promise<any> => {
+export const getNFTCollectionListService = async (
+  additionalParams: {
+    [k: string]: any;
+  },
+  provider: any,
+  myWallet: any
+): Promise<any> => {
   let offset = 0;
 
   let result: any = [];
@@ -128,6 +132,8 @@ export const getNFTCollectionListService = async (additionalParams: {
 
     offset += 100;
   }
+
+  
 
   return result;
 };

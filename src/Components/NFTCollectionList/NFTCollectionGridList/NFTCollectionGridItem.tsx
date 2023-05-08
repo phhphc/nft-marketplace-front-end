@@ -17,6 +17,9 @@ import {
   showingPrice,
 } from "@Utils/index";
 import { Checkbox } from "primereact/checkbox";
+import { ethers } from "ethers";
+import { erc721Abi } from "@Constants/erc721Abi";
+import axios from "axios";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
@@ -32,6 +35,7 @@ const NFTCollectionGridItem = ({
   refetch,
   hideSellBundle = false,
 }: INFTCollectionGridItemProps) => {
+
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
       !!item[0].listings[0] &&
@@ -57,6 +61,41 @@ const NFTCollectionGridItem = ({
   const [price, setPrice] = useState<number>(0);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const [nft, setNft] = useState(item)
+  useEffect(()=>{
+    const getNftMetadataWhenNull = async () => {
+          if (nft[0].name != "") {
+            setNft(nft)
+            return;
+          } else {
+            try {
+              const erc721Address = nft[0].token;
+              const erc721Contract = new ethers.Contract(
+                erc721Address,
+                erc721Abi,
+                web3Context.state.web3.provider
+              );
+    
+              const erc721ContractWithSigner = erc721Contract.connect(web3Context.state.web3.myWallet);
+              const uri = await erc721ContractWithSigner.tokenURI(nft[0].identifier);
+              const thinh = uri.split("/")[uri.split("/").length - 1];
+              const metadata = await axios.get(`/api/ipfs/${thinh}`);
+    
+              return {
+                ...nft,
+                name: metadata.data.name,
+                image: metadata.data.image,
+                description: metadata.data.description,
+              };
+            } catch (e) {
+              console.log(e);
+              return nft;
+            }
+          }
+      
+      
+    }
+  },)
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (price === 0) {
