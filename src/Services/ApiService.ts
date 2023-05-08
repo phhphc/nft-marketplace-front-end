@@ -322,7 +322,7 @@ export const sellNFT = async ({
   );
   console.log("🚀 ~ file: ApiService.ts:270 ~ isApproved:", isApproved);
 
-  if (true) {
+  if (!isApproved) {
     beforeApprove && beforeApprove();
     const approvalForAll = await erc721ContractWithSigner.setApprovalForAll(
       mkpAddress,
@@ -748,7 +748,7 @@ export const createNFTService = async ({
 
   const nftId = randomBN();
   console.log("nftId", nftId);
-  await myNftContractWithSigner.mint(
+  const tx=await myNftContractWithSigner.mint(
     await myWallet.getAddress(),
     nftId,
     tokenUri
@@ -756,6 +756,7 @@ export const createNFTService = async ({
     //   gasLimit: 1000000,
     // }
   );
+  await tx.wait();
 };
 
 export const createNFTCollectionService = async ({
@@ -821,6 +822,8 @@ ICreateCollectionProps) => {
     "MMM",
     "https://abc.com"
   );
+
+  await contract.wait()
 
   const params = JSON.stringify({
     token: contract.address,
