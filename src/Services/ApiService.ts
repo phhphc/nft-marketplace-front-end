@@ -108,9 +108,13 @@ interface ISaveProfileProps {
   signature: string;
 }
 
-export const getNFTCollectionListService = async (additionalParams: {
-  [k: string]: any;
-}): Promise<any> => {
+export const getNFTCollectionListService = async (
+  additionalParams: {
+    [k: string]: any;
+  },
+  provider: any,
+  myWallet: any
+): Promise<any> => {
   let offset = 0;
 
   let result: any = [];
@@ -130,7 +134,41 @@ export const getNFTCollectionListService = async (additionalParams: {
     offset += 100;
   }
 
-  return result;
+  const res = await Promise.all(
+    result.map(async (nft: INFTCollectionItem) => {
+      if (nft.name !== "" || !provider || !myWallet) {
+        return nft;
+      } else {
+        try {
+          const erc721Address = nft.token;
+          const erc721Contract = new ethers.Contract(
+            erc721Address,
+            erc721Abi,
+            provider
+          );
+
+          const erc721ContractWithSigner = erc721Contract.connect(myWallet);
+          const uri = await erc721ContractWithSigner.tokenURI(nft.identifier);
+          let uriSplit = uri.split("/");
+          uriSplit.splice(0, 4);
+          const uriMetadata = uriSplit.join("/");
+          const metadata = await axios.get(`/api/ipfs/${uriMetadata}`);
+
+          return {
+            ...nft,
+            name: metadata.data.name,
+            image: metadata.data.image,
+            description: metadata.data.description,
+          };
+        } catch (e) {
+          console.log(e);
+          return nft;
+        }
+      }
+    })
+  );
+
+  return res;
 };
 
 export const getOfferByToken = async ({
