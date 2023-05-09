@@ -271,7 +271,7 @@ const NFTDetail = ({
     if (
       web3Context.state.web3.cart
         .map((item) => item.orderHash)
-        .includes(nftDetail[0].listings[0]?.order_hash)
+        .includes(nftDetail[0]?.listings[0]?.order_hash)
     ) {
       setIsAddedToCart(true);
     } else {

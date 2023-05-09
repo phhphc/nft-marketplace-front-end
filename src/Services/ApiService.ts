@@ -613,8 +613,8 @@ export const getOfferMadeList = async (myAddress: string) => {
       );
       return {
         ...item,
-        itemName: itemInfo.name,
-        itemImage: itemInfo.image,
+        itemName: itemInfo?.name,
+        itemImage: itemInfo?.image,
       };
     });
 };
@@ -660,8 +660,8 @@ export const getOfferReceivedList = async (myAddress: string) => {
       );
       return {
         ...item,
-        itemName: itemInfo.name,
-        itemImage: itemInfo.image,
+        itemName: itemInfo?.name,
+        itemImage: itemInfo?.image,
       };
     });
 };
