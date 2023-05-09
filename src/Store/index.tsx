@@ -91,7 +91,8 @@ const AppProvider = ({ children }: IAppProvider) => {
     const fetchData = async () => {
       const provider = new ethers.providers.Web3Provider(
         window.ethereum
-      ) as any;
+      );
+      await provider.send("eth_requestAccounts", []);
 
       const signer = provider.getSigner();
       const { chainId } = await provider.getNetwork();
