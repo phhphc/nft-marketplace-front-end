@@ -14,7 +14,21 @@ const MainLayout = ({ children }: IMainLayoutProps) => {
   return (
     <div>
       <Header />
+      {SUPPORTED_NETWORK.some(
+        (networkChainId: number) =>
+          networkChainId === web3Context.state.web3.chainId
+      ) ? (
         <div className="px-5 pb-5 mt-24 min-h-screen">{children}</div>
+      ) : (
+        <div className="mt-24 min-h-screen">
+          <Message
+            severity="warn"
+            text="You must to connect to Sepo
+            lia test network!"
+            className="flex h-40"
+          />
+        </div>
+      )}
       <Footer />
     </div>
   );
