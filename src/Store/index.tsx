@@ -84,6 +84,30 @@ export interface IAppProvider {
 const AppProvider = ({ children }: IAppProvider) => {
   const [state, dispatch] = useReducer(mainReducer, initialState);
   const toast = useRef(null);
+  const handleAccountsChanged = () => {
+    dispatch({
+      type: WEB3_ACTION_TYPES.CHANGE,
+      payload: {
+        cart: [],
+        listItemsSellBundle: [],
+        loading: false,
+      },
+    });
+    localStorage.setItem("shoppingCart", JSON.stringify([]));
+    window.location.reload();
+  };
+  const handleChainChanged = () => {
+    dispatch({
+      type: WEB3_ACTION_TYPES.CHANGE,
+      payload: {
+        cart: [],
+        listItemsSellBundle: [],
+        loading: false,
+      },
+    });
+    localStorage.setItem("shoppingCart", JSON.stringify([]));
+    window.location.reload();
+  };
 
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("shoppingCart") || "[]");
@@ -94,50 +118,40 @@ const AppProvider = ({ children }: IAppProvider) => {
       ) as any;
 
       const signer = provider.getSigner();
-      const { chainId } = await provider.getNetwork();
+      const myAddress = window.ethereum.selectedAddress;
+      const chainId = Number(window.ethereum.networkVersion);
 
-      dispatch({
-        type: WEB3_ACTION_TYPES.CHANGE,
-        payload: {
-          provider,
-          myAddress: await signer.getAddress(),
-          cart,
-          myWallet: signer,
-          chainId,
-          toast,
-        },
-      });
+      if (
+        SUPPORTED_NETWORK.some(
+          (networkChainId: number) => networkChainId === chainId
+        )
+      ) {
+        dispatch({
+          type: WEB3_ACTION_TYPES.CHANGE,
+          payload: {
+            provider,
+            myAddress,
+            cart,
+            myWallet: signer,
+            chainId,
+            toast,
+          },
+        });
+      }
     };
-    fetchData();
+    if (window.ethereum) fetchData();
   }, []);
 
   useEffect(() => {
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
-        dispatch({
-          type: WEB3_ACTION_TYPES.CHANGE,
-          payload: {
-            cart: [],
-            listItemsSellBundle: [],
-            loading: false,
-          },
-        });
-        localStorage.setItem("shoppingCart", JSON.stringify([]));
-        window.location.reload();
-      });
-      window.ethereum.on("chainChanged", () => {
-        dispatch({
-          type: WEB3_ACTION_TYPES.CHANGE,
-          payload: {
-            cart: [],
-            listItemsSellBundle: [],
-            loading: false,
-          },
-        });
-        localStorage.setItem("shoppingCart", JSON.stringify([]));
-        window.location.reload();
-      });
+      window.ethereum.on("accountsChanged", handleAccountsChanged);
+
+      window.ethereum.on("chainChanged", handleChainChanged);
     }
+    return () => {
+      window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+      window.ethereum.removeListener("chainChanged", handleChainChanged);
+    };
   });
 
   useEffect(() => {
