@@ -25,7 +25,7 @@ const UserInfor = ({ profile, profileRefetch }: IUserInfoProps) => {
   return (
     <div id="user-infor" className="mt-16">
       <div className="flex justify-between">
-        <div className="font-semibold text-3xl">
+        <div className="font-semibold text-3xl pl-8">
           {profile?.username ? profile.username : "Unnamed"}
         </div>
         <i
