@@ -112,6 +112,24 @@ interface ISaveProfileProps {
   signature: string;
 }
 
+interface IIsApprovedForAllProps {
+  myAddress: string;
+  myWallet: any;
+  provider: any;
+  contractAddress: string;
+  contractAbi: any;
+  mkpAddress: string;
+}
+
+interface ISetApprovedForAllProps {
+  myWallet: any;
+  provider: any;
+  contractAddress: string;
+  contractAbi: any;
+  mkpAddress: string;
+  isApproved: boolean;
+}
+
 export const getNFTCollectionListService = async (
   additionalParams: {
     [k: string]: any;
@@ -316,10 +334,14 @@ export const sellNFT = async ({
 
   const erc721ContractWithSigner = erc721Contract.connect(myWallet);
 
-  const isApproved = await erc721ContractWithSigner.isApprovedForAll(
+  const isApproved = await isApprovedForAll({
+    contractAddress: erc721Address,
     myAddress,
-    mkpAddress
-  );
+    myWallet,
+    provider,
+    contractAbi: erc721Abi,
+    mkpAddress,
+  });
   console.log("🚀 ~ file: ApiService.ts:270 ~ isApproved:", isApproved);
 
   if (!isApproved) {
@@ -389,6 +411,42 @@ export const sellNFT = async ({
   );
 };
 
+export const isApprovedForAll = async ({
+  contractAddress,
+  contractAbi,
+  myAddress,
+  myWallet,
+  provider,
+  mkpAddress,
+}: IIsApprovedForAllProps) => {
+  const contract = new ethers.Contract(contractAddress, contractAbi, provider);
+
+  const contractWithSigner = contract.connect(myWallet);
+
+  const isApproved = await contractWithSigner.isApprovedForAll(
+    myAddress,
+    mkpAddress
+  );
+
+  return isApproved;
+};
+
+export const setApprovedForAll = async ({
+  contractAddress,
+  contractAbi,
+  myWallet,
+  provider,
+  mkpAddress,
+  isApproved,
+}: ISetApprovedForAllProps) => {
+  const contract = new ethers.Contract(contractAddress, contractAbi, provider);
+
+  const contractWithSigner = contract.connect(myWallet);
+
+  const tx = await contractWithSigner.setApprovalForAll(mkpAddress, isApproved);
+  await tx.wait();
+};
+
 export const fulfillMakeOffer = async ({
   orderHash,
   price,
@@ -423,10 +481,14 @@ export const fulfillMakeOffer = async ({
 
   const erc721ContractWithSigner = erc721Contract.connect(myWallet);
 
-  const isApproved = await erc721ContractWithSigner.isApprovedForAll(
+  const isApproved = await isApprovedForAll({
+    contractAddress: erc721Address,
     myAddress,
-    mkpAddress
-  );
+    myWallet,
+    provider,
+    contractAbi: erc721Abi,
+    mkpAddress,
+  });
 
   if (!isApproved) {
     beforeApprove && beforeApprove();
