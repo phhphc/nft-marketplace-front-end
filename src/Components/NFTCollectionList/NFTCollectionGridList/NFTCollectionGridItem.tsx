@@ -17,9 +17,7 @@ import {
   showingPrice,
 } from "@Utils/index";
 import { Checkbox } from "primereact/checkbox";
-import { ethers } from "ethers";
-import { erc721Abi } from "@Constants/erc721Abi";
-import axios from "axios";
+import { Calendar } from "primereact/calendar";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
@@ -58,9 +56,15 @@ const NFTCollectionGridItem = ({
   };
 
   const [price, setPrice] = useState<number>(0);
+  const [isExpired, setExpired] = useState(false);
+  const [expiredDate, setExpiredDate] = useState<string | Date | Date[] | null>(
+    null
+  );
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
+    console.log("isExpired", isExpired);
+    console.log("expiredDate", expiredDate);
     if (price === 0) {
       return (
         web3Context.state.web3.toast.current &&
@@ -340,7 +344,7 @@ const NFTCollectionGridItem = ({
               <Dialog
                 header="Please input the price that you want to sell"
                 visible={visible}
-                style={{ width: "50vw" }}
+                style={{ width: "50vw", height: "43vh" }}
                 onHide={() => setVisible(false)}
                 footer={
                   <div>
@@ -359,7 +363,7 @@ const NFTCollectionGridItem = ({
                   </div>
                 }
               >
-                <div className="flex gap-3">
+                <div className="flex gap-3 mb-3">
                   <InputNumber
                     placeholder="Input the price"
                     value={price}
@@ -376,6 +380,37 @@ const NFTCollectionGridItem = ({
                     placeholder="Select a unit"
                     className="md:w-14rem"
                   />
+                </div>
+                <div className="flex gap-3 align-center items-center" id="th">
+                  <div className="flex gap-3 mt-3">
+                    <span className="text-base font-semibold">
+                      Set expiration date
+                    </span>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={isExpired}
+                        className="sr-only peer"
+                        onChange={(e) => setExpired(!isExpired)}
+                      />
+                      <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+                  {isExpired && (
+                    <Calendar
+                      dateFormat="dd/mm/yy"
+                      value={expiredDate}
+                      onChange={(e: any) => {
+                        setExpiredDate(e.value);
+                      }}
+                      showTime
+                      hourFormat="24"
+                      showIcon
+                      placeholder="Expiration date"
+                      className="ml-3 mt-2"
+                      touchUI
+                    />
+                  )}
                 </div>
               </Dialog>
             </div>
