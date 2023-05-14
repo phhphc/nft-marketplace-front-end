@@ -6,6 +6,7 @@ import moment from "moment";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
+import { Tag } from "primereact/tag";
 import { useContext } from "react";
 
 export interface INFTOffersProps {
@@ -26,6 +27,20 @@ const NFTOffer = ({ nftOffer }: INFTOffersProps) => {
       </div>
     );
   };
+  const eventStatusBodyTemplate = (rowData: INFTActivity) => {
+    if (rowData.is_cancelled) {
+      return <Tag severity="danger" value="Cancelled"></Tag>;
+    } else if (rowData.is_fulfilled) {
+      return (
+        <Tag
+          severity="success"
+          value="Fulfilled"
+          style={{ width: "4rem" }}
+        ></Tag>
+      );
+    }
+    return "";
+  };
   const timeBodyTemplate = (rowData: INFTActivity) => {
     return moment(rowData.date).startOf("minute").fromNow();
   };
@@ -40,8 +55,14 @@ const NFTOffer = ({ nftOffer }: INFTOffersProps) => {
             scrollHeight="20rem"
             className="mt-3"
           >
-            <Column field="price" header="Price" body={priceBodyTemplate} sortable />
-            <Column field="quantity" header="Quantity" sortable />
+            <Column header="Status" body={eventStatusBodyTemplate}></Column>
+            <Column
+              field="price"
+              header="Price"
+              body={priceBodyTemplate}
+              sortable
+            />
+            {/* <Column field="quantity" header="Quantity" sortable /> */}
             <Column
               field="from"
               header="From"
@@ -50,7 +71,7 @@ const NFTOffer = ({ nftOffer }: INFTOffersProps) => {
             />
             <Column
               field="date"
-              header="Date"
+              header="Time"
               body={timeBodyTemplate}
               sortable
             />
