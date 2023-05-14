@@ -196,6 +196,10 @@ export interface INFTActivity {
   to: string;
   date: Date;
   link: string;
+  nft_name: string;
+  nft_image: string;
+  is_cancelled: boolean;
+  is_fulfilled: boolean;
 }
 
 export interface IFormEditProfileInput {
