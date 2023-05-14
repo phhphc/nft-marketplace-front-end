@@ -58,7 +58,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
         web3Context.state.web3.toast.current.show({
           severity: "success",
           summary: "Success",
-          detail: "Set approval successfully!",
+          detail: "Set permission successfully!",
           life: 5000,
         });
       setRefetch((prev) => prev + 1);
@@ -67,7 +67,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
         web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Fail to set approval!",
+          detail: "Fail to set permission!",
           life: 5000,
         });
     }
@@ -87,7 +87,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
         web3Context.state.web3.toast.current.show({
           severity: "success",
           summary: "Success",
-          detail: "Cancel approval successfully!",
+          detail: "Widthraw permission successfully!",
           life: 5000,
         });
       setRefetch((prev) => prev + 1);
@@ -96,7 +96,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
         web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Fail to cancel approval!",
+          detail: "Fail to widthraw permission!",
           life: 5000,
         });
     }
@@ -169,7 +169,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
           <div>
             <Message
               severity="info"
-              text="You approved to sell for all your NFTs. You can click here to cancel!"
+              text="You gave the marketplace permission to transfer all your NFTs. Click here to withdraw!"
               className="approved cursor-pointer"
               data-pr-tooltip="You won't pay extra ETH for the next time"
               data-pr-position="left"
@@ -180,12 +180,12 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
         ) : (
           <div>
             <button
-              className="bg-sky-500 hover:bg-sky-700 text-white rounded-md h-10 w-72 not-approved"
+              className="bg-sky-500 hover:bg-sky-700 text-white rounded-md h-14 w-80 not-approved"
               onClick={() => handleSetApproval()}
-              data-pr-tooltip="Once you set approval, you won't pay extra ETH for the next time"
+              data-pr-tooltip="Once you set permission, you won't pay extra ETH for the next time"
               data-pr-position="left"
             >
-              Set approval to sell for all your NFTs
+              Set permission for the marketplace to transfer all your NFTs
             </button>
             <Tooltip target=".not-approved" />
           </div>
@@ -194,7 +194,7 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
       <div className="pt-3">
         <p
           className={
-            "w-3/5 " +
+            "w-1/2 " +
             (!isSeeMore
               ? "whitespace-nowrap overflow-hidden text-ellipsis"
               : "")

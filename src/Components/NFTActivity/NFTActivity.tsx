@@ -7,6 +7,8 @@ import { showingPrice } from "@Utils/index";
 import { CURRENCY_UNITS, NFT_EVENT_NAME } from "@Constants/index";
 import { AppContext } from "@Store/index";
 import moment from "moment";
+import { useRouter } from "next/router";
+import { Tag } from "primereact/tag";
 
 export interface INFTActivityProps {
   nftActivity: INFTActivity[];
@@ -14,6 +16,7 @@ export interface INFTActivityProps {
 
 const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
   const web3Context = useContext(AppContext);
+  const router = useRouter();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [data, setData] = useState<INFTActivity[]>(nftActivity);
   const events: INFTEvent[] = [
@@ -45,6 +48,55 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
           NFT_EVENT_NAME.MINTED +
           ")"
       : rowData.name.charAt(0).toUpperCase() + rowData.name.slice(1);
+  };
+  const eventStatusBodyTemplate = (rowData: INFTActivity) => {
+    switch (rowData.name.toLowerCase()) {
+      case NFT_EVENT_NAME.LISTING.toLowerCase():
+        if (rowData.is_cancelled) {
+          return <Tag severity="danger" value="Cancelled"></Tag>;
+        } else if (rowData.is_fulfilled) {
+          return (
+            <Tag
+              severity="success"
+              value="Sold"
+              style={{ width: "4rem" }}
+            ></Tag>
+          );
+        }
+        break;
+      case NFT_EVENT_NAME.OFFER.toLowerCase():
+        if (rowData.is_cancelled) {
+          return <Tag severity="danger" value="Cancelled"></Tag>;
+        } else if (rowData.is_fulfilled) {
+          return (
+            <Tag
+              severity="success"
+              value="Fulfilled"
+              style={{ width: "4rem" }}
+            ></Tag>
+          );
+        }
+        break;
+      case NFT_EVENT_NAME.SALE.toLowerCase():
+        break;
+      case NFT_EVENT_NAME.TRANSFER.toLowerCase():
+        break;
+      default:
+        return "";
+    }
+  };
+  const imageBodyTemplate = (rowData: INFTActivity) => {
+    return (
+      <img
+        src={
+          rowData?.nft_image != "<nil>" && rowData?.nft_image != ""
+            ? rowData.nft_image
+            : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
+        }
+        alt="item image"
+        className="w-12 h-12"
+      />
+    );
   };
   const priceBodyTemplate = (rowData: INFTActivity): string => {
     return rowData.price
@@ -109,13 +161,24 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
           body={eventNameBodyTemplate}
           sortable
         ></Column>
+        <Column header="Status" body={eventStatusBodyTemplate}></Column>
+        {router.pathname === "/user-profile" && (
+          <Column field="nft_name" header="Name" sortable></Column>
+        )}
+        {router.pathname === "/user-profile" && (
+          <Column
+            field="nft_image"
+            header="Image"
+            body={imageBodyTemplate}
+          ></Column>
+        )}
         <Column
           field="price"
           header="Price"
           body={priceBodyTemplate}
           sortable
         ></Column>
-        <Column field="quantity" header="Quantity" sortable></Column>
+        {/* <Column field="quantity" header="Quantity" sortable></Column> */}
         <Column field="type" header="Type" sortable></Column>
         <Column header="From" className="w-20" body={fromBodyTemplate}></Column>
         <Column header="To" className="w-20" body={toBodyTemplate}></Column>

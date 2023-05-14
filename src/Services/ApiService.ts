@@ -1044,7 +1044,12 @@ export const getEventNFTService = async ({
       params: { token, token_id, name },
     })
     .then((response) => {
-      return response.data.data.events || [];
+      const res = response.data.data.events.sort(
+        (a: INFTActivity, b: INFTActivity) => {
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        }
+      );
+      return res || [];
     })
     .catch((err) => {});
 };
@@ -1057,7 +1062,12 @@ export const getEventNFTByOwnerService = async (
       params: { address: owner },
     })
     .then((response) => {
-      return response.data.data.events || [];
+      const res = response.data.data.events.sort(
+        (a: INFTActivity, b: INFTActivity) => {
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        }
+      );
+      return res || [];
     })
     .catch((err) => {});
 };
