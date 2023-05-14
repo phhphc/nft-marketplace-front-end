@@ -399,6 +399,7 @@ const NFTCollectionGridItem = ({
                   {isExpired && (
                     <Calendar
                       dateFormat="dd/mm/yy"
+                      minDate={new Date()}
                       value={expiredDate}
                       onChange={(e: any) => {
                         setExpiredDate(e.value);
