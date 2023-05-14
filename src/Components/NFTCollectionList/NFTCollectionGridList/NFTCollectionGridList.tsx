@@ -10,6 +10,8 @@ import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
+import { InputSwitch } from "primereact/inputswitch";
+import { Calendar } from "primereact/calendar";
 
 export interface INFTCollectionGridListProps {
   nftCollectionList: INFTCollectionItem[][];
@@ -29,6 +31,10 @@ const NFTCollectionGridList = ({
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const [isExpired, setExpired] = useState(false);
+  const [expiredDate, setExpiredDate] = useState<string | Date | Date[] | null>(
+    null
+  );
 
   const size = 12;
   const [first, setFirst] = useState(0);
@@ -106,7 +112,7 @@ const NFTCollectionGridList = ({
                 <Dialog
                   header="Please input the price that you want to sell as bundle"
                   visible={visible}
-                  style={{ width: "50vw" }}
+                  style={{ width: "50vw", height: "43vh" }}
                   onHide={() => setVisible(false)}
                   footer={
                     <div>
@@ -125,7 +131,7 @@ const NFTCollectionGridList = ({
                     </div>
                   }
                 >
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 mb-3">
                     <InputNumber
                       placeholder="Input the price"
                       value={price}
@@ -143,6 +149,30 @@ const NFTCollectionGridList = ({
                       className="md:w-14rem"
                     />
                   </div>
+                  <div className="flex gap-3 align-center items-center">
+                  <div className="flex gap-3 mt-3">
+                    <span className="text-base font-semibold">
+                      Set expiration date
+                    </span>
+                    <InputSwitch inputId="" checked={isExpired} onChange={(e: any) => setExpired(!isExpired)} />
+                  </div>
+                  {isExpired && (
+                    <Calendar
+                      dateFormat="dd/mm/yy"
+                      minDate={new Date()}
+                      value={expiredDate}
+                      onChange={(e: any) => {
+                        setExpiredDate(e.value);
+                      }}
+                      showTime
+                      hourFormat="24"
+                      showIcon
+                      placeholder="Expiration date"
+                      className="ml-3 mt-2"
+                      touchUI
+                    />
+                  )}
+                </div>
                 </Dialog>
               </div>
             )}

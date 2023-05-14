@@ -9,9 +9,19 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
-import { CURRENCY_UNITS } from "@Constants/index";
-import { sellNFT } from "@Services/ApiService";
+import { CURRENCY_UNITS, OFFER_CURRENCY_UNITS } from "@Constants/index";
+import {
+  buyToken,
+  cancelOrder,
+  makeOffer,
+  sellNFT,
+} from "@Services/ApiService";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
+import { Tag } from "primereact/tag";
+import { Checkbox } from "primereact/checkbox";
+import { Tooltip } from "primereact/tooltip";
+import { Calendar } from "primereact/calendar";
+import { InputSwitch } from "primereact/inputswitch";
 
 export interface INFTCollectionTableListProps {
   nftCollectionList: INFTCollectionItem[][];
@@ -24,11 +34,19 @@ const NFTCollectionTableList = ({
   refetch,
   hideSellBundle = false,
 }: INFTCollectionTableListProps) => {
+  console.log("nftCollectionList", nftCollectionList);
   const web3Context = useContext(AppContext);
   const [visible, setVisible] = useState(false);
+  const [visibleBundle, setVisibleBundle] = useState(false);
   const [price, setPrice] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
   const [selectedNFTs, setSelectedNFTs] = useState<INFTCollectionItem[][]>([]);
+  const [dialogMakeOffer, setDialogMakeOffer] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [isExpired, setExpired] = useState(false);
+  const [expiredDate, setExpiredDate] = useState<string | Date | Date[] | null>(
+    null
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -39,6 +57,168 @@ const NFTCollectionTableList = ({
         .filter((item: INFTCollectionItem) => item.listings.length),
     });
   }, [selectedNFTs]);
+
+  const handleBuyToken = async (item?: INFTCollectionItem[]) => {
+    try {
+      if (item) {
+        await buyToken({
+          orderHashes: [item[0].listings[0].order_hash],
+          price: [item[0].listings[0].start_price],
+          myWallet: web3Context.state.web3.myWallet,
+          provider: web3Context.state.web3.provider,
+        });
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Buy NFT successfully!",
+            life: 5000,
+          });
+        refetch();
+      }
+    } catch (error) {
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to buy NFT!",
+          life: 5000,
+        });
+    }
+  };
+
+  const handleSellNFT = async (item: INFTCollectionItem[]) => {
+    if (price === 0) {
+      return (
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "The price must be higher than 0!",
+          life: 5000,
+        })
+      );
+    }
+    try {
+      setVisible(false);
+      await sellNFT({
+        provider: web3Context.state.web3.provider,
+        myAddress: web3Context.state.web3.myAddress,
+        myWallet: web3Context.state.web3.myWallet,
+        item,
+        price: price.toString(),
+        unit: selectedUnit,
+        beforeApprove: () => {
+          web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
+        },
+        afterApprove: () => {
+          web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
+        },
+      });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Sell NFT successfully!",
+          life: 5000,
+        });
+      refetch();
+    } catch (error) {
+      web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to sell NFT!",
+          life: 5000,
+        });
+    }
+  };
+
+  const handleMakeOffer = async (item: INFTCollectionItem) => {
+    if (price === 0) {
+      return (
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "The price must be higher than 0!",
+          life: 5000,
+        })
+      );
+    }
+    try {
+      setDialogMakeOffer(false);
+      await makeOffer({
+        provider: web3Context.state.web3.provider,
+        myAddress: web3Context.state.web3.myAddress,
+        myWallet: web3Context.state.web3.myWallet,
+        item,
+        price: price.toString(),
+        unit: selectedUnit,
+      });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Make offer successfully!",
+          life: 5000,
+        });
+      refetch();
+    } catch (error) {
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to make offer!",
+          life: 5000,
+        });
+    }
+  };
+
+  const handleCancelOrder = async (item?: INFTCollectionItem[]) => {
+    try {
+      if (item) {
+        await cancelOrder({
+          orderHash: item[0].listings[0].order_hash,
+          myWallet: web3Context.state.web3.myWallet,
+          provider: web3Context.state.web3.provider,
+          myAddress: web3Context.state.web3.myAddress,
+        });
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Cancel sale successfully!",
+            life: 5000,
+          });
+        refetch();
+      }
+    } catch (error) {
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to cancel sale!",
+          life: 5000,
+        });
+    }
+  };
+
+  const onClickItemSellBundle = (event: any) => {
+    setChecked(event.checked);
+    if (event.checked) {
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.ADD_BUNDLE,
+        payload: event.value,
+      });
+    } else {
+      web3Context.dispatch({
+        type: WEB3_ACTION_TYPES.REMOVE_BUNDLE,
+        payload: event.value.identifier,
+      });
+    }
+  };
 
   const canBuy = (item: INFTCollectionItem[]) => {
     return (
@@ -54,11 +234,15 @@ const NFTCollectionTableList = ({
     );
   };
 
+  const canMakeOffer = (item: INFTCollectionItem[]) => {
+    return item[0]?.owner !== web3Context.state.web3.myAddress;
+  };
+
   const isSelling = (item: INFTCollectionItem[]) => {
     return (
       !canBuy(item) &&
       !canSell(item) &&
-      item[0].owner === web3Context.state.web3.myAddress
+      item[0]?.owner === web3Context.state.web3.myAddress
     );
   };
 
@@ -102,21 +286,229 @@ const NFTCollectionTableList = ({
     );
   };
 
-  const quantityBodyTemplate = (rowData: INFTCollectionItem[]): number => {
-    return rowData.length;
+  const ownerBodyTemplate = (rowData: INFTCollectionItem[]) => {
+    return (
+      <div className="text-ellipsis overflow-hidden">
+        {web3Context.state.web3.myAddress === rowData[0]?.owner
+          ? "You"
+          : rowData[0]?.owner}
+      </div>
+    );
   };
 
-  const ownerBodyTemplate = (rowData: INFTCollectionItem[]): string => {
-    return rowData[0]?.owner;
-  };
-
-  const statusBodyTemplate = (rowData: INFTCollectionItem[]): string => {
+  const actionBodyTemplate = (rowData: INFTCollectionItem[]) => {
     if (canBuy(rowData)) {
-      return "You can buy this NFT";
+      return (
+        <div className="flex gap-3">
+          <Tag
+            severity="info"
+            value="Make offer"
+            onClick={() => handleMakeOffer(rowData[0])}
+            className="cursor-pointer text-base hover:bg-sky-700"
+          ></Tag>
+          <Tag
+            severity="danger"
+            value="Buy NFT"
+            onClick={() => handleBuyToken(rowData)}
+            className="cursor-pointer text-base hover:bg-rose-700"
+            style={{ width: "6rem" }}
+          ></Tag>
+        </div>
+      );
     } else if (canSell(rowData)) {
-      return "You can sell this NFT";
+      return (
+        <div className="flex gap-5 items-center">
+          <div>
+            <Tag
+              severity="success"
+              value="Sell NFT"
+              onClick={() => setVisible(true)}
+              className="cursor-pointer text-base hover:bg-green-700"
+              style={{ width: "6rem" }}
+            ></Tag>
+            <Dialog
+              header="Please input the price that you want to sell"
+              visible={visible}
+              style={{ width: "50vw", height: "43vh" }}
+              onHide={() => setVisible(false)}
+              footer={
+                <div>
+                  <Button
+                    label="Cancel"
+                    icon="pi pi-times"
+                    onClick={() => setVisible(false)}
+                    className="p-button-text"
+                  />
+                  <Button
+                    label="Sell"
+                    icon="pi pi-check"
+                    onClick={() => handleSellNFT(rowData)}
+                    autoFocus
+                  />
+                </div>
+              }
+            >
+              <div className="flex gap-3 mb-3">
+                <InputNumber
+                  placeholder="Input the price"
+                  value={price}
+                  onValueChange={(e: any) => setPrice(e.value)}
+                  minFractionDigits={2}
+                  maxFractionDigits={5}
+                  min={0}
+                />
+                <Dropdown
+                  value={selectedUnit}
+                  onChange={(e) => setSelectedUnit(e.value)}
+                  options={CURRENCY_UNITS}
+                  optionLabel="name"
+                  placeholder="Select a unit"
+                  className="md:w-14rem"
+                />
+              </div>
+              <div className="flex gap-3 align-center items-center">
+                <div className="flex gap-3 mt-3">
+                  <span className="text-base font-semibold">
+                    Set expiration date
+                  </span>
+                  <InputSwitch
+                    inputId=""
+                    checked={isExpired}
+                    onChange={(e: any) => setExpired(!isExpired)}
+                  />
+                </div>
+                {isExpired && (
+                  <Calendar
+                    dateFormat="dd/mm/yy"
+                    minDate={new Date()}
+                    value={expiredDate}
+                    onChange={(e: any) => {
+                      setExpiredDate(e.value);
+                    }}
+                    showTime
+                    hourFormat="24"
+                    showIcon
+                    placeholder="Expiration date"
+                    className="ml-3 mt-2"
+                    touchUI
+                  />
+                )}
+              </div>
+            </Dialog>
+          </div>
+          {/* {!hideSellBundle && (
+            <div>
+              <Checkbox
+                onChange={onClickItemSellBundle}
+                checked={checked}
+                value={rowData[0]}
+                className="bundle"
+                data-pr-tooltip="Tick to sell bundle"
+              ></Checkbox>
+              <Tooltip target=".bundle" />
+            </div>
+          )} */}
+        </div>
+      );
+    } else if (canMakeOffer(rowData)) {
+      return (
+        <div>
+          <Tag
+            severity="info"
+            value="Make offer"
+            onClick={() => setDialogMakeOffer(true)}
+            className="cursor-pointer text-base hover:bg-sky-700"
+          ></Tag>
+          <Dialog
+            header={
+              <div>
+                <p>Please input the price that you want to make offer</p>
+                <p className="text-sm italic text-rose-500">* 1 TETH = 1 ETH</p>
+              </div>
+            }
+            visible={dialogMakeOffer}
+            style={{ width: "50vw", height: "45vh" }}
+            onHide={() => setDialogMakeOffer(false)}
+            footer={
+              <div>
+                <Button
+                  label="Cancel"
+                  icon="pi pi-times"
+                  onClick={() => setDialogMakeOffer(false)}
+                  className="p-button-text"
+                />
+                <Button
+                  label="Make offer"
+                  icon="pi pi-check"
+                  onClick={() => handleMakeOffer(rowData[0])}
+                  autoFocus
+                />
+              </div>
+            }
+          >
+            <div className="flex gap-3 mb-3">
+              <InputNumber
+                placeholder="Input the price"
+                value={price}
+                onValueChange={(e: any) => setPrice(e.value)}
+                minFractionDigits={2}
+                maxFractionDigits={5}
+                min={0}
+              />
+              <Dropdown
+                value={OFFER_CURRENCY_UNITS[0].value}
+                onChange={(e) => setSelectedUnit(e.value)}
+                options={OFFER_CURRENCY_UNITS}
+                optionLabel="name"
+                placeholder="Select a unit"
+                className="md:w-14rem"
+              />
+            </div>
+            <div className="flex gap-3 align-center items-center">
+              <div className="flex gap-3 mt-3">
+                <span className="text-base font-semibold">
+                  Set expiration date
+                </span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isExpired}
+                    className="sr-only peer"
+                    onChange={(e) => setExpired(!isExpired)}
+                  />
+                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+              {isExpired && (
+                <Calendar
+                  dateFormat="dd/mm/yy"
+                  minDate={new Date()}
+                  value={expiredDate}
+                  onChange={(e: any) => {
+                    setExpiredDate(e.value);
+                  }}
+                  showTime
+                  hourFormat="24"
+                  showIcon
+                  placeholder="Expiration date"
+                  className="ml-3 mt-2"
+                  touchUI
+                />
+              )}
+            </div>
+          </Dialog>
+        </div>
+      );
     } else if (isSelling(rowData)) {
-      return "Your NFT is selling";
+      return (
+        <Tag
+          severity="warning"
+          value="Cancel sell"
+          onClick={() => handleCancelOrder(rowData)}
+          className="cursor-pointer text-base hover:bg-yellow-700"
+          style={{ width: "6rem" }}
+        ></Tag>
+      );
     }
     return "";
   };
@@ -164,19 +556,24 @@ const NFTCollectionTableList = ({
         <>
           {web3Context.state.web3.listItemsSellBundle.length > 0 &&
             !hideSellBundle && (
-              <div className="flex justify-end mb-8">
-                <Button onClick={() => setVisible(true)}>Sell as bundle</Button>
+              <div className="fixed bottom-0 right-0 z-10 bg-slate-200 w-full">
+                <Button
+                  onClick={() => setVisibleBundle(true)}
+                  className="left-1/2 text-center"
+                >
+                  Sell as bundle
+                </Button>
                 <Dialog
                   header="Please input the price that you want to sell as bundle"
-                  visible={visible}
-                  style={{ width: "50vw" }}
-                  onHide={() => setVisible(false)}
+                  visible={visibleBundle}
+                  style={{ width: "50vw", height: "43vh" }}
+                  onHide={() => setVisibleBundle(false)}
                   footer={
                     <div>
                       <Button
                         label="Cancel"
                         icon="pi pi-times"
-                        onClick={() => setVisible(false)}
+                        onClick={() => setVisibleBundle(false)}
                         className="p-button-text"
                       />
                       <Button
@@ -188,7 +585,7 @@ const NFTCollectionTableList = ({
                     </div>
                   }
                 >
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 mb-3">
                     <InputNumber
                       placeholder="Input the price"
                       value={price}
@@ -206,6 +603,34 @@ const NFTCollectionTableList = ({
                       className="md:w-14rem"
                     />
                   </div>
+                  <div className="flex gap-3 align-center items-center">
+                    <div className="flex gap-3 mt-3">
+                      <span className="text-base font-semibold">
+                        Set expiration date
+                      </span>
+                      <InputSwitch
+                        inputId=""
+                        checked={isExpired}
+                        onChange={(e: any) => setExpired(!isExpired)}
+                      />
+                    </div>
+                    {isExpired && (
+                      <Calendar
+                        dateFormat="dd/mm/yy"
+                        minDate={new Date()}
+                        value={expiredDate}
+                        onChange={(e: any) => {
+                          setExpiredDate(e.value);
+                        }}
+                        showTime
+                        hourFormat="24"
+                        showIcon
+                        placeholder="Expiration date"
+                        className="ml-3 mt-2"
+                        touchUI
+                      />
+                    )}
+                  </div>
                 </Dialog>
               </div>
             )}
@@ -213,46 +638,43 @@ const NFTCollectionTableList = ({
             <div className="datatable-templating-demo ">
               <div className="card">
                 <DataTable
+                  scrollable
                   value={nftCollectionList}
-                  selection={selectedNFTs}
-                  selectionMode="checkbox"
-                  onSelectionChange={(e) => {
-                    setSelectedNFTs(e.value);
-                  }}
+                  // selection={selectedNFTs}
+                  // selectionMode="checkbox"
+                  // onSelectionChange={(e) => {
+                  //   setSelectedNFTs(e.value);
+                  // }}
                   dataKey="0.identifier"
                   responsiveLayout="scroll"
+                  rowHover={true}
                 >
-                  {!hideSellBundle && (
+                  {/* {!hideSellBundle && (
                     <Column
                       selectionMode="multiple"
                       headerStyle={{ width: "3em" }}
                     ></Column>
-                  )}
+                  )} */}
                   <Column
                     field="name"
                     header="Name"
                     body={nameBodyTemplate}
-                  ></Column>
-                  <Column
-                    header="Quantity"
-                    body={quantityBodyTemplate}
+                    sortable
                   ></Column>
                   <Column header="Image" body={imageBodyTemplate}></Column>
                   <Column
                     field="price"
                     header="Price"
                     body={priceBodyTemplate}
+                    sortable
                   ></Column>
                   <Column
                     field="owner"
                     header="Owner"
                     body={ownerBodyTemplate}
+                    className="w-20"
                   ></Column>
-                  <Column
-                    field="status"
-                    header="Status"
-                    body={statusBodyTemplate}
-                  ></Column>
+                  <Column header="Action" body={actionBodyTemplate}></Column>
                 </DataTable>
               </div>
             </div>
