@@ -14,6 +14,7 @@ const NFTCollectionContainer = () => {
   const { collection } = useCollectionByToken(router.query.token);
   const { nftCollectionList, refetch } = useNFTCollectionList({
     token: router.query.token as string,
+    isHidden: false,
     provider: web3Context.state.web3.provider,
     myWallet: web3Context.state.web3.myWallet,
   });

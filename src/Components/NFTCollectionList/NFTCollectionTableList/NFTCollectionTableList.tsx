@@ -43,10 +43,10 @@ const NFTCollectionTableList = ({
   const [selectedNFTs, setSelectedNFTs] = useState<INFTCollectionItem[][]>([]);
   const [dialogMakeOffer, setDialogMakeOffer] = useState(false);
   const [checked, setChecked] = useState(false);
-  const [isExpired, setExpired] = useState(false);
-  const [expiredDate, setExpiredDate] = useState<string | Date | Date[] | null>(
-    null
-  );
+  const [isDuration, setDuration] = useState(false);
+  const [durationDate, setDurationDate] = useState<
+    string | Date | Date[] | null
+  >(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -366,31 +366,31 @@ const NFTCollectionTableList = ({
                   className="md:w-14rem"
                 />
               </div>
-              <div className="flex gap-3 align-center items-center">
-                <div className="flex gap-3 mt-3">
-                  <span className="text-base font-semibold">
-                    Set expiration date
-                  </span>
+              <div className="flex gap-8 align-center">
+                <div className="flex gap-4 mt-4">
+                  <span className="text-xl font-semibold">Set duration</span>
                   <InputSwitch
                     inputId=""
-                    checked={isExpired}
-                    onChange={(e: any) => setExpired(!isExpired)}
+                    checked={isDuration}
+                    onChange={(e: any) => setDuration(!isDuration)}
                   />
                 </div>
-                {isExpired && (
+                {isDuration && (
                   <Calendar
                     dateFormat="dd/mm/yy"
                     minDate={new Date()}
-                    value={expiredDate}
+                    value={durationDate}
+                    selectionMode="range"
                     onChange={(e: any) => {
-                      setExpiredDate(e.value);
+                      setDurationDate(e.value);
                     }}
                     showTime
                     hourFormat="24"
                     showIcon
-                    placeholder="Expiration date"
-                    className="ml-3 mt-2"
+                    placeholder="Choose a range date or only start date"
+                    className="ml-3 mt-2 w-1/2"
                     touchUI
+                    showButtonBar
                   />
                 )}
               </div>
@@ -464,35 +464,31 @@ const NFTCollectionTableList = ({
                 className="md:w-14rem"
               />
             </div>
-            <div className="flex gap-3 align-center items-center">
-              <div className="flex gap-3 mt-3">
-                <span className="text-base font-semibold">
-                  Set expiration date
-                </span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isExpired}
-                    className="sr-only peer"
-                    onChange={(e) => setExpired(!isExpired)}
-                  />
-                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
+            <div className="flex gap-8 align-center">
+              <div className="flex gap-4 mt-4">
+                <span className="text-xl font-semibold">Set duration</span>
+                <InputSwitch
+                  inputId=""
+                  checked={isDuration}
+                  onChange={(e: any) => setDuration(!isDuration)}
+                />
               </div>
-              {isExpired && (
+              {isDuration && (
                 <Calendar
                   dateFormat="dd/mm/yy"
                   minDate={new Date()}
-                  value={expiredDate}
+                  value={durationDate}
+                  selectionMode="range"
                   onChange={(e: any) => {
-                    setExpiredDate(e.value);
+                    setDurationDate(e.value);
                   }}
                   showTime
                   hourFormat="24"
                   showIcon
-                  placeholder="Expiration date"
-                  className="ml-3 mt-2"
+                  placeholder="Choose a range date or only start date"
+                  className="ml-3 mt-2 w-1/2"
                   touchUI
+                  showButtonBar
                 />
               )}
             </div>
@@ -603,31 +599,33 @@ const NFTCollectionTableList = ({
                       className="md:w-14rem"
                     />
                   </div>
-                  <div className="flex gap-3 align-center items-center">
-                    <div className="flex gap-3 mt-3">
-                      <span className="text-base font-semibold">
-                        Set expiration date
+                  <div className="flex gap-8 align-center">
+                    <div className="flex gap-4 mt-4">
+                      <span className="text-xl font-semibold">
+                        Set duration
                       </span>
                       <InputSwitch
                         inputId=""
-                        checked={isExpired}
-                        onChange={(e: any) => setExpired(!isExpired)}
+                        checked={isDuration}
+                        onChange={(e: any) => setDuration(!isDuration)}
                       />
                     </div>
-                    {isExpired && (
+                    {isDuration && (
                       <Calendar
                         dateFormat="dd/mm/yy"
                         minDate={new Date()}
-                        value={expiredDate}
+                        value={durationDate}
+                        selectionMode="range"
                         onChange={(e: any) => {
-                          setExpiredDate(e.value);
+                          setDurationDate(e.value);
                         }}
                         showTime
                         hourFormat="24"
                         showIcon
-                        placeholder="Expiration date"
-                        className="ml-3 mt-2"
+                        placeholder="Choose a range date or only start date"
+                        className="ml-3 mt-2 w-1/2"
                         touchUI
+                        showButtonBar
                       />
                     )}
                   </div>

@@ -24,6 +24,7 @@ export interface INFTCollectionItem {
   description: string;
   image: string;
   listings: IListing[];
+  isHidden: boolean;
 }
 
 export interface IListing {
