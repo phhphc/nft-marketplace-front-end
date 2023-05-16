@@ -1,4 +1,4 @@
-import { IOption, IDropDown } from "@Interfaces/index";
+import { IOption, IDropDown, IDurationOption } from "@Interfaces/index";
 
 export enum COLLECTION_VIEW_TYPE {
   LARGE_GRID = "LARGE_GRID",
@@ -171,5 +171,19 @@ export const NFT_EVENT_NAME = {
   TRANSFER: "Transfer",
   MINTED: "Minted",
 };
+
+export enum DURATION_NAME {
+  NONE = "None",
+  START_TIME = "Start time",
+  END_TIME = "End time",
+  START_END_TIME = "Start - End time",
+}
+
+export const DURATION_OPTIONS: IDurationOption[] = [
+  { name: DURATION_NAME.NONE, key: DURATION_NAME.NONE },
+  { name: DURATION_NAME.START_TIME, key: DURATION_NAME.START_TIME },
+  { name: DURATION_NAME.END_TIME, key: DURATION_NAME.END_TIME },
+  { name: DURATION_NAME.START_END_TIME, key: DURATION_NAME.START_END_TIME },
+];
 
 export const SUPPORTED_NETWORK = [11155111];

@@ -68,6 +68,11 @@ export interface IBlockchain {
   value: string;
 }
 
+export interface IDurationOption {
+  name: string;
+  key: string;
+}
+
 export interface ICollection {
   collectionName: string;
   value: string;

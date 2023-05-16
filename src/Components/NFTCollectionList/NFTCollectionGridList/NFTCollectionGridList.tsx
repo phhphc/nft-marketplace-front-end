@@ -1,17 +1,17 @@
 import NFTCollectionGridItem from "./NFTCollectionGridItem";
-import { COLLECTION_VIEW_TYPE, CURRENCY_UNITS } from "@Constants/index";
+import { COLLECTION_VIEW_TYPE, CURRENCY_UNITS, DURATION_NAME, DURATION_OPTIONS } from "@Constants/index";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
 import { Paginator } from "primereact/paginator";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button } from "primereact/button";
 import { sellNFT } from "@Services/ApiService";
 import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
-import { InputSwitch } from "primereact/inputswitch";
 import { Calendar } from "primereact/calendar";
+import { RadioButton } from "primereact/radiobutton";
 
 export interface INFTCollectionGridListProps {
   nftCollectionList: INFTCollectionItem[][];
@@ -31,10 +31,10 @@ const NFTCollectionGridList = ({
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
-  const [isDuration, setDuration] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
   const [durationDate, setDurationDate] = useState<
-    string | Date | Date[] | null
-  >(null);
+    string | Date | Date[] | undefined
+  >(undefined);
 
   const size = 12;
   const [first, setFirst] = useState(0);
@@ -112,7 +112,7 @@ const NFTCollectionGridList = ({
                 <Dialog
                   header="Please input the price that you want to sell as bundle"
                   visible={visible}
-                  style={{ width: "50vw", height: "43vh" }}
+                  style={{ width: "50vw", height: "22rem" }}
                   onHide={() => setVisible(false)}
                   footer={
                     <div>
@@ -149,36 +149,55 @@ const NFTCollectionGridList = ({
                       className="md:w-14rem"
                     />
                   </div>
-                  <div className="flex gap-8 align-center">
-                    <div className="flex gap-4 mt-4">
-                      <span className="text-xl font-semibold">
-                        Set duration
-                      </span>
-                      <InputSwitch
-                        inputId=""
-                        checked={isDuration}
-                        onChange={(e: any) => setDuration(!isDuration)}
-                      />
+                  <div className="flex gap-8 mb-2">
+                    <div className="flex flex-column items-center gap-5">
+                      <div className="text-xl font-bold">Duration:</div>
+                      {DURATION_OPTIONS.map((duration) => {
+                        return (
+                          <div key={duration.key} className="flex items-center">
+                            <RadioButton
+                              inputId={duration.key}
+                              value={duration}
+                              onChange={(e) => {
+                                setSelectedDuration(e.value),
+                                  setDurationDate(undefined);
+                              }}
+                              checked={selectedDuration.key === duration.key}
+                            />
+                            <label htmlFor={duration.key} className="ml-2">
+                              {duration.name}
+                            </label>
+                          </div>
+                        );
+                      })}
                     </div>
-                    {isDuration && (
-                      <Calendar
-                        dateFormat="dd/mm/yy"
-                        minDate={new Date()}
-                        value={durationDate}
-                        selectionMode="range"
-                        onChange={(e: any) => {
-                          setDurationDate(e.value);
-                        }}
-                        showTime
-                        hourFormat="24"
-                        showIcon
-                        placeholder="Choose a range date or only start date"
-                        className="ml-3 mt-2 w-1/2"
-                        touchUI
-                        showButtonBar
-                      />
-                    )}
                   </div>
+                  {selectedDuration.key !== DURATION_NAME.NONE && (
+                    <Calendar
+                      dateFormat="dd/mm/yy"
+                      minDate={new Date()}
+                      value={durationDate}
+                      selectionMode={
+                        selectedDuration.key === DURATION_NAME.START_END_TIME
+                          ? "range"
+                          : "single"
+                      }
+                      onChange={(e: any) => {
+                        setDurationDate(e.value);
+                      }}
+                      showTime
+                      hourFormat="24"
+                      showIcon
+                      placeholder={
+                        selectedDuration.key === DURATION_NAME.START_END_TIME
+                          ? "Choose a range date"
+                          : "Choose a date"
+                      }
+                      className="flex w-3/5"
+                      touchUI
+                      showButtonBar
+                    />
+                  )}
                 </Dialog>
               </div>
             )}
