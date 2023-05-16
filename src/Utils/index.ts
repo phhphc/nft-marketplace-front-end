@@ -298,15 +298,20 @@ export const createOrder = async (
   offerer: Wallet | Contract,
   offer: OfferItem[],
   consideration: ConsiderationItem[],
-  timeFlag?: "NOT_STARTED" | "EXPIRED" | null
+  startDate?: Date,
+  endDate?: Date
 ) => {
   const counter = await marketplace.getCounter(await offerer.getAddress());
 
   const salt = randomHex();
-  const startTime =
-    timeFlag !== "NOT_STARTED" ? 0 : toBN("0xee00000000000000000000000000");
-  const endTime =
-    timeFlag !== "EXPIRED" ? toBN("0xff00000000000000000000000000") : 1;
+
+  const startTime = startDate
+    ? toBN(Math.round(startDate.getTime() / 1000))
+    : toBN(0);
+
+  const endTime = endDate
+    ? toBN(Math.round(endDate.getTime() / 1000))
+    : toBN("0xff00000000000000000000000000");
 
   const orderParameters = {
     offerer: await offerer.getAddress(),
