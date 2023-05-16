@@ -1,7 +1,12 @@
 import { COLLECTION_VIEW_TYPE } from "@Constants/index";
 import Link from "next/link";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { sellNFT, buyToken, cancelOrder } from "@Services/ApiService";
+import {
+  sellNFT,
+  buyToken,
+  cancelOrder,
+  hideNFTService,
+} from "@Services/ApiService";
 import { NFT_COLLECTION_MODE, CURRENCY_UNITS } from "@Constants/index";
 import { useContext, useState, useEffect, useRef } from "react";
 import { AppContext } from "@Store/index";
@@ -19,6 +24,9 @@ import {
 import { Checkbox } from "primereact/checkbox";
 import { Calendar } from "primereact/calendar";
 import { InputSwitch } from "primereact/inputswitch";
+import { SplitButton } from "primereact/splitbutton";
+import { useRouter } from "next/router";
+import { Tooltip } from "primereact/tooltip";
 
 export interface INFTCollectionGridItemProps {
   item: INFTCollectionItem[];
@@ -56,16 +64,17 @@ const NFTCollectionGridItem = ({
     );
   };
 
+  const router = useRouter();
   const [price, setPrice] = useState<number>(0);
-  const [isExpired, setExpired] = useState(false);
-  const [expiredDate, setExpiredDate] = useState<string | Date | Date[] | null>(
-    null
-  );
+  const [isDuration, setDuration] = useState(false);
+  const [durationDate, setDurationDate] = useState<
+    string | Date | Date[] | null
+  >(null);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
-    console.log("isExpired", isExpired);
-    console.log("expiredDate", expiredDate);
+    console.log("isDuration", isDuration);
+    console.log("durationDate", durationDate);
     if (price === 0) {
       return (
         web3Context.state.web3.toast.current &&
@@ -171,6 +180,54 @@ const NFTCollectionGridItem = ({
     }
   };
 
+  const downloadItem = (items: INFTCollectionItem[]) => {
+    items.forEach((item: INFTCollectionItem) => {
+      const url = item.image;
+      fetch(url, {
+        mode: "cors",
+      })
+        .then((response) => response.blob())
+        .then((blob) => {
+          let blobUrl = window.URL.createObjectURL(blob);
+          let a = document.createElement("a");
+          a.download = `${item.name}`;
+          a.href = blobUrl;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        });
+    });
+  };
+
+  const hideNFT = async (item: INFTCollectionItem[], isHidden: boolean) => {
+    try {
+      await hideNFTService({
+        token: item[0].token,
+        identifier: item[0].identifier,
+        isHidden: isHidden,
+      });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: isHidden
+            ? "Unpublish NFT successfully!"
+            : "Publish NFT successfully!",
+          life: 5000,
+        });
+      refetch();
+    } catch (error) {
+      console.log(error);
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: isHidden ? "Fail to unpublish NFT!" : "Fail to publish NFT!",
+          life: 5000,
+        });
+    }
+  };
+
   const [visible, setVisible] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
   const [selectedItemBundleIndex, setSelectedItemBundleIndex] = useState(0);
@@ -229,6 +286,41 @@ const NFTCollectionGridItem = ({
     setSelectedItemBundleIndex(event.index);
   };
 
+  const moreActions = [
+    {
+      label: "Publish NFT",
+      icon: "pi pi-globe",
+      value: "publish",
+      command: () => {
+        hideNFT(item, false);
+      },
+    },
+    {
+      label: "Unpublish NFT",
+      icon: "pi pi-lock",
+      value: "unpublish",
+      command: () => {
+        hideNFT(item, true);
+      },
+    },
+    {
+      label: "View detail",
+      icon: "pi pi-external-link",
+      value: "detail",
+      command: () => {
+        router.push(`/detail/${item[0].identifier}`);
+      },
+    },
+    {
+      label: "Download NFT",
+      icon: "pi pi-download",
+      value: "download",
+      command: () => {
+        downloadItem(item);
+      },
+    },
+  ];
+
   return (
     <div key={item[0].name} className="relative nft-collection-item">
       <div className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none">
@@ -276,15 +368,32 @@ const NFTCollectionGridItem = ({
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
         <div>
           <div className="p-3 h-28">
-            {item.length == 1 ? (
-              <h3 className="font-bold uppercase break-words text-sm">
-                {item[0].name || "Item name"}
-              </h3>
-            ) : (
-              <h3 className="font-bold uppercase break-words text-sm">
-                {item[selectedItemBundleIndex].name}
-              </h3>
-            )}
+            <div className="flex justify-between">
+              {item.length == 1 ? (
+                <h3 className="font-bold uppercase break-words text-sm">
+                  {item[0].name || "Item name"}
+                </h3>
+              ) : (
+                <h3 className="font-bold uppercase break-words text-sm">
+                  {item[selectedItemBundleIndex].name}
+                </h3>
+              )}
+              {item[0].owner === web3Context.state.web3.myAddress &&
+                (item[0].isHidden ? (
+                  <i
+                    className="pi pi-lock hidden-nft"
+                    data-pr-tooltip="Your NFT is unpublished"
+                    data-pr-position="left"
+                  ></i>
+                ) : (
+                  <i
+                    className="pi pi-globe hidden-nft"
+                    data-pr-tooltip="Your NFT is published"
+                    data-pr-position="left"
+                  ></i>
+                ))}
+              <Tooltip target=".hidden-nft" />
+            </div>
             {item[0].listings && (
               <p className="flex gap-1 text-sm font-medium text-gray-900 pt-1">
                 {showingPrice(item[0].listings[0]?.start_price || "0")}
@@ -335,13 +444,27 @@ const NFTCollectionGridItem = ({
             </div>
           )}
           {canSell(item) && (
-            <div>
-              <button
-                className="w-full bg-green-500 hover:bg-green-700 h-10 text-white rounded-md absolute bottom-0 left-0 right-0"
+            <div className="flex">
+              {/* <button
+                className="w-4/5 bg-green-500 hover:bg-green-700 h-10 text-white rounded-md absolute bottom-0 left-0 right-0"
                 onClick={() => setVisible(true)}
               >
                 Sell
-              </button>
+              </button> */}
+              <SplitButton
+                className="w-full"
+                label="Sell"
+                onClick={() => setVisible(true)}
+                model={
+                  item[0].isHidden
+                    ? moreActions.filter(
+                        (action) => action.value !== "unpublish"
+                      )
+                    : moreActions.filter((action) => action.value !== "publish")
+                }
+                severity="success"
+                dropdownIcon="pi pi-ellipsis-h"
+              />
               <Dialog
                 header="Please input the price that you want to sell"
                 visible={visible}
@@ -382,27 +505,31 @@ const NFTCollectionGridItem = ({
                     className="md:w-14rem"
                   />
                 </div>
-                <div className="flex gap-3 align-center items-center">
-                  <div className="flex gap-3 mt-3">
-                    <span className="text-base font-semibold">
-                      Set expiration date
-                    </span>
-                    <InputSwitch inputId="" checked={isExpired} onChange={(e: any) => setExpired(!isExpired)} />
+                <div className="flex gap-8 align-center">
+                  <div className="flex gap-4 mt-4">
+                    <span className="text-xl font-semibold">Set duration</span>
+                    <InputSwitch
+                      inputId=""
+                      checked={isDuration}
+                      onChange={(e: any) => setDuration(!isDuration)}
+                    />
                   </div>
-                  {isExpired && (
+                  {isDuration && (
                     <Calendar
                       dateFormat="dd/mm/yy"
                       minDate={new Date()}
-                      value={expiredDate}
+                      value={durationDate}
+                      selectionMode="range"
                       onChange={(e: any) => {
-                        setExpiredDate(e.value);
+                        setDurationDate(e.value);
                       }}
                       showTime
                       hourFormat="24"
                       showIcon
-                      placeholder="Expiration date"
-                      className="ml-3 mt-2"
+                      placeholder="Choose a range date or only start date"
+                      className="ml-3 mt-2 w-1/2"
                       touchUI
+                      showButtonBar
                     />
                   )}
                 </div>

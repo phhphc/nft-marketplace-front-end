@@ -38,6 +38,10 @@ module.exports = () => {
         source: "/api/v0.1/event",
         destination: `${process.env.BACKEND_URL}/event`,
       },
+      {
+        source: "/api/v0.1/nft/:token*/:identifier*",
+        destination: `${process.env.BACKEND_URL}/nft/:token*/:identifier*`,
+      },
     ];
   };
   return {

@@ -130,6 +130,12 @@ interface ISetApprovedForAllProps {
   isApproved: boolean;
 }
 
+interface IHideNFTProps {
+  token: string;
+  identifier: string;
+  isHidden: boolean;
+}
+
 export const getNFTCollectionListService = async (
   additionalParams: {
     [k: string]: any;
@@ -1070,4 +1076,20 @@ export const getEventNFTByOwnerService = async (
       return res || [];
     })
     .catch((err) => {});
+};
+
+export const hideNFTService = async ({
+  token,
+  identifier,
+  isHidden,
+}: IHideNFTProps) => {
+  const params = JSON.stringify({
+    isHidden: isHidden,
+  });
+
+  await axios.patch(`/api/v0.1/nft/${token}/${identifier}`, params, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };

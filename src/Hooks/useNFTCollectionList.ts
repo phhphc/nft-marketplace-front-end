@@ -5,6 +5,7 @@ import { useQuery } from "react-query";
 interface IUseNFTCollectionListProps {
   token?: string;
   owner?: string;
+  isHidden?: boolean;
   provider: any;
   myWallet: any;
 }
@@ -12,13 +13,14 @@ interface IUseNFTCollectionListProps {
 const useNFTCollectionList = ({
   token,
   owner,
+  isHidden,
   provider,
   myWallet,
 }: IUseNFTCollectionListProps) => {
   const result = useQuery({
-    queryKey: `nftCollectionList-${token}-${owner}-${provider}-${myWallet}`,
+    queryKey: `nftCollectionList-${token}-${owner}-${isHidden}-${provider}-${myWallet}`,
     queryFn: () =>
-      getNFTCollectionListService({ token, owner }, provider, myWallet),
+      getNFTCollectionListService({ token, owner, isHidden }, provider, myWallet),
     staleTime: Infinity,
     retry: true,
   });
