@@ -95,8 +95,8 @@ const NFTDetail = ({
   >(null);
 
   const endTime = useMemo(() => {
-    return new Date(Number(nftDetail[0]?.listings?.[0]?.end_time));
-  }, []);
+    return new Date(Number(nftDetail[0]?.listings?.[0]?.end_time) * 1000);
+  }, [nftDetail[0]?.listings?.[0]?.end_time]);
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
     if (price === 0) {
@@ -569,7 +569,7 @@ const NFTDetail = ({
                   ${moment(endTime).format("MMMM Do YYYY HH:mm")}`}
                       </span>
                     </div>
-                    <div className="time flex item-center space-x-14 mt-2">
+                    {/* <div className="time flex item-center space-x-14 mt-2">
                       <div className="day flex flex-col">
                         <span className="font-semibold text-2xl">
                           {endTime.getDate()}
@@ -588,7 +588,7 @@ const NFTDetail = ({
                         </span>
                         <span>Minutes</span>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 )}
               <div className="flex flex-col p-5 ">
