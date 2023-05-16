@@ -202,7 +202,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
                 <span className="w-full">
                   <InputText
                     {...field}
-                    value={1}
+                    value={"1"}
                     {...register("supply", { required: true })}
                     placeholder="1"
                     className="w-full"

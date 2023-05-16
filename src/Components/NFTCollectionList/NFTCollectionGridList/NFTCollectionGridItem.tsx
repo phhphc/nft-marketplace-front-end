@@ -1,4 +1,8 @@
-import { COLLECTION_VIEW_TYPE } from "@Constants/index";
+import {
+  COLLECTION_VIEW_TYPE,
+  DURATION_NAME,
+  DURATION_OPTIONS,
+} from "@Constants/index";
 import Link from "next/link";
 import { INFTCollectionItem } from "@Interfaces/index";
 import {
@@ -23,7 +27,7 @@ import {
 } from "@Utils/index";
 import { Checkbox } from "primereact/checkbox";
 import { Calendar } from "primereact/calendar";
-import { InputSwitch } from "primereact/inputswitch";
+import { RadioButton } from "primereact/radiobutton";
 import { SplitButton } from "primereact/splitbutton";
 import { useRouter } from "next/router";
 import { Tooltip } from "primereact/tooltip";
@@ -66,14 +70,13 @@ const NFTCollectionGridItem = ({
 
   const router = useRouter();
   const [price, setPrice] = useState<number>(0);
-  const [isDuration, setDuration] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
   const [durationDate, setDurationDate] = useState<
-    string | Date | Date[] | null
-  >(null);
+    string | Date | Date[] | undefined
+  >(undefined);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
-    console.log("isDuration", isDuration);
     console.log("durationDate", durationDate);
     if (price === 0) {
       return (
@@ -468,7 +471,7 @@ const NFTCollectionGridItem = ({
               <Dialog
                 header="Please input the price that you want to sell"
                 visible={visible}
-                style={{ width: "50vw", height: "43vh" }}
+                style={{ width: "50vw", height: "22rem" }}
                 onHide={() => setVisible(false)}
                 footer={
                   <div>
@@ -487,7 +490,7 @@ const NFTCollectionGridItem = ({
                   </div>
                 }
               >
-                <div className="flex gap-3 mb-3">
+                <div className="flex gap-3 mb-6">
                   <InputNumber
                     placeholder="Input the price"
                     value={price}
@@ -505,34 +508,55 @@ const NFTCollectionGridItem = ({
                     className="md:w-14rem"
                   />
                 </div>
-                <div className="flex gap-8 align-center">
-                  <div className="flex gap-4 mt-4">
-                    <span className="text-xl font-semibold">Set duration</span>
-                    <InputSwitch
-                      inputId=""
-                      checked={isDuration}
-                      onChange={(e: any) => setDuration(!isDuration)}
-                    />
+                <div className="flex gap-8 mb-2">
+                  <div className="flex flex-column items-center gap-5">
+                    <div className="text-xl font-bold">Duration:</div>
+                    {DURATION_OPTIONS.map((duration) => {
+                      return (
+                        <div key={duration.key} className="flex items-center">
+                          <RadioButton
+                            inputId={duration.key}
+                            value={duration}
+                            onChange={(e) => {
+                              setSelectedDuration(e.value),
+                                setDurationDate(undefined);
+                            }}
+                            checked={selectedDuration.key === duration.key}
+                          />
+                          <label htmlFor={duration.key} className="ml-2">
+                            {duration.name}
+                          </label>
+                        </div>
+                      );
+                    })}
                   </div>
-                  {isDuration && (
-                    <Calendar
-                      dateFormat="dd/mm/yy"
-                      minDate={new Date()}
-                      value={durationDate}
-                      selectionMode="range"
-                      onChange={(e: any) => {
-                        setDurationDate(e.value);
-                      }}
-                      showTime
-                      hourFormat="24"
-                      showIcon
-                      placeholder="Choose a range date or only start date"
-                      className="ml-3 mt-2 w-1/2"
-                      touchUI
-                      showButtonBar
-                    />
-                  )}
                 </div>
+                {selectedDuration.key !== DURATION_NAME.NONE && (
+                  <Calendar
+                    dateFormat="dd/mm/yy"
+                    minDate={new Date()}
+                    value={durationDate}
+                    selectionMode={
+                      selectedDuration.key === DURATION_NAME.START_END_TIME
+                        ? "range"
+                        : "single"
+                    }
+                    onChange={(e: any) => {
+                      setDurationDate(e.value);
+                    }}
+                    showTime
+                    hourFormat="24"
+                    showIcon
+                    placeholder={
+                      selectedDuration.key === DURATION_NAME.START_END_TIME
+                        ? "Choose a range date"
+                        : "Choose a date"
+                    }
+                    className="flex w-3/5"
+                    touchUI
+                    showButtonBar
+                  />
+                )}
               </Dialog>
             </div>
           )}

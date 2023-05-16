@@ -1,8 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faInfoCircle, faBars } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
-
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { INFTActivity, INFTCollectionItem } from "@Interfaces/index";
 import { AppContext } from "@Store/index";
@@ -10,7 +8,7 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
-import { useContext, useState, useEffect, useRef, useMemo } from "react";
+import { useContext, useState, useEffect, useMemo } from "react";
 import {
   sellNFT,
   buyToken,
@@ -20,10 +18,11 @@ import {
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import {
   CURRENCY_UNITS,
+  DURATION_NAME,
+  DURATION_OPTIONS,
   NFT_EVENT_NAME,
   OFFER_CURRENCY_UNITS,
 } from "@Constants/index";
-import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import {
   handleAddToCart,
   handleRemoveFromCart,
@@ -37,7 +36,7 @@ import NFTListing from "@Components/NFTListing/NFTListing";
 import NFTOffer from "@Components/NFTOffer/NFTOffer";
 import NFTPredictPrice from "@Components/NFTPredictPrice/NFTPredictPrice";
 import { Calendar } from "primereact/calendar";
-import { InputSwitch } from "primereact/inputswitch";
+import { RadioButton } from "primereact/radiobutton";
 
 export interface INFTDetailProps {
   nftDetail: INFTCollectionItem[];
@@ -89,10 +88,10 @@ const NFTDetail = ({
 
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
-  const [isDuration, setDuration] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
   const [durationDate, setDurationDate] = useState<
-    string | Date | Date[] | null
-  >(null);
+    string | Date | Date[] | undefined
+  >(undefined);
 
   const endTime = useMemo(() => {
     return new Date(Number(nftDetail[0]?.listings?.[0]?.end_time) * 1000);
@@ -638,7 +637,7 @@ const NFTDetail = ({
                         </div>
                       }
                       visible={dialogMakeOffer}
-                      style={{ width: "50vw", height: "45vh" }}
+                      style={{ width: "50vw", height: "23rem" }}
                       onHide={() => setDialogMakeOffer(false)}
                       footer={
                         <div>
@@ -657,7 +656,7 @@ const NFTDetail = ({
                         </div>
                       }
                     >
-                      <div className="flex gap-3 mb-3">
+                      <div className="flex gap-3 mb-6">
                         <InputNumber
                           placeholder="Input the price"
                           value={price}
@@ -675,36 +674,56 @@ const NFTDetail = ({
                           className="md:w-14rem"
                         />
                       </div>
-                      <div className="flex gap-8 align-center">
-                        <div className="flex gap-4 mt-4">
-                          <span className="text-xl font-semibold">
-                            Set duration
-                          </span>
-                          <InputSwitch
-                            inputId=""
-                            checked={isDuration}
-                            onChange={(e: any) => setDuration(!isDuration)}
-                          />
+                      <div className="flex gap-8 mb-2">
+                        <div className="flex flex-column items-center gap-5">
+                          <div className="text-xl font-bold">Duration:</div>
+                          {DURATION_OPTIONS.filter(
+                            (duration) =>
+                              duration.key !== DURATION_NAME.START_TIME &&
+                              duration.key !== DURATION_NAME.START_END_TIME
+                          ).map((duration) => {
+                            return (
+                              <div
+                                key={duration.key}
+                                className="flex items-center"
+                              >
+                                <RadioButton
+                                  inputId={duration.key}
+                                  value={duration}
+                                  onChange={(e) => {
+                                    setSelectedDuration(e.value),
+                                      setDurationDate(undefined);
+                                  }}
+                                  checked={
+                                    selectedDuration.key === duration.key
+                                  }
+                                />
+                                <label htmlFor={duration.key} className="ml-2">
+                                  {duration.name}
+                                </label>
+                              </div>
+                            );
+                          })}
                         </div>
-                        {isDuration && (
-                          <Calendar
-                            dateFormat="dd/mm/yy"
-                            minDate={new Date()}
-                            value={durationDate}
-                            selectionMode="range"
-                            onChange={(e: any) => {
-                              setDurationDate(e.value);
-                            }}
-                            showTime
-                            hourFormat="24"
-                            showIcon
-                            placeholder="Choose a range date or only start date"
-                            className="ml-3 mt-2 w-1/2"
-                            touchUI
-                            showButtonBar
-                          />
-                        )}
                       </div>
+                      {selectedDuration.key !== DURATION_NAME.NONE && (
+                        <Calendar
+                          dateFormat="dd/mm/yy"
+                          minDate={new Date()}
+                          value={durationDate}
+                          selectionMode="single"
+                          onChange={(e: any) => {
+                            setDurationDate(e.value);
+                          }}
+                          showTime
+                          hourFormat="24"
+                          showIcon
+                          placeholder="Choose a date"
+                          className="flex w-1/2"
+                          touchUI
+                          showButtonBar
+                        />
+                      )}
                     </Dialog>
                   </div>
                 )}
@@ -780,7 +799,7 @@ const NFTDetail = ({
                     <Dialog
                       header="Please input the price that you want to sell"
                       visible={visible}
-                      style={{ width: "50vw", height: "43vh" }}
+                      style={{ width: "50vw", height: "22rem" }}
                       onHide={() => setVisible(false)}
                       footer={
                         <div>
@@ -817,36 +836,62 @@ const NFTDetail = ({
                           className="md:w-14rem"
                         />
                       </div>
-                      <div className="flex gap-8 align-center">
-                        <div className="flex gap-4 mt-4">
-                          <span className="text-xl font-semibold">
-                            Set duration
-                          </span>
-                          <InputSwitch
-                            inputId=""
-                            checked={isDuration}
-                            onChange={(e: any) => setDuration(!isDuration)}
-                          />
+                      <div className="flex gap-8 mb-2">
+                        <div className="flex flex-column items-center gap-5">
+                          <div className="text-xl font-bold">Duration:</div>
+                          {DURATION_OPTIONS.map((duration) => {
+                            return (
+                              <div
+                                key={duration.key}
+                                className="flex items-center"
+                              >
+                                <RadioButton
+                                  inputId={duration.key}
+                                  value={duration}
+                                  onChange={(e) => {
+                                    setSelectedDuration(e.value),
+                                      setDurationDate(undefined);
+                                  }}
+                                  checked={
+                                    selectedDuration.key === duration.key
+                                  }
+                                />
+                                <label htmlFor={duration.key} className="ml-2">
+                                  {duration.name}
+                                </label>
+                              </div>
+                            );
+                          })}
                         </div>
-                        {isDuration && (
-                          <Calendar
-                            dateFormat="dd/mm/yy"
-                            minDate={new Date()}
-                            value={durationDate}
-                            selectionMode="range"
-                            onChange={(e: any) => {
-                              setDurationDate(e.value);
-                            }}
-                            showTime
-                            hourFormat="24"
-                            showIcon
-                            placeholder="Choose a range date or only start date"
-                            className="ml-3 mt-2 w-1/2"
-                            touchUI
-                            showButtonBar
-                          />
-                        )}
                       </div>
+                      {selectedDuration.key !== DURATION_NAME.NONE && (
+                        <Calendar
+                          dateFormat="dd/mm/yy"
+                          minDate={new Date()}
+                          value={durationDate}
+                          selectionMode={
+                            selectedDuration.key ===
+                            DURATION_NAME.START_END_TIME
+                              ? "range"
+                              : "single"
+                          }
+                          onChange={(e: any) => {
+                            setDurationDate(e.value);
+                          }}
+                          showTime
+                          hourFormat="24"
+                          showIcon
+                          placeholder={
+                            selectedDuration.key ===
+                            DURATION_NAME.START_END_TIME
+                              ? "Choose a range date"
+                              : "Choose a date"
+                          }
+                          className="flex w-3/5"
+                          touchUI
+                          showButtonBar
+                        />
+                      )}
                     </Dialog>
                   </div>
                 )}
