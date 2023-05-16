@@ -298,8 +298,8 @@ export const createOrder = async (
   offerer: Wallet | Contract,
   offer: OfferItem[],
   consideration: ConsiderationItem[],
-  startDate?: Date,
-  endDate?: Date
+  startDate: Date | null,
+  endDate: Date | null
 ) => {
   const counter = await marketplace.getCounter(await offerer.getAddress());
 

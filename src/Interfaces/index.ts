@@ -226,6 +226,8 @@ export interface IMakeOfferItem {
   identifier: string;
   itemImage: string;
   price: string;
+  startTime: string;
+  endTime: string;
 }
 
 export interface IMetaDataProfile {

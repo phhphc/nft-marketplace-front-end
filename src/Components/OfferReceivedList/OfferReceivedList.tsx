@@ -3,10 +3,11 @@ import { IMakeOfferItem } from "@Interfaces/index";
 import { fulfillMakeOffer } from "@Services/ApiService";
 import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { showingPrice } from "@Utils/index";
+import moment from "moment";
 import router from "next/router";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 
 export interface IOfferReceivedListProps {
   offerReceivedList: IMakeOfferItem[];
@@ -31,6 +32,8 @@ const OfferReceivedList = ({
       itemImage: item.itemImage,
       identifier: item.consideration[0].identifier,
       price: item.offer[0].startAmount,
+      startTime: item.startTime,
+      endTime: item.endTime
     };
   });
 
@@ -49,7 +52,7 @@ const OfferReceivedList = ({
 
   const offererBodyTemplate = (rowData: IMakeOfferItem) => {
     return (
-      <div className="text-ellipsis overflow-hidden">
+      <div className="text-ellipsis overflow-hidden w-48">
         {rowData.offererAddress}
       </div>
     );
@@ -84,6 +87,12 @@ const OfferReceivedList = ({
       rowData?.price || "0",
       OFFER_CURRENCY_UNITS[0].value,
       true
+    );
+  };
+
+  const endTimeBodyTemplate = (rowData: IMakeOfferItem) => {
+    return moment(new Date(Number(rowData?.endTime) * 1000)).format(
+      "DD/MM/yyyy HH:mm"
     );
   };
 
@@ -173,6 +182,7 @@ const OfferReceivedList = ({
           className="price"
           sortable
         ></Column>
+        <Column header="End time" body={endTimeBodyTemplate}></Column>
         <Column
           field="fulfill"
           header="Approve"
