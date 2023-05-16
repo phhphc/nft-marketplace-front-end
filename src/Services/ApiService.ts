@@ -30,8 +30,8 @@ interface ISellNFTProps {
   unit: string;
   beforeApprove?: () => void;
   afterApprove?: () => void;
-  startDate?: Date;
-  endDate?: Date;
+  startDate: Date | null;
+  endDate: Date | null;
 }
 
 interface IMakeOfferProps {
@@ -41,8 +41,8 @@ interface IMakeOfferProps {
   item: INFTCollectionItem;
   price: string;
   unit: string;
-  startDate?: Date;
-  endDate?: Date;
+  startDate: Date | null;
+  endDate: Date | null;
 }
 
 interface ITransferTETHToEthProps {

@@ -105,7 +105,7 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
   };
   const fromBodyTemplate = (rowData: INFTActivity) => {
     return (
-      <div className="text-ellipsis overflow-hidden">
+      <div className="text-ellipsis overflow-hidden w-48">
         {web3Context.state.web3.myAddress === rowData.from
           ? "You"
           : rowData.from}
@@ -114,7 +114,7 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
   };
   const toBodyTemplate = (rowData: INFTActivity) => {
     return (
-      <div className="text-ellipsis overflow-hidden">
+      <div className="text-ellipsis overflow-hidden w-48">
         {web3Context.state.web3.myAddress === rowData.to ? "You" : rowData.to}
       </div>
     );

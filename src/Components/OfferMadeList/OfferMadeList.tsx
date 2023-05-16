@@ -3,10 +3,11 @@ import { IMakeOfferItem } from "@Interfaces/index";
 import { cancelOrder } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { showingPrice } from "@Utils/index";
+import moment from "moment";
 import router from "next/router";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 
 export interface IOfferMadeListProps {
   offerMadeList: IMakeOfferItem[];
@@ -31,6 +32,8 @@ const OfferMadeList = ({
       itemImage: item.itemImage,
       identifier: item.consideration[0].identifier,
       price: item.offer[0].startAmount,
+      startTime: item.startTime,
+      endTime: item.endTime
     };
   });
 
@@ -80,6 +83,12 @@ const OfferMadeList = ({
       rowData?.price || "0",
       OFFER_CURRENCY_UNITS[0].value,
       true
+    );
+  };
+
+  const endTimeBodyTemplate = (rowData: IMakeOfferItem) => {
+    return moment(new Date(Number(rowData?.endTime) * 1000)).format(
+      "DD/MM/yyyy HH:mm"
     );
   };
 
@@ -151,6 +160,7 @@ const OfferMadeList = ({
           className="price"
           sortable
         ></Column>
+        <Column header="End time" body={endTimeBodyTemplate}></Column>
         <Column header="Cancel" body={cancelBodyTemplate}></Column>
         <Column
           field=""

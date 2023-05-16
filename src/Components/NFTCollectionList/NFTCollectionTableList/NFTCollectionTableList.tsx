@@ -48,9 +48,7 @@ const NFTCollectionTableList = ({
   const [dialogMakeOffer, setDialogMakeOffer] = useState(false);
   const [checked, setChecked] = useState(false);
   const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
-  const [durationDate, setDurationDate] = useState<
-    string | Date | Date[] | undefined
-  >(undefined);
+  const [durationDate, setDurationDate] = useState<Date | Date[] | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -112,6 +110,16 @@ const NFTCollectionTableList = ({
         item,
         price: price.toString(),
         unit: selectedUnit,
+        startDate: Array.isArray(durationDate)
+          ? durationDate[0]
+          : selectedDuration.key === DURATION_NAME.START_TIME
+          ? durationDate
+          : null,
+        endDate: Array.isArray(durationDate)
+          ? durationDate[1]
+          : selectedDuration.key === DURATION_NAME.END_TIME
+          ? durationDate
+          : null,
         beforeApprove: () => {
           web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
         },
@@ -160,6 +168,8 @@ const NFTCollectionTableList = ({
         item,
         price: price.toString(),
         unit: selectedUnit,
+        startDate: null,
+        endDate: Array.isArray(durationDate) ? null : durationDate,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -292,7 +302,7 @@ const NFTCollectionTableList = ({
 
   const ownerBodyTemplate = (rowData: INFTCollectionItem[]) => {
     return (
-      <div className="text-ellipsis overflow-hidden">
+      <div className="text-ellipsis overflow-hidden w-48">
         {web3Context.state.web3.myAddress === rowData[0]?.owner
           ? "You"
           : rowData[0]?.owner}
@@ -380,8 +390,7 @@ const NFTCollectionTableList = ({
                           inputId={duration.key}
                           value={duration}
                           onChange={(e) => {
-                            setSelectedDuration(e.value),
-                              setDurationDate(undefined);
+                            setSelectedDuration(e.value), setDurationDate(null);
                           }}
                           checked={selectedDuration.key === duration.key}
                         />
@@ -503,8 +512,7 @@ const NFTCollectionTableList = ({
                         inputId={duration.key}
                         value={duration}
                         onChange={(e) => {
-                          setSelectedDuration(e.value),
-                            setDurationDate(undefined);
+                          setSelectedDuration(e.value), setDurationDate(null);
                         }}
                         checked={selectedDuration.key === duration.key}
                       />
@@ -560,6 +568,16 @@ const NFTCollectionTableList = ({
         item: web3Context.state.web3.listItemsSellBundle,
         price: price.toString(),
         unit: selectedUnit,
+        startDate: Array.isArray(durationDate)
+          ? durationDate[0]
+          : selectedDuration.key === DURATION_NAME.START_TIME
+          ? durationDate
+          : null,
+        endDate: Array.isArray(durationDate)
+          ? durationDate[1]
+          : selectedDuration.key === DURATION_NAME.END_TIME
+          ? durationDate
+          : null,
         beforeApprove: () => {
           web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
         },
@@ -652,7 +670,7 @@ const NFTCollectionTableList = ({
                               value={duration}
                               onChange={(e) => {
                                 setSelectedDuration(e.value),
-                                  setDurationDate(undefined);
+                                  setDurationDate(null);
                               }}
                               checked={selectedDuration.key === duration.key}
                             />

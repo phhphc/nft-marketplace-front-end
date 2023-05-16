@@ -71,13 +71,10 @@ const NFTCollectionGridItem = ({
   const router = useRouter();
   const [price, setPrice] = useState<number>(0);
   const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
-  const [durationDate, setDurationDate] = useState<
-    string | Date | Date[] | undefined
-  >(undefined);
+  const [durationDate, setDurationDate] = useState<Date | Date[] | null>(null);
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
-    console.log("durationDate", durationDate);
     if (price === 0) {
       return (
         web3Context.state.web3.toast.current &&
@@ -98,6 +95,16 @@ const NFTCollectionGridItem = ({
         item,
         price: price.toString(),
         unit: selectedUnit,
+        startDate: Array.isArray(durationDate)
+          ? durationDate[0]
+          : selectedDuration.key === DURATION_NAME.START_TIME
+          ? durationDate
+          : null,
+        endDate: Array.isArray(durationDate)
+          ? durationDate[1]
+          : selectedDuration.key === DURATION_NAME.END_TIME
+          ? durationDate
+          : null,
         beforeApprove: () => {
           web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
         },
@@ -519,7 +526,7 @@ const NFTCollectionGridItem = ({
                             value={duration}
                             onChange={(e) => {
                               setSelectedDuration(e.value),
-                                setDurationDate(undefined);
+                                setDurationDate(null);
                             }}
                             checked={selectedDuration.key === duration.key}
                           />

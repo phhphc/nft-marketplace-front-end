@@ -33,8 +33,8 @@ const NFTCollectionGridList = ({
   const [selectedUnit, setSelectedUnit] = useState<string>("");
   const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
   const [durationDate, setDurationDate] = useState<
-    string | Date | Date[] | undefined
-  >(undefined);
+    Date | Date[] | null
+  >(null);
 
   const size = 12;
   const [first, setFirst] = useState(0);
@@ -67,6 +67,16 @@ const NFTCollectionGridList = ({
         item: web3Context.state.web3.listItemsSellBundle,
         price: price.toString(),
         unit: selectedUnit,
+        startDate: Array.isArray(durationDate)
+          ? durationDate[0]
+          : selectedDuration.key === DURATION_NAME.START_TIME
+          ? durationDate
+          : null,
+        endDate: Array.isArray(durationDate)
+          ? durationDate[1]
+          : selectedDuration.key === DURATION_NAME.END_TIME
+          ? durationDate
+          : null,
         beforeApprove: () => {
           web3Context.dispatch({ type: WEB3_ACTION_TYPES.ADD_LOADING });
         },
@@ -160,7 +170,7 @@ const NFTCollectionGridList = ({
                               value={duration}
                               onChange={(e) => {
                                 setSelectedDuration(e.value),
-                                  setDurationDate(undefined);
+                                  setDurationDate(null);
                               }}
                               checked={selectedDuration.key === duration.key}
                             />
