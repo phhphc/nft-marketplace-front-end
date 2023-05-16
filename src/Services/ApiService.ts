@@ -30,6 +30,8 @@ interface ISellNFTProps {
   unit: string;
   beforeApprove?: () => void;
   afterApprove?: () => void;
+  startDate?: Date;
+  endDate?: Date;
 }
 
 interface IMakeOfferProps {
@@ -39,6 +41,8 @@ interface IMakeOfferProps {
   item: INFTCollectionItem;
   price: string;
   unit: string;
+  startDate?: Date;
+  endDate?: Date;
 }
 
 interface ITransferTETHToEthProps {
@@ -221,6 +225,8 @@ export const makeOffer = async ({
   item,
   price,
   unit,
+  startDate,
+  endDate,
 }: IMakeOfferProps) => {
   const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
   const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
@@ -262,7 +268,9 @@ export const makeOffer = async ({
       chainId,
       myWallet,
       offer,
-      consideration
+      consideration,
+      startDate,
+      endDate
     );
 
   console.log(
@@ -328,6 +336,8 @@ export const sellNFT = async ({
   unit,
   beforeApprove,
   afterApprove,
+  startDate,
+  endDate,
 }: ISellNFTProps) => {
   const erc721Address = item[0].token;
   const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
@@ -382,7 +392,9 @@ export const sellNFT = async ({
       chainId,
       myWallet,
       offer,
-      consideration
+      consideration,
+      startDate,
+      endDate
     );
 
   console.log(
