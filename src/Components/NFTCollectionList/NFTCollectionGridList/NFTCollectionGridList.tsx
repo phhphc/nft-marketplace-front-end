@@ -1,5 +1,10 @@
 import NFTCollectionGridItem from "./NFTCollectionGridItem";
-import { COLLECTION_VIEW_TYPE, CURRENCY_UNITS, DURATION_NAME, DURATION_OPTIONS } from "@Constants/index";
+import {
+  COLLECTION_VIEW_TYPE,
+  CURRENCY_UNITS,
+  DURATION_NAME,
+  DURATION_OPTIONS,
+} from "@Constants/index";
 import { INFTCollectionItem } from "@Interfaces/index";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
 import { Paginator } from "primereact/paginator";
@@ -32,9 +37,7 @@ const NFTCollectionGridList = ({
   const [price, setPrice] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
   const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
-  const [durationDate, setDurationDate] = useState<
-    Date | Date[] | null
-  >(null);
+  const [durationDate, setDurationDate] = useState<Date | Date[] | null>(null);
 
   const size = 12;
   const [first, setFirst] = useState(0);
