@@ -70,9 +70,12 @@ const NFTDetail = ({
     );
   };
   const canSell = (item: INFTCollectionItem[]) => {
+    return item[0]?.owner === web3Context.state.web3.myAddress;
+  };
+  const canResell = (item: INFTCollectionItem[]) => {
     return (
-      item[0]?.listings.length === 0 &&
-      item[0]?.owner === web3Context.state.web3.myAddress
+      item[0].listings.length !== 0 &&
+      item[0].owner === web3Context.state.web3.myAddress
     );
   };
   const canDownload = (item: INFTCollectionItem[]) => {
@@ -796,7 +799,7 @@ const NFTDetail = ({
                         className="w-1/2 bg-green-500 hover:bg-green-700 h-16 text-white rounded-md text-xl"
                         onClick={() => setVisible(true)}
                       >
-                        Sell
+                        {canResell(nftDetail) ? "Resell" : "Sell"}
                       </button>
                       <button
                         onClick={() => downloadItem(nftDetail)}

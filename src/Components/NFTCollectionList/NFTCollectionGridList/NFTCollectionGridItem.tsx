@@ -54,8 +54,12 @@ const NFTCollectionGridItem = ({
   };
 
   const canSell = (item: INFTCollectionItem[]) => {
+    return item[0].owner === web3Context.state.web3.myAddress;
+  };
+
+  const canResell = (item: INFTCollectionItem[]) => {
     return (
-      item[0].listings.length === 0 &&
+      item[0].listings.length !== 0 &&
       item[0].owner === web3Context.state.web3.myAddress
     );
   };
@@ -227,7 +231,6 @@ const NFTCollectionGridItem = ({
         });
       refetch();
     } catch (error) {
-      console.log(error);
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
           severity: "error",
@@ -333,9 +336,9 @@ const NFTCollectionGridItem = ({
 
   return (
     <div key={item[0].name} className="relative nft-collection-item">
-      <div className="block aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none">
+      <div className="block aspect-w-1 aspect-h-1 w-full  rounded-md bg-gray-200 lg:aspect-none">
         <div className="relative">
-          {canSell(item) && !hideSellBundle && (
+          {!canResell(item) && canSell(item) && !hideSellBundle && (
             <Checkbox
               onChange={onClickItemSellBundle}
               checked={checked}
@@ -462,8 +465,8 @@ const NFTCollectionGridItem = ({
                 Sell
               </button> */}
               <SplitButton
-                className="w-full"
-                label="Sell"
+                className="w-full absolute bottom-0 left-0 right-0"
+                label={`${canResell(item) ? "Resell" : "Sell"}`}
                 onClick={() => setVisible(true)}
                 model={
                   item[0].isHidden

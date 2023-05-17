@@ -136,6 +136,7 @@ const NFTCollectionTableList = ({
         });
       refetch();
     } catch (error) {
+      console.log(error);
       web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -242,8 +243,12 @@ const NFTCollectionTableList = ({
   };
 
   const canSell = (item: INFTCollectionItem[]) => {
+    return item[0].owner === web3Context.state.web3.myAddress;
+  };
+
+  const canResell = (item: INFTCollectionItem[]) => {
     return (
-      item[0].listings.length === 0 &&
+      item[0].listings.length !== 0 &&
       item[0].owner === web3Context.state.web3.myAddress
     );
   };
@@ -335,7 +340,7 @@ const NFTCollectionTableList = ({
           <div>
             <Tag
               severity="success"
-              value="Sell NFT"
+              value={canResell(rowData) ? "Resell" : "Sell"}
               onClick={() => setVisible(true)}
               className="cursor-pointer text-base hover:bg-green-700"
               style={{ width: "6rem" }}
