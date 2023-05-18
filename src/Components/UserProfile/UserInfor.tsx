@@ -59,12 +59,7 @@ const UserInfor = ({ profile, profileRefetch }: IUserInfoProps) => {
         Bio: {profile?.metadata?.bio ? profile?.metadata?.bio : ""}
       </div>
       <div className="flex pt-3 text-lg">
-        <Tooltip target=".icon-chain" position="mouse" />
-        <i
-          role="button"
-          className="icon-chain pi pi-tag pt-1"
-          data-pr-tooltip="Chain: Ethereum"
-        />
+        Address:
         <Tooltip target=".chain-address" position="top" content={isCopied} />
         <div
           role="button"
