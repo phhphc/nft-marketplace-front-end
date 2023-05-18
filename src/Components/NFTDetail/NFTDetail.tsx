@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faInfoCircle, faBars } from "@fortawesome/free-solid-svg-icons";
 import { Accordion, AccordionTab } from "primereact/accordion";
-import { INFTActivity, INFTCollectionItem } from "@Interfaces/index";
+import { IListing, INFTActivity, INFTCollectionItem } from "@Interfaces/index";
 import { AppContext } from "@Store/index";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
@@ -235,7 +235,9 @@ const NFTDetail = ({
     try {
       if (item) {
         await cancelOrder({
-          orderHash: item[0].listings[0].order_hash,
+          orderHashes: item[0].listings.map(
+            (listing: IListing) => listing.order_hash
+          ),
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
           myAddress: web3Context.state.web3.myAddress,
