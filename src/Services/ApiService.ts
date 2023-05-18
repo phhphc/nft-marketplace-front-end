@@ -15,7 +15,12 @@ import {
 } from "@Utils/index";
 import { CURRENCY } from "@Constants/index";
 import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
-import { ICollectionItem, INFTActivity, IProfile } from "@Interfaces/index";
+import {
+  ICollectionItem,
+  IListing,
+  INFTActivity,
+  IProfile,
+} from "@Interfaces/index";
 import { flatten } from "lodash";
 import { INFTCollectionItem } from "@Interfaces/index";
 
@@ -77,7 +82,7 @@ interface IFulfillMakeOfferProps {
 interface ICancelOrderProps {
   provider: any;
   myWallet: any;
-  orderHash: string;
+  orderHashes: string[];
   myAddress: string;
 }
 
@@ -371,6 +376,23 @@ export const sellNFT = async ({
     afterApprove && afterApprove();
   }
 
+  const oldPrice = item[0].listings?.[0]?.start_price || 0;
+
+  if (
+    Number(unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price)) >
+      Number(oldPrice) &&
+    Number(oldPrice) !== 0
+  ) {
+    await cancelOrder({
+      orderHashes: item[0].listings.map(
+        (listing: IListing) => listing.order_hash
+      ),
+      myWallet,
+      provider,
+      myAddress,
+    });
+  }
+
   const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 
   const mkpContractWithSigner = mkpContract.connect(myWallet);
@@ -612,7 +634,7 @@ export const buyToken = async ({
 };
 
 export const cancelOrder = async ({
-  orderHash,
+  orderHashes,
   myWallet,
   provider,
   myAddress,
@@ -623,31 +645,38 @@ export const cancelOrder = async ({
 
   const mkpContractWithSigner = mkpContract.connect(myWallet);
 
-  const orderData = await axios.get("/api/v0.1/order", {
-    params: {
-      orderHash,
-      isCancelled: false,
-      isFulfilled: false,
-      isInvalid: false,
-    },
-  });
+  const orderData = await Promise.all(
+    orderHashes.map((item) =>
+      axios.get("/api/v0.1/order", {
+        params: {
+          orderHash: item,
+          isCancelled: false,
+          isFulfilled: false,
+          isInvalid: false,
+        },
+      })
+    )
+  );
 
   const counter = await mkpContractWithSigner.getCounter(myAddress);
 
-  delete orderData.data.data.content[0].status;
-  delete orderData.data.data.content[0].orderHash;
-  delete orderData.data.data.content[0].signature;
+  orderData.forEach((item) => {
+    delete item.data.data.content[0].status;
+    delete item.data.data.content[0].orderHash;
+    delete item.data.data.content[0].signature;
+    item.data.data.content[0].counter = counter;
+  });
 
   console.log(
-    transformDataRequestToBuyNFT([
-      { counter, ...orderData.data.data.content[0] },
-    ])
+    transformDataRequestToBuyNFT(
+      orderData.map((item: any) => item.data.data.content[0])
+    )
   );
 
   const tx = await mkpContractWithSigner.cancel(
-    transformDataRequestToBuyNFT([
-      { counter, ...orderData.data.data.content[0] },
-    ])
+    transformDataRequestToBuyNFT(
+      orderData.map((item: any) => item.data.data.content[0])
+    )
   );
 
   console.log("🚀 ~ file: ApiService.ts:191 ~ tx:", tx);

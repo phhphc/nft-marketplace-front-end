@@ -2,7 +2,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { INFTCollectionItem } from "@Interfaces/index";
+import { IListing, INFTCollectionItem } from "@Interfaces/index";
 import { showingPrice } from "@Utils/index";
 import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { Button } from "primereact/button";
@@ -195,7 +195,9 @@ const NFTCollectionTableList = ({
     try {
       if (item) {
         await cancelOrder({
-          orderHash: item[0].listings[0].order_hash,
+          orderHashes: item[0].listings.map(
+            (listing: IListing) => listing.order_hash
+          ),
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
           myAddress: web3Context.state.web3.myAddress,

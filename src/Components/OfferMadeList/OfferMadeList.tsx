@@ -33,7 +33,7 @@ const OfferMadeList = ({
       identifier: item.consideration[0].identifier,
       price: item.offer[0].startAmount,
       startTime: item.startTime,
-      endTime: item.endTime
+      endTime: item.endTime,
     };
   });
 
@@ -106,7 +106,7 @@ const OfferMadeList = ({
     try {
       if (item) {
         await cancelOrder({
-          orderHash: item.orderHash,
+          orderHashes: [item.orderHash],
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
           myAddress: web3Context.state.web3.myAddress,
