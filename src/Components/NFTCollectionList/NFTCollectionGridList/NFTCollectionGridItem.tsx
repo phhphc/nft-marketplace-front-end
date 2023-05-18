@@ -301,22 +301,6 @@ const NFTCollectionGridItem = ({
 
   const moreActions = [
     {
-      label: "Publish NFT",
-      icon: "pi pi-globe",
-      value: "publish",
-      command: () => {
-        hideNFT(item, false);
-      },
-    },
-    {
-      label: "Unpublish NFT",
-      icon: "pi pi-lock",
-      value: "unpublish",
-      command: () => {
-        hideNFT(item, true);
-      },
-    },
-    {
       label: "View detail",
       icon: "pi pi-external-link",
       value: "detail",
@@ -333,6 +317,37 @@ const NFTCollectionGridItem = ({
       },
     },
   ];
+
+  if (item[0].isHidden) {
+    moreActions.push({
+      label: "Publish NFT",
+      icon: "pi pi-globe",
+      value: "publish",
+      command: () => {
+        hideNFT(item, false);
+      },
+    });
+  }
+  if (!item[0].isHidden) {
+    moreActions.push({
+      label: "Unpublish NFT",
+      icon: "pi pi-lock",
+      value: "unpublish",
+      command: () => {
+        hideNFT(item, true);
+      },
+    });
+  }
+  if (canResell(item)) {
+    moreActions.push({
+      label: "Cancel sale",
+      icon: "pi pi-times",
+      value: "cancelSale",
+      command: () => {
+        handleCancelOrder(item);
+      },
+    });
+  }
 
   return (
     <div key={item[0].name} className="relative nft-collection-item">
@@ -413,24 +428,71 @@ const NFTCollectionGridItem = ({
               </p>
             )}
           </div>
+          {/* {canBuy(item) && (
+            <SplitButton
+              className="w-full absolute bottom-0 left-0 right-0"
+              label="Buy now"
+              onClick={() => handleBuyToken(item)}
+              severity="danger"
+              dropdownIcon="pi pi-cart-plus"
+            />
+          )} */}
           {canBuy(item) && (
-            <div className="flex gap-3 justify-between w-full absolute bottom-0 left-0 right-0">
+            <div className="flex justify-between w-full absolute bottom-0 left-0 right-0">
+              <button
+                className="buy-button h-12 bg-red-500 hover:bg-red-700 text-white font-bold text-base rounded-l-md border-white"
+                onClick={() => handleBuyToken(item)}
+              >
+                Buy Now
+              </button>
               {isAddedToCart ? (
-                <div
+                // <div
+                //   onClick={() =>
+                //     handleRemoveFromCart(
+                //       web3Context,
+                //       item[0].listings[0].order_hash
+                //     )
+                //   }
+                //   className="flex justify-center gap-1 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md cursor-pointer"
+                // >
+                //   <div className=" text-red-600 text-base">
+                //     Remove from cart
+                //   </div>
+                // </div>
+                <button
+                  className="w-12 h-12 bg-red-500 hover:bg-red-700 rounded-r-md border-white"
                   onClick={() =>
                     handleRemoveFromCart(
                       web3Context,
                       item[0].listings[0].order_hash
                     )
                   }
-                  className="flex justify-center gap-1 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md cursor-pointer"
                 >
-                  <div className=" text-red-600 text-base">
-                    Remove from cart
-                  </div>
-                </div>
+                  <i
+                    className="pi pi-shopping-cart text-white pt-1"
+                    style={{ fontSize: "2rem" }}
+                  ></i>
+                </button>
               ) : (
-                <div
+                // <div
+                //   onClick={() =>
+                //     handleAddToCart(
+                //       web3Context,
+                //       item[0].listings[0].order_hash,
+                //       1,
+                //       (
+                //         Number(item[0].listings[0]?.start_price) *
+                //           item.length || 0
+                //       ).toString()
+                //     )
+                //   }
+                //   className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md cursor-pointer"
+                // >
+                //   <i className="pi pi-cart-plus text-red-600 pt-1"></i>
+                //   <div className=" text-red-600 text-base">Add to cart</div>
+                // </div>
+                <button
+                  className="w-12 h-12 bg-red-500 hover:bg-red-700 rounded-r-md border-white"
                   onClick={() =>
                     handleAddToCart(
                       web3Context,
@@ -442,18 +504,13 @@ const NFTCollectionGridItem = ({
                       ).toString()
                     )
                   }
-                  className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md cursor-pointer"
                 >
-                  <i className="pi pi-cart-plus text-red-600 pt-1"></i>
-                  <div className=" text-red-600 text-base">Add to cart</div>
-                </div>
+                  <i
+                    className="pi pi-cart-plus text-white pt-1"
+                    style={{ fontSize: "2rem" }}
+                  ></i>
+                </button>
               )}
-              <button
-                className="w-20 bg-red-500 hover:bg-red-700 text-white rounded-md"
-                onClick={() => handleBuyToken(item)}
-              >
-                Buy Now
-              </button>
             </div>
           )}
           {canSell(item) && (
@@ -468,13 +525,7 @@ const NFTCollectionGridItem = ({
                 className="w-full absolute bottom-0 left-0 right-0"
                 label={`${canResell(item) ? "Resell" : "Sell"}`}
                 onClick={() => setVisible(true)}
-                model={
-                  item[0].isHidden
-                    ? moreActions.filter(
-                        (action) => action.value !== "unpublish"
-                      )
-                    : moreActions.filter((action) => action.value !== "publish")
-                }
+                model={moreActions}
                 severity="success"
                 dropdownIcon="pi pi-ellipsis-h"
               />
@@ -569,14 +620,6 @@ const NFTCollectionGridItem = ({
                 )}
               </Dialog>
             </div>
-          )}
-          {isSelling(item) && (
-            <button
-              className="w-full bg-yellow-500 hover:bg-yellow-700 h-10 text-white rounded-md absolute bottom-0 left-0 right-0"
-              onClick={() => handleCancelOrder(item)}
-            >
-              Cancel sale
-            </button>
           )}
         </div>
       )}

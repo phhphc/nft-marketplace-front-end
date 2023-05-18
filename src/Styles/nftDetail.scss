@@ -1,42 +1,34 @@
 #nft-detail {
-    #left-side {
+  #left-side {
+    .p-accordion-header-link {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      color: black;
+    }
+    .p-accordion-tab {
+      margin-bottom: 0;
+      &:not(:last-child) {
         .p-accordion-header-link {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: space-between;
-            color: black;
+          border-radius: 0;
         }
-        .p-accordion-tab {
-            margin-bottom: 0;
-            &:not(:last-child) {
-                .p-accordion-header-link {
-                    border-radius: 0;
-                }
-            }
-            &:last-child {
-                .p-accordion-header-link {
-                    border-top-left-radius: 0;
-                    border-top-right-radius: 0;
-                }
-            }
-            .properties {
-                .p-accordion-content {
-                    padding: 0px;
-                }
-            }
+      }
+      &:last-child {
+        .p-accordion-header-link {
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
         }
+      }
+      .properties {
+        .p-accordion-content {
+          padding: 0px;
+        }
+      }
     }
-    #right-side {
-        .buy-now-btn {
-            &:hover {
-                flex: 1;
-                ~ .add-to-cart-btn {
-                    display: none;
-                }
-                .buy-now-text {
-                    display: inline;
-                }
-            }
-        }
+  }
+  #right-side {
+    .buy-button {
+      width: 21.7rem;
     }
+  }
 }

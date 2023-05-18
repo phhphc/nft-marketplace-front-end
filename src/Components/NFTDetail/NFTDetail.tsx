@@ -74,8 +74,8 @@ const NFTDetail = ({
   };
   const canResell = (item: INFTCollectionItem[]) => {
     return (
-      item[0].listings.length !== 0 &&
-      item[0].owner === web3Context.state.web3.myAddress
+      item[0]?.listings.length !== 0 &&
+      item[0]?.owner === web3Context.state.web3.myAddress
     );
   };
   const canDownload = (item: INFTCollectionItem[]) => {
@@ -626,168 +626,166 @@ const NFTDetail = ({
                     </>
                   )}
                 {canMakeOffer(nftDetail) && (
-                  <div className="mb-3">
-                    <button
-                      onClick={() => setDialogMakeOffer(true)}
-                      className="w-full bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg"
-                    >
-                      <i
-                        className="pi pi-tag pr-3"
-                        style={{ fontSize: "1.5rem" }}
-                      ></i>
-                      Make offer
-                    </button>
-
-                    <Dialog
-                      header={
-                        <div>
-                          <p>
-                            Please input the price that you want to make offer
-                          </p>
-                          <p className="text-sm italic text-rose-500">
-                            * 1 TETH = 1 ETH
-                          </p>
-                        </div>
-                      }
-                      visible={dialogMakeOffer}
-                      style={{ width: "50vw", height: "23rem" }}
-                      onHide={() => setDialogMakeOffer(false)}
-                      footer={
-                        <div>
-                          <Button
-                            label="Cancel"
-                            icon="pi pi-times"
-                            onClick={() => setDialogMakeOffer(false)}
-                            className="p-button-text"
-                          />
-                          <Button
-                            label="Make offer"
-                            icon="pi pi-check"
-                            onClick={() => handleMakeOffer(nftDetail[0])}
-                            autoFocus
-                          />
-                        </div>
-                      }
-                    >
-                      <div className="flex gap-3 mb-6">
-                        <InputNumber
-                          placeholder="Input the price"
-                          value={price}
-                          onValueChange={(e: any) => setPrice(e.value)}
-                          minFractionDigits={2}
-                          maxFractionDigits={5}
-                          min={0}
-                        />
-                        <Dropdown
-                          value={OFFER_CURRENCY_UNITS[0].value}
-                          onChange={(e) => setSelectedUnit(e.value)}
-                          options={OFFER_CURRENCY_UNITS}
-                          optionLabel="name"
-                          placeholder="Select a unit"
-                          className="md:w-14rem"
-                        />
-                      </div>
-                      <div className="flex gap-8 mb-2">
-                        <div className="flex flex-column items-center gap-5">
-                          <div className="text-xl font-bold">Duration:</div>
-                          {DURATION_OPTIONS.filter(
-                            (duration) =>
-                              duration.key !== DURATION_NAME.START_TIME &&
-                              duration.key !== DURATION_NAME.START_END_TIME
-                          ).map((duration) => {
-                            return (
-                              <div
-                                key={duration.key}
-                                className="flex items-center"
-                              >
-                                <RadioButton
-                                  inputId={duration.key}
-                                  value={duration}
-                                  onChange={(e) => {
-                                    setSelectedDuration(e.value),
-                                      setDurationDate(null);
-                                  }}
-                                  checked={
-                                    selectedDuration.key === duration.key
-                                  }
-                                />
-                                <label htmlFor={duration.key} className="ml-2">
-                                  {duration.name}
-                                </label>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      {selectedDuration.key !== DURATION_NAME.NONE && (
-                        <Calendar
-                          dateFormat="dd/mm/yy"
-                          minDate={new Date()}
-                          value={durationDate}
-                          selectionMode="single"
-                          onChange={(e: any) => {
-                            setDurationDate(e.value);
-                          }}
-                          showTime
-                          hourFormat="24"
-                          showIcon
-                          placeholder="Choose a date"
-                          className="flex w-1/2"
-                          touchUI
-                          showButtonBar
-                        />
-                      )}
-                    </Dialog>
-                  </div>
-                )}
-
-                {canBuy(nftDetail) && (
-                  <div>
-                    <div className="flex gap-3">
-                      {isAddedToCart ? (
+                  <div className="flex justify-between gap-3">
+                    {canBuy(nftDetail) && (
+                      <div className="flex justify-between h-16 w-1/2">
                         <button
-                          onClick={() =>
-                            handleRemoveFromCart(
-                              web3Context,
-                              nftDetail[0].listings[0].order_hash
-                            )
-                          }
-                          className="w-1/2 bg-red-100 hover:bg-red-300 h-16 rounded-md text-xl text-red-600"
+                          className="buy-button bg-red-500 hover:bg-red-700 text-white text-lg rounded-l-md border-white"
+                          onClick={() => handleBuyToken(nftDetail)}
                         >
-                          <i
-                            className="pi pi-shopping-cart text-red-600 pr-3"
-                            style={{ fontSize: "2rem" }}
-                          ></i>
-                          Remove from cart
+                          Buy Now
                         </button>
-                      ) : (
-                        <button
-                          onClick={() =>
-                            handleAddToCart(
-                              web3Context,
-                              nftDetail[0].listings[0].order_hash,
-                              1,
-                              (
-                                Number(nftDetail[0].listings[0]?.start_price) *
-                                  nftDetail.length || 0
-                              ).toString()
-                            )
-                          }
-                          className="w-1/2 bg-red-100 hover:bg-red-300 h-16 rounded-md text-lg text-red-600"
-                        >
-                          <i
-                            className="pi pi-cart-plus text-red-600 pr-3"
-                            style={{ fontSize: "2rem" }}
-                          ></i>
-                          Add to cart
-                        </button>
-                      )}
+                        {isAddedToCart ? (
+                          <button
+                            className="w-16 bg-red-500 hover:bg-red-700 rounded-r-md border-white"
+                            onClick={() =>
+                              handleRemoveFromCart(
+                                web3Context,
+                                nftDetail[0].listings[0].order_hash
+                              )
+                            }
+                          >
+                            <i
+                              className="pi pi-shopping-cart text-white pt-1"
+                              style={{ fontSize: "2rem" }}
+                            ></i>
+                          </button>
+                        ) : (
+                          <button
+                            className="w-16 bg-red-500 hover:bg-red-700 rounded-r-md border-white"
+                            onClick={() =>
+                              handleAddToCart(
+                                web3Context,
+                                nftDetail[0].listings[0].order_hash,
+                                1,
+                                (
+                                  Number(
+                                    nftDetail[0].listings[0]?.start_price
+                                  ) * nftDetail.length || 0
+                                ).toString()
+                              )
+                            }
+                          >
+                            <i
+                              className="pi pi-cart-plus text-white pt-1"
+                              style={{ fontSize: "2rem" }}
+                            ></i>
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    <div className={canBuy(nftDetail) ? "w-1/2" : "w-full"}>
                       <button
-                        className="w-1/2 bg-red-500 hover:bg-red-700 text-white h-16 rounded-md text-lg"
-                        onClick={() => handleBuyToken(nftDetail)}
+                        onClick={() => setDialogMakeOffer(true)}
+                        className="w-full bg-sky-500 hover:bg-sky-700 text-white h-16 rounded-md text-lg"
                       >
-                        Buy Now
+                        Make offer
                       </button>
+
+                      <Dialog
+                        header={
+                          <div>
+                            <p>
+                              Please input the price that you want to make offer
+                            </p>
+                            <p className="text-sm italic text-rose-500">
+                              * 1 TETH = 1 ETH
+                            </p>
+                          </div>
+                        }
+                        visible={dialogMakeOffer}
+                        style={{ width: "50vw", height: "23rem" }}
+                        onHide={() => setDialogMakeOffer(false)}
+                        footer={
+                          <div>
+                            <Button
+                              label="Cancel"
+                              icon="pi pi-times"
+                              onClick={() => setDialogMakeOffer(false)}
+                              className="p-button-text"
+                            />
+                            <Button
+                              label="Make offer"
+                              icon="pi pi-check"
+                              onClick={() => handleMakeOffer(nftDetail[0])}
+                              autoFocus
+                            />
+                          </div>
+                        }
+                      >
+                        <div className="flex gap-3 mb-6">
+                          <InputNumber
+                            placeholder="Input the price"
+                            value={price}
+                            onValueChange={(e: any) => setPrice(e.value)}
+                            minFractionDigits={2}
+                            maxFractionDigits={5}
+                            min={0}
+                          />
+                          <Dropdown
+                            value={OFFER_CURRENCY_UNITS[0].value}
+                            onChange={(e) => setSelectedUnit(e.value)}
+                            options={OFFER_CURRENCY_UNITS}
+                            optionLabel="name"
+                            placeholder="Select a unit"
+                            className="md:w-14rem"
+                          />
+                        </div>
+                        <div className="flex gap-8 mb-2">
+                          <div className="flex flex-column items-center gap-5">
+                            <div className="text-xl font-bold">Duration:</div>
+                            {DURATION_OPTIONS.filter(
+                              (duration) =>
+                                duration.key !== DURATION_NAME.START_TIME &&
+                                duration.key !== DURATION_NAME.START_END_TIME
+                            ).map((duration) => {
+                              return (
+                                <div
+                                  key={duration.key}
+                                  className="flex items-center"
+                                >
+                                  <RadioButton
+                                    inputId={duration.key}
+                                    value={duration}
+                                    onChange={(e) => {
+                                      setSelectedDuration(e.value),
+                                        setDurationDate(null);
+                                    }}
+                                    checked={
+                                      selectedDuration.key === duration.key
+                                    }
+                                  />
+                                  <label
+                                    htmlFor={duration.key}
+                                    className="ml-2"
+                                  >
+                                    {duration.name}
+                                  </label>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        {selectedDuration.key !== DURATION_NAME.NONE && (
+                          <Calendar
+                            dateFormat="dd/mm/yy"
+                            minDate={new Date()}
+                            value={durationDate}
+                            selectionMode="single"
+                            onChange={(e: any) => {
+                              setDurationDate(e.value);
+                            }}
+                            showTime
+                            hourFormat="24"
+                            showIcon
+                            placeholder="Choose a date"
+                            className="flex w-1/2"
+                            touchUI
+                            showButtonBar
+                          />
+                        )}
+                      </Dialog>
                     </div>
                   </div>
                 )}
@@ -799,15 +797,33 @@ const NFTDetail = ({
                         className="w-1/2 bg-green-500 hover:bg-green-700 h-16 text-white rounded-md text-xl"
                         onClick={() => setVisible(true)}
                       >
+                        <i
+                          className={
+                            "pr-3 " +
+                            (canResell(nftDetail)
+                              ? "pi pi-refresh"
+                              : "pi pi-tag")
+                          }
+                        ></i>
                         {canResell(nftDetail) ? "Resell" : "Sell"}
                       </button>
-                      <button
-                        onClick={() => downloadItem(nftDetail)}
-                        className="w-1/2 bg-fuchsia-500 hover:bg-fuchsia-600 h-16 text-white rounded-md text-xl"
-                      >
-                        <i className="pi pi-download pr-3"></i>
-                        Download your NFT
-                      </button>
+                      {canResell(nftDetail) ? (
+                        <button
+                          className="w-1/2 bg-yellow-500 hover:bg-yellow-700 h-16 text-white rounded-md text-xl"
+                          onClick={() => handleCancelOrder(nftDetail)}
+                        >
+                          <i className="pi pi-times pr-3"></i>
+                          Cancel sale
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => downloadItem(nftDetail)}
+                          className="w-1/2 bg-fuchsia-500 hover:bg-fuchsia-600 h-16 text-white rounded-md text-xl"
+                        >
+                          <i className="pi pi-download pr-3"></i>
+                          Download NFT
+                        </button>
+                      )}
                     </div>
                     <Dialog
                       header="Please input the price that you want to sell"
@@ -908,25 +924,14 @@ const NFTDetail = ({
                     </Dialog>
                   </div>
                 )}
-
-                {isSelling(nftDetail) && canDownload(nftDetail) && (
-                  <div>
-                    <div className="flex gap-3">
-                      <button
-                        className="w-1/2 bg-yellow-500 hover:bg-yellow-700 h-16 text-white rounded-md text-xl"
-                        onClick={() => handleCancelOrder(nftDetail)}
-                      >
-                        Cancel sale
-                      </button>
-                      <button
-                        onClick={() => downloadItem(nftDetail)}
-                        className="w-1/2 bg-fuchsia-500 hover:bg-fuchsia-600 h-16 text-white rounded-md text-xl"
-                      >
-                        <i className="pi pi-download pr-3"></i>
-                        Download your NFT
-                      </button>
-                    </div>
-                  </div>
+                {canResell(nftDetail) && canDownload(nftDetail) && (
+                  <button
+                    onClick={() => downloadItem(nftDetail)}
+                    className="w-full mt-5 bg-fuchsia-500 hover:bg-fuchsia-600 h-16 text-white rounded-md text-xl"
+                  >
+                    <i className="pi pi-download pr-3"></i>
+                    Download NFT
+                  </button>
                 )}
               </div>
             </div>
