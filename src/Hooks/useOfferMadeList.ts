@@ -1,10 +1,10 @@
-import { getOfferMadeList } from "@Services/ApiService";
+import { getOfferList } from "@Services/ApiService";
 import { useQuery } from "react-query";
 
 const useOfferMadeList = (owner: string) => {
   const result = useQuery({
     queryKey: ["OfferMadeList", owner],
-    queryFn: () => getOfferMadeList(owner),
+    queryFn: () => getOfferList({ from: owner }),
     staleTime: Infinity,
   });
   const offerMadeList = result.data || [];

@@ -186,6 +186,24 @@ export interface ICollectionItem {
   image: string;
 }
 
+export interface IOfferItem {
+  name: string;
+  token: string;
+  token_id: string;
+  quantity: number;
+  type: string;
+  price: string;
+  from: string;
+  order_hash: string;
+  nft_image: string;
+  nft_name: string;
+  end_time: string;
+  is_cancelled: boolean;
+  is_fulfilled: boolean;
+  is_expired: boolean;
+  owner: string;
+}
+
 export interface INFTEvent {
   label: string;
   value: string;

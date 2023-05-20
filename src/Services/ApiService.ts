@@ -19,10 +19,12 @@ import {
   ICollectionItem,
   IListing,
   INFTActivity,
+  IOfferItem,
   IProfile,
 } from "@Interfaces/index";
 import { flatten } from "lodash";
 import { INFTCollectionItem } from "@Interfaces/index";
+import { IOfferMadeListProps } from "@Components/OfferMadeList/OfferMadeList";
 
 const { parseEther } = ethers.utils;
 
@@ -48,6 +50,11 @@ interface IMakeOfferProps {
   unit: string;
   startDate: Date | null;
   endDate: Date | null;
+}
+
+interface IGetOfferListProps{
+  owner?: string;
+  from?: string;
 }
 
 interface ITransferTETHToEthProps {
@@ -772,6 +779,22 @@ export const getOfferReceivedList = async (myAddress: string) => {
         itemName: itemInfo?.name,
         itemImage: itemInfo?.image,
       };
+    });
+};
+
+export const getOfferList = async ({
+  owner,
+  from,
+}: IGetOfferListProps): Promise<IOfferItem[]> => {
+  return axios
+    .get("/api/v0.1/profile/offer", {
+      params: { owner, from },
+    })
+    .then((response) => {
+      return response.data.data.offer_list || [];
+    })
+    .catch((err) => {
+      console.log(err);
     });
 };
 

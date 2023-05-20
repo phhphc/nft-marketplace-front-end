@@ -5,6 +5,7 @@ import {
   IMakeOfferItem,
   INFTActivity,
   INFTCollectionItem,
+  IOfferItem,
 } from "@Interfaces/index";
 import { TabView, TabPanel } from "primereact/tabview";
 import OfferMadeList from "@Components/OfferMadeList/OfferMadeList";
@@ -12,9 +13,9 @@ import OfferMadeList from "@Components/OfferMadeList/OfferMadeList";
 export interface IUserProfileTabsProps {
   nftCollectionList: INFTCollectionItem[][];
   refetch: () => void;
-  offerReceivedList: IMakeOfferItem[];
+  offerReceivedList: IOfferItem[];
   offerReceivedListRefetch: () => void;
-  offerMadeList: IMakeOfferItem[];
+  offerMadeList: IOfferItem[];
   offerMadeListRefetch: () => void;
   nftRefetch: () => void;
   nftActivity: INFTActivity[];
