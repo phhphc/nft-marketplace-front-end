@@ -1,5 +1,5 @@
 import { OFFER_CURRENCY_UNITS } from "@Constants/index";
-import { IMakeOfferItem } from "@Interfaces/index";
+import { IMakeOfferItem, IOfferItem } from "@Interfaces/index";
 import { fulfillMakeOffer } from "@Services/ApiService";
 import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { showingPrice } from "@Utils/index";
@@ -10,7 +10,7 @@ import { DataTable } from "primereact/datatable";
 import { useContext, useMemo } from "react";
 
 export interface IOfferReceivedListProps {
-  offerReceivedList: IMakeOfferItem[];
+  offerReceivedList: IOfferItem[];
   offerReceivedListRefetch: () => void;
   nftRefetch: () => void;
   nftActivityRefetch: () => void;
@@ -24,16 +24,15 @@ const OfferReceivedList = ({
 }: IOfferReceivedListProps) => {
   const web3Context = useContext(AppContext);
 
-  const data = offerReceivedList.map((item: IMakeOfferItem) => {
+  const data = offerReceivedList.map((item: IOfferItem) => {
     return {
-      offererAddress: item.offerer,
-      orderHash: item.orderHash,
-      itemName: item.itemName,
-      itemImage: item.itemImage,
-      identifier: item.consideration[0].identifier,
-      price: item.offer[0].startAmount,
-      startTime: item.startTime,
-      endTime: item.endTime
+      offererAddress: item.from,
+      orderHash: item.order_hash,
+      itemName: item.nft_name,
+      itemImage: item.nft_image,
+      identifier: item.token_id,
+      price: item.price,
+      endTime: item.end_time,
     };
   });
 

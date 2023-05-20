@@ -1,5 +1,5 @@
 import { OFFER_CURRENCY_UNITS } from "@Constants/index";
-import { IMakeOfferItem } from "@Interfaces/index";
+import { IMakeOfferItem, IOfferItem } from "@Interfaces/index";
 import { cancelOrder } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { showingPrice } from "@Utils/index";
@@ -10,7 +10,7 @@ import { DataTable } from "primereact/datatable";
 import { useContext, useMemo } from "react";
 
 export interface IOfferMadeListProps {
-  offerMadeList: IMakeOfferItem[];
+  offerMadeList: IOfferItem[];
   offerMadeListRefetch: () => void;
   nftRefetch: () => void;
   nftActivityRefetch: () => void;
@@ -24,16 +24,15 @@ const OfferMadeList = ({
 }: IOfferMadeListProps) => {
   const web3Context = useContext(AppContext);
 
-  const data = offerMadeList.map((item: IMakeOfferItem) => {
+  const data = offerMadeList.map((item: IOfferItem) => {
     return {
-      offererAddress: item.offerer,
-      orderHash: item.orderHash,
-      itemName: item.itemName,
-      itemImage: item.itemImage,
-      identifier: item.consideration[0].identifier,
-      price: item.offer[0].startAmount,
-      startTime: item.startTime,
-      endTime: item.endTime,
+      offererAddress: item.from,
+      orderHash: item.order_hash,
+      itemName: item.nft_name,
+      itemImage: item.nft_image,
+      identifier: item.token_id,
+      price: item.price,
+      endTime: item.end_time,
     };
   });
 

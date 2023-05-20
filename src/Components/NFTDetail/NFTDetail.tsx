@@ -815,7 +815,7 @@ const NFTDetail = ({
                           onClick={() => handleCancelOrder(nftDetail)}
                         >
                           <i className="pi pi-times pr-3"></i>
-                          Cancel sale
+                          Cancel sale (cancel all previous orders)
                         </button>
                       ) : (
                         <button
@@ -828,7 +828,15 @@ const NFTDetail = ({
                       )}
                     </div>
                     <Dialog
-                      header="Please input the price that you want to sell"
+                      header={
+                        <div>
+                          <p>Please input the price that you want to sell</p>
+                          <p className="text-sm italic text-rose-500">
+                            * If resell at a higher price, all previous orders
+                            will be canceled
+                          </p>
+                        </div>
+                      }
                       visible={visible}
                       style={{ width: "50vw", height: "22rem" }}
                       onHide={() => setVisible(false)}
