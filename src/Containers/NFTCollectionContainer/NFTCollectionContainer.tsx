@@ -22,7 +22,7 @@ const NFTCollectionContainer = () => {
   return (
     <>
       <ImageProfile collectionImage={collection}></ImageProfile>
-      <NFTInfor collectionInfo={collection}></NFTInfor>
+      <NFTInfor collectionInfo={collection} nftCollectionList={nftCollectionList}></NFTInfor>
       <NFTCollectionList
         nftCollectionList={nftCollectionList}
         mode={NFT_COLLECTION_MODE.CAN_BUY}
