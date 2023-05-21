@@ -1,18 +1,24 @@
 import "primeicons/primeicons.css";
 import { Tooltip } from "primereact/tooltip";
-import { useContext, useEffect, useState } from "react";
-import { ICollectionItem } from "@Interfaces/index";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { ICollectionItem, INFTCollectionItem } from "@Interfaces/index";
 import moment from "moment";
 import { Message } from "primereact/message";
 import { isApprovedForAll, setApprovedForAll } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { erc721Abi } from "@Constants/erc721Abi";
+import useNFTActivity from "@Hooks/useNFTActivity";
+import { useRouter } from "next/router";
 
 export interface ICollectionInfoProps {
   collectionInfo: ICollectionItem[];
+  nftCollectionList: INFTCollectionItem[][];
 }
 
-const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
+const NFTInfor = ({
+  collectionInfo,
+  nftCollectionList,
+}: ICollectionInfoProps) => {
   const [isSeeMore, setIsSeeMore] = useState(false);
   const handleClickToRead = () => {
     setIsSeeMore(!isSeeMore);
@@ -20,7 +26,12 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
   const [isApprovedForAllNfts, setApprovalForAllNfts] = useState(false);
   const [refetch, setRefetch] = useState<number>(0);
   const web3Context = useContext(AppContext);
-  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;  
+  const router = useRouter();
+  const token = router.query.token as string;
+  const { nftActivity, refetch: nftActivityRefetch } = useNFTActivity({
+    token: token
+  });
 
   useEffect(() => {
     const handleApprovalForAllNfts = async () => {
@@ -102,28 +113,53 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
     }
   };
 
-  // const totalVolume = useMemo(() => {
-  //   return Math.round(
-  //     (nftCollectionList
-  //       ? nftCollectionList.reduce(
-  //           (acc, cur) => acc + Number(cur[0].listings[0]?.start_price || 0),
-  //           0
-  //         )
-  //       : 0) / 1000000000000000000
-  //   );
-  // }, [nftCollectionList]);
+  const totalVolume = useMemo(() => {
+    let total = 0
+    let saleList = nftActivity.filter(act => act.name === "sale")
+    let salePriceList = saleList.map(sale => Number(sale.price))
+    for (let price of salePriceList) {
+      total += price
+    }
+      return total / 1000000000000000000
+  }, [nftActivity]);
 
-  // const floorPrice = useMemo(() => {
-  //   return Math.round(
-  //     (nftCollectionList
-  //       ? Math.min(
-  //           ...(nftCollectionList
-  //             .filter((item) => !!item[0].listings)
-  //             .map((item) => Number(item[0].listings[0]?.start_price)) as any)
-  //         )
-  //       : 0) / 1000000000000000000
-  //   );
-  // }, [nftCollectionList]);
+  const floorPrice = useMemo(() => {
+    const priceList: number[] = []
+    nftCollectionList.forEach(nft=>{
+      let price = Number(nft[0]?.listings[0]?.end_price)
+      if (!Number.isNaN(price)) {
+        priceList.push(price)
+      }
+    })
+    if (priceList.length > 0) {
+      return Math.min(...priceList) / 1000000000000000000
+    }
+    return NaN
+  }, [nftCollectionList]);
+
+  const bestOfferPrice = useMemo(() => {
+    let offerList = nftActivity.filter(act => act.name === "offer")
+    let offerPriceList = offerList.map(offer => Number(offer.price))
+    if (offerPriceList.length > 0) {
+      return Math.max(...offerPriceList) / 1000000000000000000
+    }
+    return NaN
+  }, [nftActivity]);
+
+  const listed = useMemo(() => {
+    let listedNft = nftCollectionList.filter(nft => nft[0].listings.length > 0)
+    return Math.round(listedNft.length / nftCollectionList.length * 100)
+  }, [nftCollectionList]);
+
+  const ownerCount = useMemo(() => {
+    let ownList = Array.from(new Set(nftCollectionList.map(nft => nft[0].owner)))
+    return ownList.length
+  }, [nftCollectionList]);
+
+  const uniqueOwner = useMemo(() => {
+    return Math.round(ownerCount / nftCollectionList.length * 100)
+  }, [ownerCount, nftCollectionList])
+  
 
   return (
     <div id="nft-infor">
@@ -138,22 +174,12 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
       <div className="flex pt-3 justify-between">
         <div className="flex detail-infor pt-3 text-lg">
           {" "}
-          {/* <div>
-          Items{" "}
-          <span className="font-semibold pr-1">
-          </span>
-        </div>
-        · */}
           <div className="">
             Created{" "}
             <span className="font-semibold pr-1">
               {moment(collectionInfo[0]?.created_at).format("MMMM Do YYYY")}
             </span>
           </div>
-          {/* ·
-        <div className="pl-1">
-          Creator earnings <span className="font-semibold pr-1">7.5%</span>
-        </div> */}
           ·
           <div className="pl-1">
             Chain <span className="font-semibold pr-1">Ethereum</span>
@@ -191,6 +217,44 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
           </div>
         )}
       </div>
+      <div className="flex pt-3 justify-between">
+        <div className="pl-1">
+          Items <span className="font-semibold pr-1">{nftCollectionList.length}</span>
+        </div>
+        <div className="pl-1">
+          Total Volume <span className="font-semibold pr-1">{totalVolume} ETH</span>
+        </div>
+        <div className="pl-1">
+          Floor Price 
+          <span className="font-semibold pr-1 pl-1">
+            {Number.isNaN(floorPrice) ? "--" : floorPrice + " ETH"}
+          </span>
+        </div>
+        <div className="pl-1">
+          Best Offer
+          <span className="font-semibold pr-1 pl-1">
+          {Number.isNaN(bestOfferPrice) ? "--" : bestOfferPrice + " WETH"}
+          </span>
+        </div>
+        <div className="pl-1">
+          Listed
+          <span className="font-semibold pr-1 pl-1">
+          {Number.isNaN(listed) ? 0 : listed} %
+          </span>
+        </div>
+        <div className="pl-1">
+          Owner
+          <span className="font-semibold pr-1 pl-1">
+          {ownerCount}
+          </span>
+        </div>
+        <div className="pl-1">
+          Unique Owner
+          <span className="font-semibold pr-1 pl-1">
+          {Number.isNaN(uniqueOwner) ? 0 : uniqueOwner} %
+          </span>
+        </div>
+      </div>
       <div className="pt-3">
         <p
           className={
@@ -211,34 +275,6 @@ const NFTInfor = ({ collectionInfo }: ICollectionInfoProps) => {
           </span>
         </button>
       </div>
-      {/* <div className="nft-statistics pt-4">
-        <div className="flex gap-5">
-          <div className="flex flex-col" role="button">
-            <div className="font-semibold text-lg"> ETH</div>
-            <div className="text-sm text-slate-500">total volume</div>
-          </div>
-          <div className="flex flex-col" role="button">
-            <div className="font-semibold text-lg"> ETH</div>
-            <div className="text-sm text-slate-500">floor price</div>
-          </div>
-          <div className="flex flex-col" role="button">
-            <div className="font-semibold text-lg">0.1527 WETH</div>
-            <div className="text-sm text-slate-500">best offer</div>
-          </div>
-          <div className="flex flex-col" role="button">
-            <div className="font-semibold text-lg">5%</div>
-            <div className="text-sm text-slate-500">listed</div>
-          </div>
-          <div className="flex flex-col" role="button">
-            <div className="font-semibold text-lg">2,412</div>
-            <div className="text-sm text-slate-500">owners</div>
-          </div>
-          <div className="flex flex-col" role="button">
-            <div className="font-semibold text-lg">60%</div>
-            <div className="text-sm text-slate-500">unique owners</div>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 };
