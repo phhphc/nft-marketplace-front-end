@@ -90,9 +90,12 @@ const OfferReceivedList = ({
   };
 
   const endTimeBodyTemplate = (rowData: IMakeOfferItem) => {
-    return moment(new Date(Number(rowData?.endTime) * 1000)).format(
-      "DD/MM/yyyy HH:mm"
-    );
+    return moment(new Date(Number(rowData?.endTime) * 1000)).format() ===
+      "Invalid date"
+      ? "None"
+      : moment(new Date(Number(rowData?.endTime) * 1000)).format(
+          "DD/MM/yyyy HH:mm"
+        );
   };
 
   const fulfillBodyTemplate = (rowData: IMakeOfferItem) => {
@@ -134,7 +137,7 @@ const OfferReceivedList = ({
         web3Context.state.web3.toast.current.show({
           severity: "success",
           summary: "Success",
-          detail: "Approve offer successfully!",
+          detail: "Fulfill offer successfully!",
           life: 5000,
         });
       offerReceivedListRefetch();
@@ -146,7 +149,7 @@ const OfferReceivedList = ({
         web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Fail to approve offer!",
+          detail: "Fail to fulfill offer!",
           life: 5000,
         });
     }
@@ -184,7 +187,7 @@ const OfferReceivedList = ({
         <Column header="End time" body={endTimeBodyTemplate}></Column>
         <Column
           field="fulfill"
-          header="Approve"
+          header="Fulfill"
           body={fulfillBodyTemplate}
         ></Column>
         {/* <Column
