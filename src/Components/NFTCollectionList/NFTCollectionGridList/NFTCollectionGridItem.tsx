@@ -427,7 +427,12 @@ const NFTCollectionGridItem = ({
             </div>
             {item[0].listings && (
               <p className="flex gap-1 text-sm font-medium text-gray-900 pt-1">
-                {showingPrice(item[0].listings[0]?.start_price || "0")}
+                {item[0].listings[0] &&
+                  showingPrice(
+                    item[0].listings[0]?.start_price || "0",
+                    CURRENCY_UNITS[0].value,
+                    true
+                  )}
               </p>
             )}
           </div>
@@ -537,13 +542,16 @@ const NFTCollectionGridItem = ({
                   <div>
                     <p>Please input the price that you want to sell</p>
                     <p className="text-sm italic text-rose-500">
+                      * 1 ETH = 1,000,000,000 Gwei
+                    </p>
+                    <p className="text-sm italic text-rose-500">
                       * If resell at a higher price, all previous orders will be
                       canceled
                     </p>
                   </div>
                 }
                 visible={visible}
-                style={{ width: "50vw", height: "22rem" }}
+                style={{ width: "50vw", height: "24rem" }}
                 onHide={() => setVisible(false)}
                 footer={
                   <div>

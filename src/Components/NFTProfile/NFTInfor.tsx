@@ -26,11 +26,11 @@ const NFTInfor = ({
   const [isApprovedForAllNfts, setApprovalForAllNfts] = useState(false);
   const [refetch, setRefetch] = useState<number>(0);
   const web3Context = useContext(AppContext);
-  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;  
+  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
   const router = useRouter();
   const token = router.query.token as string;
   const { nftActivity, refetch: nftActivityRefetch } = useNFTActivity({
-    token: token
+    token: token,
   });
 
   useEffect(() => {
@@ -114,52 +114,55 @@ const NFTInfor = ({
   };
 
   const totalVolume = useMemo(() => {
-    let total = 0
-    let saleList = nftActivity.filter(act => act.name === "sale")
-    let salePriceList = saleList.map(sale => Number(sale.price))
+    let total = 0;
+    let saleList = nftActivity.filter((act) => act.name === "sale");
+    let salePriceList = saleList.map((sale) => Number(sale.price));
     for (let price of salePriceList) {
-      total += price
+      total += price;
     }
-      return total / 1000000000000000000
+    return total / 1000000000000000000;
   }, [nftActivity]);
 
   const floorPrice = useMemo(() => {
-    const priceList: number[] = []
-    nftCollectionList.forEach(nft=>{
-      let price = Number(nft[0]?.listings[0]?.end_price)
+    const priceList: number[] = [];
+    nftCollectionList.forEach((nft) => {
+      let price = Number(nft[0]?.listings[0]?.end_price);
       if (!Number.isNaN(price)) {
-        priceList.push(price)
+        priceList.push(price);
       }
-    })
+    });
     if (priceList.length > 0) {
-      return Math.min(...priceList) / 1000000000000000000
+      return Math.min(...priceList) / 1000000000000000000;
     }
-    return NaN
+    return NaN;
   }, [nftCollectionList]);
 
   const bestOfferPrice = useMemo(() => {
-    let offerList = nftActivity.filter(act => act.name === "offer")
-    let offerPriceList = offerList.map(offer => Number(offer.price))
+    let offerList = nftActivity.filter((act) => act.name === "offer");
+    let offerPriceList = offerList.map((offer) => Number(offer.price));
     if (offerPriceList.length > 0) {
-      return Math.max(...offerPriceList) / 1000000000000000000
+      return Math.max(...offerPriceList) / 1000000000000000000;
     }
-    return NaN
+    return NaN;
   }, [nftActivity]);
 
   const listed = useMemo(() => {
-    let listedNft = nftCollectionList.filter(nft => nft[0].listings.length > 0)
-    return Math.round(listedNft.length / nftCollectionList.length * 100)
+    let listedNft = nftCollectionList.filter(
+      (nft) => nft[0].listings.length > 0
+    );
+    return Math.round((listedNft.length / nftCollectionList.length) * 100);
   }, [nftCollectionList]);
 
   const ownerCount = useMemo(() => {
-    let ownList = Array.from(new Set(nftCollectionList.map(nft => nft[0].owner)))
-    return ownList.length
+    let ownList = Array.from(
+      new Set(nftCollectionList.map((nft) => nft[0].owner))
+    );
+    return ownList.length;
   }, [nftCollectionList]);
 
   const uniqueOwner = useMemo(() => {
-    return Math.round(ownerCount / nftCollectionList.length * 100)
-  }, [ownerCount, nftCollectionList])
-  
+    return Math.round((ownerCount / nftCollectionList.length) * 100);
+  }, [ownerCount, nftCollectionList]);
 
   return (
     <div id="nft-infor">
@@ -218,14 +221,16 @@ const NFTInfor = ({
         )}
       </div>
       <div className="flex pt-3 justify-between">
-        <div className="pl-1">
-          Items <span className="font-semibold pr-1">{nftCollectionList.length}</span>
+        <div className="">
+          Items{" "}
+          <span className="font-semibold pr-1">{nftCollectionList.length}</span>
         </div>
         <div className="pl-1">
-          Total Volume <span className="font-semibold pr-1">{totalVolume} ETH</span>
+          Total Volume{" "}
+          <span className="font-semibold pr-1">{totalVolume} ETH</span>
         </div>
         <div className="pl-1">
-          Floor Price 
+          Floor Price
           <span className="font-semibold pr-1 pl-1">
             {Number.isNaN(floorPrice) ? "--" : floorPrice + " ETH"}
           </span>
@@ -233,25 +238,23 @@ const NFTInfor = ({
         <div className="pl-1">
           Best Offer
           <span className="font-semibold pr-1 pl-1">
-          {Number.isNaN(bestOfferPrice) ? "--" : bestOfferPrice + " WETH"}
+            {Number.isNaN(bestOfferPrice) ? "--" : bestOfferPrice + " WETH"}
           </span>
         </div>
         <div className="pl-1">
           Listed
           <span className="font-semibold pr-1 pl-1">
-          {Number.isNaN(listed) ? 0 : listed} %
+            {Number.isNaN(listed) ? 0 : listed}%
           </span>
         </div>
         <div className="pl-1">
           Owner
-          <span className="font-semibold pr-1 pl-1">
-          {ownerCount}
-          </span>
+          <span className="font-semibold pr-1 pl-1">{ownerCount}</span>
         </div>
         <div className="pl-1">
           Unique Owner
           <span className="font-semibold pr-1 pl-1">
-          {Number.isNaN(uniqueOwner) ? 0 : uniqueOwner} %
+            {Number.isNaN(uniqueOwner) ? 0 : uniqueOwner}%
           </span>
         </div>
       </div>

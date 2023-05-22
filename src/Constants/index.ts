@@ -139,9 +139,9 @@ export const MAPPING_STRING_TO_BIG_NUMBER = [
 ];
 
 export const CURRENCY = {
-  ETHER: "Ether",
+  ETHER: "ETH",
   GWEI: "Gwei",
-  TETHER: "TEther",
+  TETHER: "TETH",
 };
 
 export const CURRENCY_UNITS = [

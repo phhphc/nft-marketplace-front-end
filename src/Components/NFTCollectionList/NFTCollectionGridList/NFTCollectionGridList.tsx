@@ -127,13 +127,16 @@ const NFTCollectionGridList = ({
                     <div>
                       <p>Please input the price that you want to sell as bundle</p>
                       <p className="text-sm italic text-rose-500">
+                      * 1 ETH = 1,000,000,000 Gwei
+                    </p>
+                      <p className="text-sm italic text-rose-500">
                         * If resell at a higher price, all previous orders will be
                         canceled
                       </p>
                     </div>
                   }
                   visible={visible}
-                  style={{ width: "50vw", height: "22rem" }}
+                  style={{ width: "50vw", height: "24rem" }}
                   onHide={() => setVisible(false)}
                   footer={
                     <div>

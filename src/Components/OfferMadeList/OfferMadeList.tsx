@@ -86,9 +86,12 @@ const OfferMadeList = ({
   };
 
   const endTimeBodyTemplate = (rowData: IMakeOfferItem) => {
-    return moment(new Date(Number(rowData?.endTime) * 1000)).format(
-      "DD/MM/yyyy HH:mm"
-    );
+    return moment(new Date(Number(rowData?.endTime) * 1000)).format() ===
+      "Invalid date"
+      ? "None"
+      : moment(new Date(Number(rowData?.endTime) * 1000)).format(
+          "DD/MM/yyyy HH:mm"
+        );
   };
 
   const cancelBodyTemplate = (rowData: IMakeOfferItem) => {

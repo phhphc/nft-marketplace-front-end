@@ -19,7 +19,7 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
-import { CURRENCY_TRANSFER } from "@Constants/index";
+import { CURRENCY_TRANSFER, CURRENCY_UNITS } from "@Constants/index";
 
 const Header = () => {
   const web3Context = useContext(AppContext);
@@ -529,7 +529,7 @@ const Header = () => {
                     </div>
                     <span className="price text-sm">
                       {showingPrice(
-                        cartItem[0].listings[0]?.start_price || "0"
+                        cartItem[0].listings[0]?.start_price || "0", CURRENCY_UNITS[0].value, true
                       )}
                     </span>
                     <button
@@ -549,7 +549,7 @@ const Header = () => {
               <div className="flex justify-between border-t-2 mx-3 my-3 pt-3">
                 <span className="text-xl font-semibold">Total price</span>
                 <span className="font-semibold">
-                  {showingPrice(totalPrice.toString())}
+                  {showingPrice(totalPrice.toString(), CURRENCY_UNITS[0].value, true)}
                 </span>
               </div>
               <button
