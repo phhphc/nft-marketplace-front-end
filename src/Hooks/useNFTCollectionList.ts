@@ -21,13 +21,8 @@ const useNFTCollectionList = ({
   const result = useQuery({
     queryKey: `nftCollectionList-${token}-${owner}-${isHidden}-${provider}-${myWallet}`,
     queryFn: () =>
-      getNFTCollectionListService(
-        { token, owner, isHidden },
-        provider,
-        myWallet
-      ),
+      getNFTCollectionListService({ token, owner, isHidden }, myWallet),
     staleTime: Infinity,
-    retry: true,
   });
 
   const nftCollectionList: INFTCollectionItem[][] =
