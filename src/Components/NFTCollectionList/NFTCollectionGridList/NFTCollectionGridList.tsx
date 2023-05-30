@@ -63,6 +63,16 @@ const NFTCollectionGridList = ({
   const handleSellBundle = async () => {
     try {
       setVisible(false);
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await sellNFT({
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
@@ -125,13 +135,15 @@ const NFTCollectionGridList = ({
                 <Dialog
                   header={
                     <div>
-                      <p>Please input the price that you want to sell as bundle</p>
+                      <p>
+                        Please input the price that you want to sell as bundle
+                      </p>
                       <p className="text-sm italic text-rose-500">
-                      * 1 ETH = 1,000,000,000 Gwei
-                    </p>
+                        * 1 ETH = 1,000,000,000 Gwei
+                      </p>
                       <p className="text-sm italic text-rose-500">
-                        * If resell at a higher price, all previous orders will be
-                        canceled
+                        * If resell at a higher price, all previous orders will
+                        be canceled
                       </p>
                     </div>
                   }

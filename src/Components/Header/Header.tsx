@@ -22,6 +22,7 @@ import { Dropdown } from "primereact/dropdown";
 import { CURRENCY_TRANSFER, CURRENCY_UNITS } from "@Constants/index";
 
 const Header = () => {
+  const logOutInterval = useRef<any>();
   const web3Context = useContext(AppContext);
 
   // Wallet
@@ -113,11 +114,12 @@ const Header = () => {
   ]);
 
   useEffect(() => {
-    setInterval(() => {
+    logOutInterval.current = setInterval(() => {
       if (!window?.ethereum?._state?.isUnlocked) {
         handleLogOut();
       }
     }, 2000);
+    return clearInterval(logOutInterval.current);
   }, []);
 
   // Cart
@@ -173,6 +175,16 @@ const Header = () => {
   ) => {
     setCartModalVisible(false);
     try {
+      if (!provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       if (cart.length) {
         await buyToken({
           orderHashes: cart.map((item) => item.orderHash),
@@ -529,7 +541,9 @@ const Header = () => {
                     </div>
                     <span className="price text-sm">
                       {showingPrice(
-                        cartItem[0].listings[0]?.start_price || "0", CURRENCY_UNITS[0].value, true
+                        cartItem[0].listings[0]?.start_price || "0",
+                        CURRENCY_UNITS[0].value,
+                        true
                       )}
                     </span>
                     <button
@@ -549,7 +563,11 @@ const Header = () => {
               <div className="flex justify-between border-t-2 mx-3 my-3 pt-3">
                 <span className="text-xl font-semibold">Total price</span>
                 <span className="font-semibold">
-                  {showingPrice(totalPrice.toString(), CURRENCY_UNITS[0].value, true)}
+                  {showingPrice(
+                    totalPrice.toString(),
+                    CURRENCY_UNITS[0].value,
+                    true
+                  )}
                 </span>
               </div>
               <button

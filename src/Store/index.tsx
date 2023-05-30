@@ -89,9 +89,14 @@ const AppProvider = ({ children }: IAppProvider) => {
     const cart = JSON.parse(localStorage.getItem("shoppingCart") || "[]");
 
     const fetchData = async () => {
-      const provider = new ethers.providers.Web3Provider(
-        window.ethereum
-      );
+      dispatch({
+        type: WEB3_ACTION_TYPES.CHANGE,
+        payload: {
+          toast,
+          cart,
+        },
+      });
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       await provider.send("eth_requestAccounts", []);
 
       const signer = provider.getSigner();
@@ -102,10 +107,9 @@ const AppProvider = ({ children }: IAppProvider) => {
         payload: {
           provider,
           myAddress: await signer.getAddress(),
-          cart,
+
           myWallet: signer,
           chainId,
-          toast,
         },
       });
     };

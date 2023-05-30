@@ -543,6 +543,7 @@ export const handleAddToCart = (
 ) => {
   const currCart = web3Context.state.web3.cart;
   const newCart = [...currCart, { orderHash, quantity, price }];
+  console.log("🚀 ~ file: index.ts:546 ~ newCart:", newCart);
   web3Context.dispatch({
     type: WEB3_ACTION_TYPES.CHANGE,
     payload: {
