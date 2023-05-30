@@ -359,178 +359,6 @@ const NFTDetail = ({
                   : ""}
               </div>
             </div>
-            <Accordion multiple>
-              {/* <AccordionTab
-                className="properties"
-                header={
-                  <div className="flex space-x-2">
-                    <FontAwesomeIcon icon={faChartSimple} />
-                    <p>Properties</p>
-                  </div>
-                }
-              >
-                <div className="grid grid-cols-3">
-                  <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
-                    <span className="text-xs text-sky-500">BACKGOUND</span>
-                    <span className="text-lg text-black">Blue</span>
-                    <span className="text-sm text-gray-500">
-                      7% have this trait
-                    </span>
-                  </div>
-                  <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
-                    <span className="text-xs text-sky-500">FACIAL TEARS</span>
-                    <span className="text-lg text-black">CMYK</span>
-                    <span className="text-sm text-gray-500">
-                      68% have this trait
-                    </span>
-                  </div>
-                  <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
-                    <span className="text-xs text-sky-500">BACKGOUND</span>
-                    <span className="text-lg text-black">Blue</span>
-                    <span className="text-sm text-gray-500">
-                      7% have this trait
-                    </span>
-                  </div>
-                  <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
-                    <span className="text-xs text-sky-500">FACIAL TEARS</span>
-                    <span className="text-lg text-black">CMYK</span>
-                    <span className="text-sm text-gray-500">
-                      68% have this trait
-                    </span>
-                  </div>
-                  <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
-                    <span className="text-xs text-sky-500">BACKGOUND</span>
-                    <span className="text-lg text-black">Blue</span>
-                    <span className="text-sm text-gray-500">
-                      7% have this trait
-                    </span>
-                  </div>
-                  <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
-                    <span className="text-xs text-sky-500">FACIAL TEARS</span>
-                    <span className="text-lg text-black">CMYK</span>
-                    <span className="text-sm text-gray-500">
-                      68% have this trait
-                    </span>
-                  </div>
-                  <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
-                    <span className="text-xs text-sky-500">BACKGOUND</span>
-                    <span className="text-lg text-black">Blue</span>
-                    <span className="text-sm text-gray-500">
-                      7% have this trait
-                    </span>
-                  </div>
-                  <div className="properties-item flex flex-col items-center bg-sky-100 h-30 p-3 m-1 rounded-lg border border-blue-300">
-                    <span className="text-xs text-sky-500">FACIAL TEARS</span>
-                    <span className="text-lg text-black">CMYK</span>
-                    <span className="text-sm text-gray-500">
-                      68% have this trait
-                    </span>
-                  </div>
-                </div>
-              </AccordionTab> */}
-
-              {/* <AccordionTab
-                className="about"
-                header={
-                  <div className="flex space-x-2">
-                    <FontAwesomeIcon icon={faClipboard} />
-                    <p>
-                      About {nftDetail[selectedItemIndex].name.toUpperCase()} BY{" "}
-                      {"AuthorName"}
-                    </p>
-                  </div>
-                }
-              >
-                <div className="flex space-x-3">
-                  <img
-                    className="avatar w-6 h-6 rounded-3xl mt-2"
-                    src={
-                      nftDetail[selectedItemIndex].image != "<nil>"
-                        ? nftDetail[selectedItemIndex].image
-                        : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
-                    }
-                    alt=""
-                  />
-                  <span className="about-text">
-                    <span className="space-x-1">
-                      <Link className="text-blue-500" href="">
-                        GEMMA
-                      </Link>
-                      <span>
-                        (The Generative Electronic Museum of Metaverse Art) is a
-                        comprehensive generative art collection by
-                      </span>
-                      <Link className="text-blue-500" href="">
-                        Tristan Eaton
-                      </Link>
-                      .
-                      <span>
-                        Combining Eaton's stunning portraiture and layered
-                        collage, each piece carries its own unique personality
-                        and identity.
-                      </span>
-                    </span>
-                    <br />
-                    <span className="space-x-1">
-                      <span>ICategory</span>
-                      <span className="font-semibold">{"Art"}</span>
-                    </span>
-                  </span>
-                </div>
-                <div className="about-icons my-8 box-content">
-                  <Tooltip target=".website" position="top">
-                    Website
-                  </Tooltip>
-                  <i className="website cursor-pointer px-6 py-5 border-2 rounded-l-lg">
-                    <FontAwesomeIcon icon={faGlobe} />
-                  </i>
-                  <Tooltip target=".instagram" position="top">
-                    Instagram
-                  </Tooltip>
-                  <i className="instagram cursor-pointer px-6 py-5 border-2">
-                    <FontAwesomeIcon icon={faInstagram} />
-                  </i>
-                  <Tooltip target=".twitter" position="top">
-                    Twitter
-                  </Tooltip>
-                  <i className="twitter cursor-pointer px-6 py-5 border-2 rounded-r-lg">
-                    <FontAwesomeIcon icon={faTwitter} />
-                  </i>
-                </div>
-              </AccordionTab> */}
-              <AccordionTab
-                header={
-                  <div className="flex space-x-2">
-                    <FontAwesomeIcon icon={faInfoCircle} />
-                    <span>Details</span>
-                  </div>
-                }
-              >
-                <div className="space-y-3">
-                  <div className="w-full flex justify-between">
-                    <span>Token</span>
-
-                    <span className="text-blue-500 w-28 overflow-hidden text-ellipsis">
-                      {nftDetail[selectedItemIndex]?.token}
-                    </span>
-                  </div>
-                  <div className="w-full flex justify-between">
-                    <span>Identifier</span>
-                    <span className="text-blue-500 w-28 overflow-hidden text-ellipsis">
-                      {nftDetail[selectedItemIndex]?.identifier}
-                    </span>
-                  </div>
-                  <div className="w-full flex justify-between">
-                    <span>Token Standard</span>
-                    <span className="text-blue-500">{"ERC-721"}</span>
-                  </div>
-                  <div className="w-full flex justify-between">
-                    <span>Chain</span>
-                    <span className="text-blue-500">{"Ethereum"}</span>
-                  </div>
-                </div>
-              </AccordionTab>
-            </Accordion>
           </div>
         </div>
         <div id="right-side" className="col-span-3">
@@ -547,28 +375,6 @@ const NFTDetail = ({
                 : nftDetail[selectedItemIndex]?.owner}
             </span>
           </h2>
-          {/* <div className="flex flex-start space-x-8 pt-5 pb-8">
-          <div className="view space-x-1">
-            <i>
-              <FontAwesomeIcon icon={faEye} />
-            </i>
-            <span>{100}</span>
-            <span>views</span>
-          </div>
-          <div className="favorite space-x-1">
-            <i>
-              <FontAwesomeIcon icon={faHeart} />
-            </i>
-            <span>{12}</span>
-            <span>favorites</span>
-          </div>
-          <div className="category space-x-1">
-            <i className="">
-              <FontAwesomeIcon icon={faShapes} />
-            </i>
-            <span>{"Art"}</span>
-          </div>
-        </div> */}
           <div className="flex flex-col gap-7">
             <div className="boxes w-full border rounded-lg mt-5">
               {nftDetail[selectedItemIndex]?.listings &&
@@ -583,26 +389,6 @@ const NFTDetail = ({
                   ${moment(endTime).format("MMMM Do YYYY HH:mm")}`}
                       </span>
                     </div>
-                    {/* <div className="time flex item-center space-x-14 mt-2">
-                      <div className="day flex flex-col">
-                        <span className="font-semibold text-2xl">
-                          {endTime.getDate()}
-                        </span>
-                        <span>Days</span>
-                      </div>
-                      <div className="hour flex flex-col">
-                        <span className="font-semibold text-2xl">
-                          {endTime.getHours()}
-                        </span>
-                        <span>Hours</span>
-                      </div>
-                      <div className="minute flex flex-col">
-                        <span className="font-semibold text-2xl">
-                          {endTime.getMinutes()}
-                        </span>
-                        <span>Minutes</span>
-                      </div>
-                    </div> */}
                   </div>
                 )}
               <div className="flex flex-col p-5 ">
@@ -785,6 +571,7 @@ const NFTDetail = ({
                             className="flex w-1/2"
                             touchUI
                             showButtonBar
+                            hideOnDateTimeSelect
                           />
                         )}
                       </Dialog>
@@ -932,6 +719,7 @@ const NFTDetail = ({
                           className="flex w-3/5"
                           touchUI
                           showButtonBar
+                          hideOnDateTimeSelect
                         />
                       )}
                     </Dialog>

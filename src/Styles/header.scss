@@ -1,31 +1,35 @@
 .p-sidebar-right .p-sidebar {
- width: 380px;
- height: 520px;
- padding-top: 20px;
- right: 10px;
- border-radius: 5px;
- .p-sidebar-header {
-  display: none;
- }
+  width: 380px;
+  height: 520px;
+  padding-top: 20px;
+  right: 10px;
+  border-radius: 5px;
+  .p-sidebar-header {
+    display: none;
+  }
 }
 
 .profile-btn {
- &:hover {
-  .profile-menu {
-   display: flex;
+  &:hover {
+    .profile-menu {
+      display: flex;
+    }
   }
- }
 }
 
 .cart-modal {
- .cart-item {
-  &:hover {
-   .price {
-    display: none;
-   }
-   .delete-cart-btn {
-    display: flex;
-   }
+  .cart-item {
+    &:hover {
+      .price {
+        display: none;
+      }
+      .delete-cart-btn {
+        display: flex;
+      }
+    }
   }
- }
+}
+
+.p-listbox.p-component {
+  border: unset;
 }
