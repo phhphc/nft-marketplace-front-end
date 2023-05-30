@@ -92,6 +92,16 @@ const NFTCollectionGridItem = ({
     }
     try {
       setVisible(false);
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await sellNFT({
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
@@ -139,6 +149,17 @@ const NFTCollectionGridItem = ({
 
   const handleBuyToken = async (item?: INFTCollectionItem[]) => {
     try {
+      if (!web3Context.state.web3.provider) {
+        console.log(web3Context);
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       if (item) {
         await buyToken({
           orderHashes: [item[0].listings[0].order_hash],
@@ -168,6 +189,16 @@ const NFTCollectionGridItem = ({
 
   const handleCancelOrder = async (item?: INFTCollectionItem[]) => {
     try {
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       if (item) {
         await cancelOrder({
           orderHashes: item[0].listings.map(
@@ -462,7 +493,17 @@ const NFTCollectionGridItem = ({
               ) : (
                 <button
                   className="w-12 h-12 bg-red-500 hover:bg-red-700 rounded-r-md border-white"
-                  onClick={() =>
+                  onClick={() => {
+                    if (!web3Context.state.web3.provider) {
+                      web3Context.state.web3.toast.current &&
+                        web3Context.state.web3.toast.current.show({
+                          severity: "error",
+                          summary: "Error",
+                          detail: "Please login your wallet",
+                          life: 5000,
+                        });
+                      return;
+                    }
                     handleAddToCart(
                       web3Context,
                       item[0].listings[0].order_hash,
@@ -471,8 +512,8 @@ const NFTCollectionGridItem = ({
                         Number(item[0].listings[0]?.start_price) *
                           item.length || 0
                       ).toString()
-                    )
-                  }
+                    );
+                  }}
                 >
                   <i
                     className="pi pi-cart-plus text-white pt-1"

@@ -29,6 +29,7 @@ export interface IHeaderProps {
 }
 
 const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
+  const logOutInterval = useRef<any>();
   const web3Context = useContext(AppContext);
 
   // Wallet
@@ -121,11 +122,12 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   ]);
 
   useEffect(() => {
-    setInterval(() => {
+    logOutInterval.current = setInterval(() => {
       if (!window?.ethereum?._state?.isUnlocked) {
         handleLogOut();
       }
     }, 2000);
+    return () => clearInterval(logOutInterval.current);
   }, []);
 
   // Cart
@@ -181,6 +183,16 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   ) => {
     setCartModalVisible(false);
     try {
+      if (!provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       if (cart.length) {
         await buyToken({
           orderHashes: cart.map((item) => item.orderHash),

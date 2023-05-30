@@ -112,6 +112,16 @@ const NFTDetail = ({
     }
     try {
       setVisible(false);
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await sellNFT({
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
@@ -159,6 +169,16 @@ const NFTDetail = ({
 
   const handleBuyToken = async (item?: INFTCollectionItem[]) => {
     try {
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       if (item) {
         await buyToken({
           orderHashes: [item[0].listings[0].order_hash],
@@ -201,6 +221,16 @@ const NFTDetail = ({
     }
     try {
       setDialogMakeOffer(false);
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await makeOffer({
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
@@ -233,6 +263,16 @@ const NFTDetail = ({
 
   const handleCancelOrder = async (item?: INFTCollectionItem[]) => {
     try {
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       if (item) {
         await cancelOrder({
           orderHashes: item[0].listings.map(
@@ -441,7 +481,17 @@ const NFTDetail = ({
                         ) : (
                           <button
                             className="w-16 bg-red-500 hover:bg-red-700 rounded-r-md border-white"
-                            onClick={() =>
+                            onClick={() => {
+                              if (!web3Context.state.web3.provider) {
+                                web3Context.state.web3.toast.current &&
+                                  web3Context.state.web3.toast.current.show({
+                                    severity: "error",
+                                    summary: "Error",
+                                    detail: "Please login your wallet",
+                                    life: 5000,
+                                  });
+                                return;
+                              }
                               handleAddToCart(
                                 web3Context,
                                 nftDetail[0].listings[0].order_hash,
@@ -451,8 +501,8 @@ const NFTDetail = ({
                                     nftDetail[0].listings[0]?.start_price
                                   ) * nftDetail.length || 0
                                 ).toString()
-                              )
-                            }
+                              );
+                            }}
                           >
                             <i
                               className="pi pi-cart-plus text-white pt-1"

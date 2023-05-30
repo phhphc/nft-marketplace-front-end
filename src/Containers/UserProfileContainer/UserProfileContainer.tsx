@@ -60,7 +60,7 @@ const UserProfileContainer = () => {
       ) : (
         <Message
           severity="warn"
-          text="You must to login your wallet!"
+          text="Please login your wallet!"
           className="flex h-40"
         />
       )}

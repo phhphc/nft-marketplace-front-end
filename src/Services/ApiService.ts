@@ -53,7 +53,7 @@ interface IMakeOfferProps {
   endDate: Date | null;
 }
 
-interface IGetOfferListProps{
+interface IGetOfferListProps {
   owner?: string;
   from?: string;
 }
@@ -384,22 +384,14 @@ export const sellNFT = async ({
     afterApprove && afterApprove();
   }
 
-  const oldPrice = item[0].listings?.[0]?.start_price || 0;
-
-  if (
-    Number(unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price)) >
-      Number(oldPrice) &&
-    Number(oldPrice) !== 0
-  ) {
-    await cancelOrder({
-      orderHashes: item[0].listings.map(
-        (listing: IListing) => listing.order_hash
-      ),
-      myWallet,
-      provider,
-      myAddress,
-    });
-  }
+  await cancelOrder({
+    orderHashes: item[0].listings.map(
+      (listing: IListing) => listing.order_hash
+    ),
+    myWallet,
+    provider,
+    myAddress,
+  });
 
   const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 
@@ -647,6 +639,7 @@ export const cancelOrder = async ({
   provider,
   myAddress,
 }: ICancelOrderProps) => {
+  if (!orderHashes?.length) return;
   const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
 
   const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
