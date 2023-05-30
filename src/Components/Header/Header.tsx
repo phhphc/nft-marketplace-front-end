@@ -119,7 +119,7 @@ const Header = () => {
         handleLogOut();
       }
     }, 2000);
-    return clearInterval(logOutInterval.current);
+    return () => clearInterval(logOutInterval.current);
   }, []);
 
   // Cart
