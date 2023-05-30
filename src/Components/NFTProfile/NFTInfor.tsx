@@ -238,7 +238,7 @@ const NFTInfor = ({
         <div className="pl-1">
           Best Offer
           <span className="font-semibold pr-1 pl-1">
-            {Number.isNaN(bestOfferPrice) ? "--" : bestOfferPrice + " WETH"}
+            {Number.isNaN(bestOfferPrice) ? "--" : bestOfferPrice + " ETH"}
           </span>
         </div>
         <div className="pl-1">

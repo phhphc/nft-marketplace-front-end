@@ -62,6 +62,16 @@ const NFTCollectionTableList = ({
 
   const handleBuyToken = async (item?: INFTCollectionItem[]) => {
     try {
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       if (item) {
         await buyToken({
           orderHashes: [item[0].listings[0].order_hash],
@@ -103,6 +113,16 @@ const NFTCollectionTableList = ({
     }
     try {
       setVisible(false);
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await sellNFT({
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
@@ -162,6 +182,16 @@ const NFTCollectionTableList = ({
     }
     try {
       setDialogMakeOffer(false);
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await makeOffer({
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,
@@ -193,6 +223,16 @@ const NFTCollectionTableList = ({
 
   const handleCancelOrder = async (item?: INFTCollectionItem[]) => {
     try {
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       if (item) {
         await cancelOrder({
           orderHashes: item[0].listings.map(
@@ -579,6 +619,16 @@ const NFTCollectionTableList = ({
 
   const handleSellBundle = async () => {
     try {
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await sellNFT({
         provider: web3Context.state.web3.provider,
         myAddress: web3Context.state.web3.myAddress,

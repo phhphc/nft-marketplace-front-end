@@ -106,6 +106,16 @@ const OfferMadeList = ({
 
   const handleCancelOrder = async (item: IMakeOfferItem) => {
     try {
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       if (item) {
         await cancelOrder({
           orderHashes: [item.orderHash],
