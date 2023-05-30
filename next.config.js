@@ -42,6 +42,10 @@ module.exports = () => {
         source: "/api/v0.1/nft/:token*/:identifier*",
         destination: `${process.env.BACKEND_URL}/nft/:token*/:identifier*`,
       },
+      {
+        source: "/api/v0.1/notification",
+        destination: `${process.env.BACKEND_URL}/notification`,
+      },
     ];
   };
   return {

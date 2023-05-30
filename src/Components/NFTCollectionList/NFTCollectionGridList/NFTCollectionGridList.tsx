@@ -232,6 +232,7 @@ const NFTCollectionGridList = ({
                       className="flex w-3/5"
                       touchUI
                       showButtonBar
+                      hideOnDateTimeSelect
                     />
                   )}
                 </Dialog>

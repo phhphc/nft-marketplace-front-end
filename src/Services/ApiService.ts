@@ -19,6 +19,7 @@ import {
   ICollectionItem,
   IListing,
   INFTActivity,
+  INotification,
   IOfferItem,
   IProfile,
 } from "@Interfaces/index";
@@ -1149,4 +1150,22 @@ export const hideNFTService = async ({
       "Content-Type": "application/json",
     },
   });
+};
+
+export const getNotificationByOwnerService = async (
+  owner: string
+): Promise<INotification[]> => {
+  return axios
+    .get("/api/v0.1/notification", {
+      params: { address: owner },
+    })
+    .then((response) => {
+      const res = response.data.data.notifications.sort(
+        (a: INotification, b: INotification) => {
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        }
+      );
+      return res || [];
+    })
+    .catch((err) => {});
 };

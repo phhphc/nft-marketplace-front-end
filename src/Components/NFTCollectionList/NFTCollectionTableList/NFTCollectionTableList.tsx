@@ -484,6 +484,7 @@ const NFTCollectionTableList = ({
                   className="flex w-3/5"
                   touchUI
                   showButtonBar
+                  hideOnDateTimeSelect
                 />
               )}
             </Dialog>
@@ -598,6 +599,7 @@ const NFTCollectionTableList = ({
                 className="flex w-1/2"
                 touchUI
                 showButtonBar
+                hideOnDateTimeSelect
               />
             )}
           </Dialog>
@@ -787,6 +789,7 @@ const NFTCollectionTableList = ({
                       className="flex w-3/5"
                       touchUI
                       showButtonBar
+                      hideOnDateTimeSelect
                     />
                   )}
                 </Dialog>

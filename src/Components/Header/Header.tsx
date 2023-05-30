@@ -10,7 +10,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ethers } from "ethers";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
-import { INFTCollectionItem } from "@Interfaces/index";
+import { INFTCollectionItem, INotification } from "@Interfaces/index";
 import { handleRemoveFromCart, showingPrice } from "@Utils/index";
 import { buyToken, transferCurrency } from "@Services/ApiService";
 import { erc20Abi } from "@Constants/erc20Abi";
@@ -20,8 +20,15 @@ import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { CURRENCY_TRANSFER, CURRENCY_UNITS } from "@Constants/index";
+import { Badge } from "primereact/badge";
+import { ListBox } from "primereact/listbox";
 
-const Header = () => {
+export interface IHeaderProps {
+  notification: INotification[];
+  notificationRefetch: () => void;
+}
+
+const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   const logOutInterval = useRef<any>();
   const web3Context = useContext(AppContext);
 
@@ -29,6 +36,7 @@ const Header = () => {
   const [walletConnected, setWalletConnected] = useState(false);
   const [refetch, setRefetch] = useState<number>(0);
   const [walletModalVisible, setWalletModalVisible] = useState(false);
+  const [notificationVisible, setNotificationVisible] = useState(false);
   const [ethBalance, setEthBalance] = useState(0);
   const [erc20Balance, setErc20Balance] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -255,6 +263,27 @@ const Header = () => {
     }
   };
 
+  console.log("notification", notification);
+
+  const [selectedNotification, setSelectedNotification] = useState(null);
+
+  const notificationListTemplate = (noti: any) => {
+    return (
+      <div className="flex items-center rounded">
+        <img
+          alt={noti.nft_name}
+          src={noti.nft_image}
+          style={{ width: "3rem", height: "3rem", marginRight: "1rem" }}
+          className="rounded-full"
+        />
+        <div>
+          {noti.nft_name}You reived a offer from thinh nguyen dep trai hahahaha
+
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div id="header" className="fixed top-0 right-0 left-0 h-24 z-10">
       <div className="flex h-full w-full bg-gray-100 shadow items-center justify-between px-10">
@@ -272,7 +301,6 @@ const Header = () => {
           />
         </span>
 
-        {/* Profile, wallet and cart */}
         <div
           id="navbar"
           className="w-70 flex items-center justify-end space-x-5"
@@ -280,39 +308,132 @@ const Header = () => {
           {/* Profile icon and wallet icon when connecting to wallet */}
           {walletConnected && (
             <>
-              {/* Profile */}
-              <Link href={`/user-profile`} className="profile-btn relative">
-                <button className="rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center">
-                  <i className="pi pi-user text-black text-3xl"></i>
-                </button>
-
-                <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
-                  <Link
-                    href={`/user-profile`}
-                    className="py-3 w-full hover:bg-slate-200 rounded-t-lg border-b"
+              {/* Notification */}
+              <button
+                className="w-10 h-10 rounded-full hover:bg-gray-300"
+                onClick={() => setNotificationVisible(true)}
+              >
+                <i className="pi pi-bell p-overlay-badge text-black text-3xl">
+                  {notification.length>0 && (
+                    <Badge
+                      value={notification.length}
+                      severity="danger"
+                    ></Badge>
+                  )}
+                </i>
+              </button>
+              <Sidebar
+                position="right"
+                visible={notificationVisible}
+                onHide={() => setNotificationVisible(false)}
+              >
+                <h2 className="text-2xl font-bold mb-2">Notification</h2>
+                <ListBox
+                  value={selectedNotification}
+                  onChange={(e) => setSelectedNotification(e.value)}
+                  options={notification}
+                  optionLabel="name"
+                  itemTemplate={notificationListTemplate}
+                  className=""
+                />
+              </Sidebar>
+              {/* Cart */}
+              <button
+                className="cart rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center"
+                onClick={() => setCartModalVisible(true)}
+              >
+                <i className="pi pi-cart-plus text-black text-3xl"></i>
+              </button>
+              <Tooltip target=".cart" position="bottom">
+                Open cart
+              </Tooltip>
+              <Sidebar
+                className="cart-modal"
+                visible={cartModalVisible}
+                position="right"
+                onHide={() => setCartModalVisible(false)}
+              >
+                <div className="flex flex-col text-black overflow-y-auto">
+                  <div className="text-xl font-bold mx-3 pb-4 border-b-2">
+                    YOUR CART
+                  </div>
+                  <div className="flex justify-between items-center font-bold m-3">
+                    <span>{cartItemList.length} item(s)</span>
+                    <button
+                      className="bg-red-500 p-2 text-white rounded-lg hover:bg-red-400"
+                      onClick={() => handleRemoveAllFromCart()}
+                    >
+                      Remove all
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {cartItemList.map((cartItem) => (
+                      <div
+                        key={cartItem[0].name}
+                        className="cart-item flex justify-between items-center w-full py-2 px-4 rounded-lg hover:bg-gray-100"
+                      >
+                        <div className="flex justify-start space-x-2">
+                          <Link href={`/detail/${cartItem[0].identifier}`}>
+                            <img
+                              src={cartItem[0].image}
+                              alt="cart-item"
+                              className="h-16 w-16 rounded-lg"
+                            />
+                          </Link>
+                          <div className="flex flex-col items-start justify-start text-sm">
+                            {cartItem.length > 1 && (
+                              <span className="font-medium">Bundle</span>
+                            )}
+                            {cartItem.map((item) => (
+                              <span className="font-medium">{item.name}</span>
+                            ))}
+                          </div>
+                        </div>
+                        <span className="price text-sm">
+                          {showingPrice(
+                            cartItem[0].listings[0]?.start_price || "0",
+                            CURRENCY_UNITS[0].value,
+                            true
+                          )}
+                        </span>
+                        <button
+                          className="delete-cart-btn hidden"
+                          onClick={() =>
+                            handleRemoveFromCart(
+                              web3Context,
+                              cartItem[0].listings[0].order_hash
+                            )
+                          }
+                        >
+                          <i className="pi pi-trash" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between border-t-2 mx-3 my-3 pt-3">
+                    <span className="text-xl font-semibold">Total price</span>
+                    <span className="font-semibold">
+                      {showingPrice(
+                        totalPrice.toString(),
+                        CURRENCY_UNITS[0].value,
+                        true
+                      )}
+                    </span>
+                  </div>
+                  <button
+                    className="bg-sky-500 p-4 rounded-lg text-xl font-semibold text-white hover:bg-sky-400"
+                    onClick={() =>
+                      handleBuyShoppingCart(
+                        web3Context.state.web3.myWallet,
+                        web3Context.state.web3.provider,
+                        web3Context.state.web3.cart
+                      )
+                    }
                   >
-                    <span className="ml-4">Profile</span>
-                  </Link>
-                  <Link
-                    href={`/my-collections`}
-                    className="py-3 w-full hover:bg-slate-200 border-b"
-                  >
-                    <span className="ml-4">My Collections</span>
-                  </Link>
-                  <Link
-                    href={`/create-collection`}
-                    className="py-3 w-full hover:bg-slate-200 border-b"
-                  >
-                    <span className="ml-4">New Collection</span>
-                  </Link>
-                  <Link
-                    href={`/create-nft`}
-                    className="py-3 w-full hover:bg-slate-200 rounded-b-lg border-b"
-                  >
-                    <span className="ml-4">Create NFT</span>
-                  </Link>
+                    Purchase
+                  </button>
                 </div>
-              </Link>
+              </Sidebar>
 
               {/* Wallet */}
               <button
@@ -439,6 +560,39 @@ const Header = () => {
                   </div>
                 </div>
               </Sidebar>
+              {/* Profile */}
+              <Link href={`/user-profile`} className="profile-btn relative">
+                <button className="rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center">
+                  <i className="pi pi-user text-black text-3xl"></i>
+                </button>
+
+                <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
+                  <Link
+                    href={`/user-profile`}
+                    className="py-3 w-full hover:bg-slate-200 rounded-t-lg border-b"
+                  >
+                    <span className="ml-4">Profile</span>
+                  </Link>
+                  <Link
+                    href={`/my-collections`}
+                    className="py-3 w-full hover:bg-slate-200 border-b"
+                  >
+                    <span className="ml-4">My Collections</span>
+                  </Link>
+                  <Link
+                    href={`/create-collection`}
+                    className="py-3 w-full hover:bg-slate-200 border-b"
+                  >
+                    <span className="ml-4">New Collection</span>
+                  </Link>
+                  <Link
+                    href={`/create-nft`}
+                    className="py-3 w-full hover:bg-slate-200 rounded-b-lg border-b"
+                  >
+                    <span className="ml-4">Create NFT</span>
+                  </Link>
+                </div>
+              </Link>
             </>
           )}
           {/* Wallet if not connect to wallet */}
@@ -487,103 +641,6 @@ const Header = () => {
               </Sidebar>
             </div>
           )}
-          {/* Cart */}
-          <button
-            className="cart rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center"
-            onClick={() => setCartModalVisible(true)}
-          >
-            <i className="pi pi-cart-plus text-black text-3xl"></i>
-          </button>
-          <Tooltip target=".cart" position="bottom">
-            Open cart
-          </Tooltip>
-          <Sidebar
-            className="cart-modal"
-            visible={cartModalVisible}
-            position="right"
-            onHide={() => setCartModalVisible(false)}
-          >
-            <div className="flex flex-col text-black overflow-y-auto">
-              <div className="text-xl font-bold mx-3 pb-4 border-b-2">
-                YOUR CART
-              </div>
-              <div className="flex justify-between items-center font-bold m-3">
-                <span>{cartItemList.length} item(s)</span>
-                <button
-                  className="bg-red-500 p-2 text-white rounded-lg hover:bg-red-400"
-                  onClick={() => handleRemoveAllFromCart()}
-                >
-                  Remove all
-                </button>
-              </div>
-              <div className="space-y-2">
-                {cartItemList.map((cartItem) => (
-                  <div
-                    key={cartItem[0].name}
-                    className="cart-item flex justify-between items-center w-full py-2 px-4 rounded-lg hover:bg-gray-100"
-                  >
-                    <div className="flex justify-start space-x-2">
-                      <Link href={`/detail/${cartItem[0].identifier}`}>
-                        <img
-                          src={cartItem[0].image}
-                          alt="cart-item"
-                          className="h-16 w-16 rounded-lg"
-                        />
-                      </Link>
-                      <div className="flex flex-col items-start justify-start text-sm">
-                        {cartItem.length > 1 && (
-                          <span className="font-medium">Bundle</span>
-                        )}
-                        {cartItem.map((item) => (
-                          <span className="font-medium">{item.name}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <span className="price text-sm">
-                      {showingPrice(
-                        cartItem[0].listings[0]?.start_price || "0",
-                        CURRENCY_UNITS[0].value,
-                        true
-                      )}
-                    </span>
-                    <button
-                      className="delete-cart-btn hidden"
-                      onClick={() =>
-                        handleRemoveFromCart(
-                          web3Context,
-                          cartItem[0].listings[0].order_hash
-                        )
-                      }
-                    >
-                      <i className="pi pi-trash" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-between border-t-2 mx-3 my-3 pt-3">
-                <span className="text-xl font-semibold">Total price</span>
-                <span className="font-semibold">
-                  {showingPrice(
-                    totalPrice.toString(),
-                    CURRENCY_UNITS[0].value,
-                    true
-                  )}
-                </span>
-              </div>
-              <button
-                className="bg-sky-500 p-4 rounded-lg text-xl font-semibold text-white hover:bg-sky-400"
-                onClick={() =>
-                  handleBuyShoppingCart(
-                    web3Context.state.web3.myWallet,
-                    web3Context.state.web3.provider,
-                    web3Context.state.web3.cart
-                  )
-                }
-              >
-                Purchase
-              </button>
-            </div>
-          </Sidebar>
         </div>
       </div>
     </div>

@@ -467,15 +467,6 @@ const NFTCollectionGridItem = ({
               </p>
             )}
           </div>
-          {/* {canBuy(item) && (
-            <SplitButton
-              className="w-full absolute bottom-0 left-0 right-0"
-              label="Buy now"
-              onClick={() => handleBuyToken(item)}
-              severity="danger"
-              dropdownIcon="pi pi-cart-plus"
-            />
-          )} */}
           {canBuy(item) && (
             <div className="flex justify-between w-full absolute bottom-0 left-0 right-0">
               <button
@@ -485,19 +476,6 @@ const NFTCollectionGridItem = ({
                 Buy Now
               </button>
               {isAddedToCart ? (
-                // <div
-                //   onClick={() =>
-                //     handleRemoveFromCart(
-                //       web3Context,
-                //       item[0].listings[0].order_hash
-                //     )
-                //   }
-                //   className="flex justify-center gap-1 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md cursor-pointer"
-                // >
-                //   <div className=" text-red-600 text-base">
-                //     Remove from cart
-                //   </div>
-                // </div>
                 <button
                   className="w-12 h-12 bg-red-500 hover:bg-red-700 rounded-r-md border-white"
                   onClick={() =>
@@ -513,23 +491,6 @@ const NFTCollectionGridItem = ({
                   ></i>
                 </button>
               ) : (
-                // <div
-                //   onClick={() =>
-                //     handleAddToCart(
-                //       web3Context,
-                //       item[0].listings[0].order_hash,
-                //       1,
-                //       (
-                //         Number(item[0].listings[0]?.start_price) *
-                //           item.length || 0
-                //       ).toString()
-                //     )
-                //   }
-                //   className="flex justify-center gap-2 w-44 bg-red-200 hover:bg-red-300 h-10 pt-2 rounded-md cursor-pointer"
-                // >
-                //   <i className="pi pi-cart-plus text-red-600 pt-1"></i>
-                //   <div className=" text-red-600 text-base">Add to cart</div>
-                // </div>
                 <button
                   className="w-12 h-12 bg-red-500 hover:bg-red-700 rounded-r-md border-white"
                   onClick={() => {
@@ -564,12 +525,6 @@ const NFTCollectionGridItem = ({
           )}
           {canSell(item) && (
             <div className="flex">
-              {/* <button
-                className="w-4/5 bg-green-500 hover:bg-green-700 h-10 text-white rounded-md absolute bottom-0 left-0 right-0"
-                onClick={() => setVisible(true)}
-              >
-                Sell
-              </button> */}
               <SplitButton
                 className="w-full absolute bottom-0 left-0 right-0"
                 label={`${canResell(item) ? "Resell" : "Sell"}`}
@@ -676,6 +631,7 @@ const NFTCollectionGridItem = ({
                     className="flex w-3/5"
                     touchUI
                     showButtonBar
+                    hideOnDateTimeSelect
                   />
                 )}
               </Dialog>

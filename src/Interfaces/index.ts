@@ -260,3 +260,22 @@ export interface IProfile {
   metadata?: IMetaDataProfile;
   username?: string;
 }
+
+export interface INotification {
+  is_viewed: boolean;
+  info: string;
+  event_name: string;
+  order_hash: string;
+  address: string;
+  token: string;
+  token_id: string;
+  quantity: number;
+  type: string;
+  price: string;
+  from: string;
+  to: string;
+  date: string;
+  owner: string;
+  nft_image: string;
+  nft_name: string;
+}
