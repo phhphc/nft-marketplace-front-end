@@ -57,6 +57,16 @@ const NFTInfor = ({
 
   const handleSetApproval = async () => {
     try {
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await setApprovedForAll({
         contractAddress: collectionInfo[0]?.token,
         contractAbi: erc721Abi,
@@ -86,6 +96,16 @@ const NFTInfor = ({
 
   const handleCancelApproval = async () => {
     try {
+      if (!web3Context.state.web3.provider) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await setApprovedForAll({
         contractAddress: collectionInfo[0]?.token,
         contractAbi: erc721Abi,
