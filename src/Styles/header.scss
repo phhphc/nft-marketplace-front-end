@@ -33,3 +33,7 @@
 .p-listbox.p-component {
   border: unset;
 }
+
+.p-listbox .p-listbox-list .p-listbox-item {
+  padding: 0.75rem 0;
+}

@@ -153,6 +153,11 @@ interface IHideNFTProps {
   isHidden: boolean;
 }
 
+interface ISetViewdNotifProps {
+  eventName: string;
+  orderHash: string;
+}
+
 export const getNFTCollectionListService = async (
   additionalParams: {
     [k: string]: any;
@@ -1168,4 +1173,20 @@ export const getNotificationByOwnerService = async (
       return res || [];
     })
     .catch((err) => {});
+};
+
+export const setViewdNotifService = async ({
+  eventName,
+  orderHash,
+}: ISetViewdNotifProps) => {
+  const params = JSON.stringify({
+    event_name: eventName,
+    order_hash: orderHash,
+  });
+
+  await axios.post("/api/v0.1/notification", params, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };

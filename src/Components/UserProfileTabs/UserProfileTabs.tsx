@@ -9,6 +9,8 @@ import {
 } from "@Interfaces/index";
 import { TabView, TabPanel } from "primereact/tabview";
 import OfferMadeList from "@Components/OfferMadeList/OfferMadeList";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 
 export interface IUserProfileTabsProps {
   nftCollectionList: INFTCollectionItem[][];
@@ -33,9 +35,20 @@ const UserProfileTabs = ({
   nftActivity,
   nftActivityRefetch,
 }: IUserProfileTabsProps) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.query.notif === "offer_received") {
+      window.scrollTo({
+        behavior: "smooth",
+        top: 500,
+      });
+    }
+  });
+
   return (
     <div className="mt-5">
-      <TabView>
+      <TabView activeIndex={router.query.notif === "offer_received" ? 2 : 0}>
         <TabPanel header="My NFTs">
           <NFTUserProfileTabs
             nftCollectionList={nftCollectionList}
