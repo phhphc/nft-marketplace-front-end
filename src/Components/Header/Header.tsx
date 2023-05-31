@@ -12,16 +12,27 @@ import { WEB3_ACTION_TYPES } from "@Store/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import { INFTCollectionItem, INotification } from "@Interfaces/index";
 import { handleRemoveFromCart, showingPrice } from "@Utils/index";
-import { buyToken, transferCurrency } from "@Services/ApiService";
+import {
+  buyToken,
+  setViewdNotifService,
+  transferCurrency,
+} from "@Services/ApiService";
 import { erc20Abi } from "@Constants/erc20Abi";
 import { Tag } from "primereact/tag";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
-import { CURRENCY_TRANSFER, CURRENCY_UNITS } from "@Constants/index";
+import {
+  CURRENCY_TRANSFER,
+  CURRENCY_UNITS,
+  NOTIFICATION_INFO,
+} from "@Constants/index";
 import { Badge } from "primereact/badge";
 import { ListBox } from "primereact/listbox";
+import moment from "moment";
+import { useRouter } from "next/router";
+import { RadioButton } from "primereact/radiobutton";
 
 export interface IHeaderProps {
   notification: INotification[];
@@ -42,6 +53,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const router = useRouter();
 
   const handleConnectWallet = async () => {
     // If metamask is installed
@@ -263,22 +275,86 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
     }
   };
 
-  console.log("notification", notification);
+  const setViewdNotification = async (notif: INotification) => {
+    try {
+      await setViewdNotifService({
+        eventName: notif.event_name,
+        orderHash: notif.order_hash,
+      });
+      notificationRefetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  const [selectedNotification, setSelectedNotification] = useState(null);
+  const clickToNotification = (notif: INotification) => {
+    setNotificationVisible(false);
+    setViewdNotification(notif);
+    if (NOTIFICATION_INFO.OFFER_RECEIVED === notif.info) {
+      router.push({
+        pathname: "/user-profile",
+        query: { notif: "offer_received" },
+      });
+    } else {
+      router.push(`/detail/${notif.token_id}`);
+    }
+  };
 
-  const notificationListTemplate = (noti: any) => {
+  const notificationListTemplate = (notif: INotification) => {
+    let notiSentence = "";
+    switch (notif.info) {
+      case NOTIFICATION_INFO.LISTING_SOLD:
+        notiSentence = `Your NFT: ${notif.nft_name} is sold`;
+        break;
+      case NOTIFICATION_INFO.LISTING_EXPIRED:
+        notiSentence = `Your NFT: ${notif.nft_name} has expired to listing`;
+        break;
+      case NOTIFICATION_INFO.OFFER_RECEIVED:
+        notiSentence = `You have an offer to your NFT: ${notif.nft_name}`;
+        break;
+      case NOTIFICATION_INFO.OFFER_ACCEPTED:
+        notiSentence = `Your offer to NFT: ${notif.nft_name} is fulfilled`;
+        break;
+      case NOTIFICATION_INFO.OFFER_EXPIRED:
+        notiSentence = `Your offer to NFT: ${notif.nft_name} has expired`;
+        break;
+      default:
+        notiSentence;
+    }
+
     return (
-      <div className="flex items-center rounded">
-        <img
-          alt={noti.nft_name}
-          src={noti.nft_image}
-          style={{ width: "3rem", height: "3rem", marginRight: "1rem" }}
-          className="rounded-full"
-        />
-        <div>
-          {noti.nft_name}You reived a offer from thinh nguyen dep trai hahahaha
-
+      <div
+        onClick={() => {
+          clickToNotification(notif);
+        }}
+      >
+        <div className="flex gap-3 items-center rounded">
+          <img
+            alt={notif.nft_name}
+            src={notif.nft_image}
+            style={{ width: "4rem", height: "4rem" }}
+            className="rounded-full"
+          />
+          <div>
+            <div>{notiSentence}</div>
+            <div className="flex justify-between mt-1">
+              <div className="text-sm text-emerald-500">
+                {moment(notif.date).startOf("minute").fromNow()}
+              </div>
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setViewdNotification(notif);
+                }}
+              >
+                <Tag
+                  className="hover:bg-green-700"
+                  severity="success"
+                  value="Click as seen"
+                ></Tag>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -314,7 +390,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                 onClick={() => setNotificationVisible(true)}
               >
                 <i className="pi pi-bell p-overlay-badge text-black text-3xl">
-                  {notification.length>0 && (
+                  {notification.length > 0 && (
                     <Badge
                       value={notification.length}
                       severity="danger"
@@ -329,8 +405,6 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
               >
                 <h2 className="text-2xl font-bold mb-2">Notification</h2>
                 <ListBox
-                  value={selectedNotification}
-                  onChange={(e) => setSelectedNotification(e.value)}
                   options={notification}
                   optionLabel="name"
                   itemTemplate={notificationListTemplate}
@@ -540,7 +614,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                         <Dropdown
                           value={selectedUnit}
                           onChange={(e) => {
-                            setSelectedUnit(e.value), console.log(e.value);
+                            setSelectedUnit(e.value);
                           }}
                           options={CURRENCY_TRANSFER}
                           optionLabel="name"

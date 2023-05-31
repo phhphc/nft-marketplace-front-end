@@ -186,4 +186,12 @@ export const DURATION_OPTIONS: IDurationOption[] = [
   { name: DURATION_NAME.START_END_TIME, key: DURATION_NAME.START_END_TIME },
 ];
 
+export enum NOTIFICATION_INFO {
+  LISTING_SOLD = "listing_sold",
+  LISTING_EXPIRED = "listing_expired",
+  OFFER_RECEIVED = "offer_received",
+  OFFER_ACCEPTED = "offer_accepted",
+  OFFER_EXPIRED = "offer_expired",
+}
+
 export const SUPPORTED_NETWORK = [11155111];
