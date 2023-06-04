@@ -248,19 +248,24 @@ export const makeOffer = async ({
 }: IMakeOfferProps) => {
   const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
   const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+  const mkpMoneyAddress = process.env.NEXT_PUBLIC_MKP_MONEY_ADDRESS!;
 
   const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
 
   const erc20ContractWithSigner = erc20Contract.connect(myWallet);
 
-  await erc20ContractWithSigner.buy({
-    value: parseEther(price),
+  const buyTx = await erc20ContractWithSigner.buy({
+    value: parseEther((Number(price) * 1.01).toString()),
   });
 
-  await erc20ContractWithSigner.increaseAllowance(
+  await buyTx.wait();
+
+  const increaseTx = await erc20ContractWithSigner.increaseAllowance(
     mkpAddress,
-    parseEther(price)
+    parseEther((Number(price) * 1.01).toString())
   );
+
+  await increaseTx.wait();
 
   const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 
@@ -269,8 +274,8 @@ export const makeOffer = async ({
   const offer = [
     getTestItem20(
       0,
-      parseEther(price),
-      parseEther(price),
+      parseEther((Number(price) * 1.01).toString()),
+      parseEther((Number(price) * 1.01).toString()),
       undefined,
       erc20Address
     ),
@@ -278,6 +283,13 @@ export const makeOffer = async ({
 
   const consideration = [
     getTestItem721(item.identifier, 1, 1, myAddress, item.token),
+    getTestItem20(
+      0,
+      parseEther((Number(price) * 0.01).toString()),
+      parseEther((Number(price) * 0.01).toString()),
+      mkpMoneyAddress,
+      erc20Address
+    ),
   ];
   const { chainId } = await provider.getNetwork();
   const { orderHash, value, orderComponents, startTime, endTime, signature } =
@@ -359,6 +371,7 @@ export const sellNFT = async ({
 }: ISellNFTProps) => {
   const erc721Address = item[0].token;
   const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+  const mkpMoneyAddress = process.env.NEXT_PUBLIC_MKP_MONEY_ADDRESS!;
 
   const erc721Contract = new ethers.Contract(
     erc721Address,
@@ -407,9 +420,22 @@ export const sellNFT = async ({
   );
   const consideration = [
     getItemETH(
-      unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
-      unit == CURRENCY.ETHER ? parseEther(price) : parseGwei(price),
+      unit == CURRENCY.ETHER
+        ? parseEther((Number(price) * 0.99).toString())
+        : parseGwei((Number(price) * 0.99).toString()),
+      unit == CURRENCY.ETHER
+        ? parseEther((Number(price) * 0.99).toString())
+        : parseGwei((Number(price) * 0.99).toString()),
       myAddress
+    ),
+    getItemETH(
+      unit == CURRENCY.ETHER
+        ? parseEther((Number(price) * 0.01).toString())
+        : parseGwei((Number(price) * 0.01).toString()),
+      unit == CURRENCY.ETHER
+        ? parseEther((Number(price) * 0.01).toString())
+        : parseGwei((Number(price) * 0.01).toString()),
+      mkpMoneyAddress
     ),
   ];
   const { chainId } = await provider.getNetwork();
@@ -502,10 +528,28 @@ export const fulfillMakeOffer = async ({
   afterApprove,
 }: IFulfillMakeOfferProps) => {
   const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+  const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
+
+  const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
+
+  const erc20ContractWithSigner = erc20Contract.connect(myWallet);
 
   const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 
   const mkpContractWithSigner = mkpContract.connect(myWallet);
+
+  const buyTx = await erc20ContractWithSigner.buy({
+    value: (Number(price) / 101).toString(),
+  });
+
+  await buyTx.wait();
+
+  const increaseTx = await erc20ContractWithSigner.increaseAllowance(
+    mkpAddress,
+    (Number(price) / 101).toString()
+  );
+
+  await increaseTx.wait();
 
   const orderData = await axios.get("/api/v0.1/order", {
     params: {
@@ -551,6 +595,13 @@ export const fulfillMakeOffer = async ({
   delete orderData.data.data.content[0].status;
   delete orderData.data.data.content[0].orderHash;
   delete orderData.data.data.content[0].signature;
+
+  console.log(
+    transformDataRequestToBuyNFT({
+      parameters: orderData.data.data.content[0],
+      signature: signature,
+    })
+  );
 
   const tx = await mkpContractWithSigner.fulfillOrder(
     transformDataRequestToBuyNFT({
