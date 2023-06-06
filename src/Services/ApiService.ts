@@ -12,6 +12,7 @@ import {
   transformDataRequestToSellNFT,
   randomBN,
   getTestItem20,
+  toFixed,
 } from "@Utils/index";
 import { CURRENCY } from "@Constants/index";
 import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
@@ -255,14 +256,14 @@ export const makeOffer = async ({
   const erc20ContractWithSigner = erc20Contract.connect(myWallet);
 
   const buyTx = await erc20ContractWithSigner.buy({
-    value: parseEther((Number(price) * 1.01).toString()),
+    value: parseEther(toFixed(Number(price) * 1.01).toString()),
   });
 
   await buyTx.wait();
 
   const increaseTx = await erc20ContractWithSigner.increaseAllowance(
     mkpAddress,
-    parseEther((Number(price) * 1.01).toString())
+    parseEther(toFixed(Number(price) * 1.01).toString())
   );
 
   await increaseTx.wait();
@@ -274,8 +275,8 @@ export const makeOffer = async ({
   const offer = [
     getTestItem20(
       0,
-      parseEther((Number(price) * 1.01).toString()),
-      parseEther((Number(price) * 1.01).toString()),
+      parseEther(toFixed(Number(price) * 1.01).toString()),
+      parseEther(toFixed(Number(price) * 1.01).toString()),
       undefined,
       erc20Address
     ),
@@ -285,8 +286,8 @@ export const makeOffer = async ({
     getTestItem721(item.identifier, 1, 1, myAddress, item.token),
     getTestItem20(
       0,
-      parseEther((Number(price) * 0.01).toString()),
-      parseEther((Number(price) * 0.01).toString()),
+      parseEther(toFixed(Number(price) * 0.01).toString()),
+      parseEther(toFixed(Number(price) * 0.01).toString()),
       mkpMoneyAddress,
       erc20Address
     ),
@@ -421,20 +422,20 @@ export const sellNFT = async ({
   const consideration = [
     getItemETH(
       unit == CURRENCY.ETHER
-        ? parseEther((Number(price) * 0.99).toString())
-        : parseGwei((Number(price) * 0.99).toString()),
+        ? parseEther(toFixed(Number(price) * 0.99).toString())
+        : parseGwei(toFixed(Number(price) * 0.99).toString()),
       unit == CURRENCY.ETHER
-        ? parseEther((Number(price) * 0.99).toString())
-        : parseGwei((Number(price) * 0.99).toString()),
+        ? parseEther(toFixed(Number(price) * 0.99).toString())
+        : parseGwei(toFixed(Number(price) * 0.99).toString()),
       myAddress
     ),
     getItemETH(
       unit == CURRENCY.ETHER
-        ? parseEther((Number(price) * 0.01).toString())
-        : parseGwei((Number(price) * 0.01).toString()),
+        ? parseEther(toFixed(Number(price) * 0.01).toString())
+        : parseGwei(toFixed(Number(price) * 0.01).toString()),
       unit == CURRENCY.ETHER
-        ? parseEther((Number(price) * 0.01).toString())
-        : parseGwei((Number(price) * 0.01).toString()),
+        ? parseEther(toFixed(Number(price) * 0.01).toString())
+        : parseGwei(toFixed(Number(price) * 0.01).toString()),
       mkpMoneyAddress
     ),
   ];
