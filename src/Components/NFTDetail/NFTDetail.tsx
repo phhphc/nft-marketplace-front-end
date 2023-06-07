@@ -81,13 +81,6 @@ const NFTDetail = ({
   const canDownload = (item: INFTCollectionItem[]) => {
     return item[0]?.owner === web3Context.state.web3.myAddress;
   };
-  const isSelling = (item: INFTCollectionItem[]) => {
-    return (
-      !canBuy(item) &&
-      !canSell(item) &&
-      item[0]?.owner === web3Context.state.web3.myAddress
-    );
-  };
 
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
@@ -437,7 +430,7 @@ const NFTDetail = ({
                     <>
                       {nftDetail.length > 1 && (
                         <span className="text-lg">
-                          Bundle: {nftDetail.length} items
+                          Bundle: {nftDetail.length} Items
                         </span>
                       )}
                       {nftDetail[selectedItemIndex]?.listings[0] && (
@@ -445,8 +438,9 @@ const NFTDetail = ({
                           <div>Price:</div>
                           <div className="font-medium text-gray-900 uppercase self-center">
                             {showingPrice(
-                              nftDetail[selectedItemIndex]?.listings[0]
-                                ?.start_price || "0"
+                              nftDetail[0].listings[0]?.start_price || "0",
+                              CURRENCY_UNITS[0].value,
+                              true
                             )}
                           </div>
                         </div>

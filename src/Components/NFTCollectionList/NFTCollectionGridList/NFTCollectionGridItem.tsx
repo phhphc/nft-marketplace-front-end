@@ -64,14 +64,6 @@ const NFTCollectionGridItem = ({
     );
   };
 
-  const isSelling = (item: INFTCollectionItem[]) => {
-    return (
-      !canBuy(item) &&
-      !canSell(item) &&
-      item[0].owner === web3Context.state.web3.myAddress
-    );
-  };
-
   const router = useRouter();
   const [price, setPrice] = useState<number>(0);
   const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
@@ -247,12 +239,14 @@ const NFTCollectionGridItem = ({
     });
   };
 
-  const hideNFT = async (item: INFTCollectionItem[], isHidden: boolean) => {
+  const hideNFT = async (items: INFTCollectionItem[], isHidden: boolean) => {
     try {
-      await hideNFTService({
-        token: item[0].token,
-        identifier: item[0].identifier,
-        isHidden: isHidden,
+      await items.map((item: INFTCollectionItem) => {
+        hideNFTService({
+          token: item.token,
+          identifier: item.identifier,
+          isHidden: isHidden,
+        });
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -428,45 +422,45 @@ const NFTCollectionGridItem = ({
         </div>
       </div>
       {viewType !== COLLECTION_VIEW_TYPE.ICON_VIEW && (
-        <div>
-          <div className="p-3 h-28">
-            <div className="flex justify-between">
-              {item.length == 1 ? (
-                <h3 className="font-bold uppercase break-words text-sm">
-                  {item[0].name || "Item name"}
-                </h3>
-              ) : (
-                <h3 className="font-bold uppercase break-words text-sm">
-                  {item[selectedItemBundleIndex].name}
-                </h3>
-              )}
-              {item[0].owner === web3Context.state.web3.myAddress &&
-                (item[0].isHidden ? (
-                  <i
-                    className="pi pi-lock hidden-nft"
-                    data-pr-tooltip="Your NFT is unpublished"
-                    data-pr-position="left"
-                  ></i>
-                ) : (
-                  <i
-                    className="pi pi-globe hidden-nft"
-                    data-pr-tooltip="Your NFT is published"
-                    data-pr-position="left"
-                  ></i>
-                ))}
-              <Tooltip target=".hidden-nft" />
-            </div>
-            {item[0].listings && (
-              <p className="flex gap-1 text-sm font-medium text-gray-900 pt-1">
-                {item[0].listings[0] &&
-                  showingPrice(
-                    item[0].listings[0]?.start_price || "0",
-                    CURRENCY_UNITS[0].value,
-                    true
-                  )}
-              </p>
+        <div className="h-28">
+          <div className="flex justify-between px-3 pt-3">
+            {item.length == 1 ? (
+              <h3 className="font-bold uppercase break-words text-sm">
+                {item[0].name || "Item name"}
+              </h3>
+            ) : (
+              <h3 className="font-bold uppercase break-words text-sm">
+                {item[selectedItemBundleIndex].name}
+              </h3>
             )}
+            {item[0].owner === web3Context.state.web3.myAddress &&
+              (item[0].isHidden ? (
+                <i
+                  className="pi pi-lock hidden-nft"
+                  data-pr-tooltip="Your NFT is unpublished"
+                  data-pr-position="left"
+                ></i>
+              ) : (
+                <i
+                  className="pi pi-globe hidden-nft"
+                  data-pr-tooltip="Your NFT is published"
+                  data-pr-position="left"
+                ></i>
+              ))}
+            <Tooltip target=".hidden-nft" />
           </div>
+          {item[0].listings[0] && (
+            <div className="text-base font-medium px-3">
+              Price:
+              <span className="pl-1">
+                {showingPrice(
+                  item[0].listings[0]?.start_price || "0",
+                  CURRENCY_UNITS[0].value,
+                  true
+                )}
+              </span>
+            </div>
+          )}
           {canBuy(item) && (
             <div className="flex justify-between w-full absolute bottom-0 left-0 right-0">
               <button
