@@ -178,7 +178,6 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
           body={priceBodyTemplate}
           sortable
         ></Column>
-        {/* <Column field="quantity" header="Quantity" sortable></Column> */}
         <Column field="type" header="Type" sortable></Column>
         <Column header="From" className="w-20" body={fromBodyTemplate}></Column>
         <Column header="To" className="w-20" body={toBodyTemplate}></Column>

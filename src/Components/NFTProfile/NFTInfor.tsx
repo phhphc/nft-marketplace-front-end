@@ -203,42 +203,16 @@ const NFTInfor = ({
               {moment(collectionInfo[0]?.created_at).format("MMMM Do YYYY")}
             </span>
           </div>
-          ·
+          -
           <div className="pl-1">
             Chain <span className="font-semibold pr-1">Ethereum</span>
           </div>
-          ·
+          -
           <div className="pl-1">
             Category{" "}
             <span className="font-semibold">{collectionInfo[0]?.category}</span>
           </div>
         </div>
-
-        {isApprovedForAllNfts ? (
-          <div>
-            <Message
-              severity="info"
-              text="You gave the marketplace permission to transfer all your NFTs. Click here to withdraw!"
-              className="approved cursor-pointer"
-              data-pr-tooltip="You won't pay extra ETH for the next time"
-              data-pr-position="left"
-              onClick={() => handleCancelApproval()}
-            />
-            <Tooltip target=".approved" />
-          </div>
-        ) : (
-          <div>
-            <button
-              className="bg-sky-500 hover:bg-sky-700 text-white rounded-md h-14 w-80 not-approved"
-              onClick={() => handleSetApproval()}
-              data-pr-tooltip="Once you set permission, you won't pay extra ETH for the next time"
-              data-pr-position="left"
-            >
-              Set permission for the marketplace to transfer all your NFTs
-            </button>
-            <Tooltip target=".not-approved" />
-          </div>
-        )}
       </div>
       <div className="flex pt-3 justify-between">
         <div className="">
@@ -297,6 +271,34 @@ const NFTInfor = ({
             ></i>
           </span>
         </button>
+      </div>
+      <div className="pt-1 flex justify-end animate-bounce">
+        {isApprovedForAllNfts ? (
+          <div>
+            <Message
+              severity="info"
+              text="You gave the marketplace permission to transfer all your NFTs in this collection. Click here to withdraw!"
+              className="approved cursor-pointer"
+              data-pr-tooltip="You won't pay extra ETH for the next time"
+              data-pr-position="left"
+              onClick={() => handleCancelApproval()}
+            />
+            <Tooltip target=".approved" />
+          </div>
+        ) : (
+          <div>
+            <button
+              className="bg-sky-500 hover:bg-sky-700 text-white rounded-md h-12 px-5 not-approved"
+              onClick={() => handleSetApproval()}
+              data-pr-tooltip="Once you set permission, you won't pay extra ETH for the next time"
+              data-pr-position="left"
+            >
+              Click here to set permission for the marketplace to transfer all
+              your NFTs in this collection
+            </button>
+            <Tooltip target=".not-approved" />
+          </div>
+        )}
       </div>
     </div>
   );
