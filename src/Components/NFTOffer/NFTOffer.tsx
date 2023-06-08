@@ -62,7 +62,6 @@ const NFTOffer = ({ nftOffer }: INFTOffersProps) => {
               body={priceBodyTemplate}
               sortable
             />
-            {/* <Column field="quantity" header="Quantity" sortable /> */}
             <Column
               field="from"
               header="From"

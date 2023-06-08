@@ -335,7 +335,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
             style={{ width: "4rem", height: "4rem" }}
             className="rounded-full"
           />
-          <div>
+          <div className="flex flex-col w-full">
             <div>{notiSentence}</div>
             <div className="flex justify-between mt-1">
               <div className="text-sm text-emerald-500">

@@ -201,6 +201,17 @@ const NFTDetail = ({
   };
 
   const handleMakeOffer = async (item: INFTCollectionItem) => {
+    if (durationDate===null) {
+      return (
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please input the end time!",
+          life: 5000,
+        })
+      )
+    }
     if (price === 0) {
       return (
         web3Context.state.web3.toast.current &&
@@ -566,11 +577,10 @@ const NFTDetail = ({
                         </div>
                         <div className="flex gap-8 mb-2">
                           <div className="flex flex-column items-center gap-5">
-                            <div className="text-xl font-bold">Duration:</div>
+                            <div className="text-xl font-bold">* Duration:</div>
                             {DURATION_OPTIONS.filter(
                               (duration) =>
-                                duration.key !== DURATION_NAME.START_TIME &&
-                                duration.key !== DURATION_NAME.START_END_TIME
+                                duration.key === DURATION_NAME.END_TIME
                             ).map((duration) => {
                               return (
                                 <div
@@ -584,9 +594,7 @@ const NFTDetail = ({
                                       setSelectedDuration(e.value),
                                         setDurationDate(null);
                                     }}
-                                    checked={
-                                      selectedDuration.key === duration.key
-                                    }
+                                    checked={true}
                                   />
                                   <label
                                     htmlFor={duration.key}
@@ -599,25 +607,24 @@ const NFTDetail = ({
                             })}
                           </div>
                         </div>
-                        {selectedDuration.key !== DURATION_NAME.NONE && (
-                          <Calendar
-                            dateFormat="dd/mm/yy"
-                            minDate={new Date()}
-                            value={durationDate}
-                            selectionMode="single"
-                            onChange={(e: any) => {
-                              setDurationDate(e.value);
-                            }}
-                            showTime
-                            hourFormat="24"
-                            showIcon
-                            placeholder="Choose a date"
-                            className="flex w-1/2"
-                            touchUI
-                            showButtonBar
-                            hideOnDateTimeSelect
-                          />
-                        )}
+
+                        <Calendar
+                          dateFormat="dd/mm/yy"
+                          minDate={new Date()}
+                          value={durationDate}
+                          selectionMode="single"
+                          onChange={(e: any) => {
+                            setDurationDate(e.value);
+                          }}
+                          showTime
+                          hourFormat="24"
+                          showIcon
+                          placeholder="Choose a date"
+                          className="flex w-1/2"
+                          touchUI
+                          showButtonBar
+                          hideOnDateTimeSelect
+                        />
                       </Dialog>
                     </div>
                   </div>

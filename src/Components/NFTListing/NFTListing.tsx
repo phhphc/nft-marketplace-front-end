@@ -59,7 +59,6 @@ const NFTListing = ({ nftListing }: INFTListingsProps) => {
               body={priceBodyTemplate}
               sortable
             />
-            {/* <Column field="quantity" header="Quantity" sortable /> */}
             <Column
               field="from"
               header="From"
