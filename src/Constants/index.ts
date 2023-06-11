@@ -195,3 +195,8 @@ export enum NOTIFICATION_INFO {
 }
 
 export const SUPPORTED_NETWORK = [11155111];
+
+export const CHAIN_ID = {
+  SEPOLIA: 11155111,
+  MUMBAI: 80001,
+};

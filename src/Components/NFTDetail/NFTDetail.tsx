@@ -138,6 +138,7 @@ const NFTDetail = ({
         afterApprove: () => {
           web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
         },
+        chainId: web3Context.state.web3.chainId,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -201,7 +202,7 @@ const NFTDetail = ({
   };
 
   const handleMakeOffer = async (item: INFTCollectionItem) => {
-    if (durationDate===null) {
+    if (durationDate === null) {
       return (
         web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -210,7 +211,7 @@ const NFTDetail = ({
           detail: "Please input the end time!",
           life: 5000,
         })
-      )
+      );
     }
     if (price === 0) {
       return (
