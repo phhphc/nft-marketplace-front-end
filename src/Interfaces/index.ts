@@ -235,6 +235,7 @@ export interface IFormEditProfileInput {
 }
 
 export interface IMakeOfferItem {
+  owner: string;
   offerer: string;
   offererAddress: string;
   offer: OfferItem[];

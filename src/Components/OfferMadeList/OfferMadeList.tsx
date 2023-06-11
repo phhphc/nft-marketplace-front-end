@@ -27,6 +27,7 @@ const OfferMadeList = ({
 
   const data = offerMadeList.map((item: IOfferItem) => {
     return {
+      owner: item.owner,
       offererAddress: item.from,
       orderHash: item.order_hash,
       itemName: item.nft_name,
@@ -122,7 +123,7 @@ const OfferMadeList = ({
   };
 
   const cancelBodyTemplate = (rowData: IMakeOfferItem) => {
-    if (!rowData.isCancelled && !rowData.isExpired && !rowData.isFulfilled) {
+    if (!rowData.isCancelled && !rowData.isExpired && !rowData.isFulfilled && rowData.owner!==web3Context.state.web3.myAddress) {
       return (
         <i
           className="text-red-500 pi pi-times-circle pi-book cursor-pointer hover:text-red-700"

@@ -151,7 +151,7 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
       <DataTable
         value={data}
         scrollable
-        scrollHeight="20rem"
+        scrollHeight="30rem"
         className="mt-5"
         stripedRows
       >
