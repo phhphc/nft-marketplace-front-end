@@ -27,6 +27,7 @@ import {
   CHAIN_ID,
   CURRENCY_TRANSFER,
   CURRENCY_UNITS,
+  ERC20_ADDRESS,
   NOTIFICATION_INFO,
 } from "@Constants/index";
 import { Badge } from "primereact/badge";
@@ -98,10 +99,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
         const ETHBalance = await web3Context.state.web3.provider.getBalance(
           web3Context.state.web3.myAddress
         );
-        const erc20Address =
-          web3Context.state.web3.chainId === CHAIN_ID.MUMBAI
-            ? process.env.NEXT_PUBLIC_MUMBAI_ERC20_ADDRESS!
-            : process.env.NEXT_PUBLIC_SEPOLIA_ERC20_ADDRESS!;
+        const erc20Address = ERC20_ADDRESS.get(web3Context.state.web3.chainId)!;
 
         const erc20Contract = new ethers.Contract(
           erc20Address,
