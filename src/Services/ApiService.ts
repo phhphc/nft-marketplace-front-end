@@ -14,7 +14,12 @@ import {
   getTestItem20,
   toFixed,
 } from "@Utils/index";
-import { CHAIN_ID, CURRENCY } from "@Constants/index";
+import {
+  BACKEND_URL_VERSION,
+  CHAIN_ID,
+  CURRENCY,
+  MKP_ADDRESS,
+} from "@Constants/index";
 import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
 import {
   ICollectionItem,
@@ -373,11 +378,9 @@ export const sellNFT = async ({
   chainId,
 }: ISellNFTProps) => {
   const erc721Address = item[0].token;
-  const version = chainId === CHAIN_ID.MUMBAI ? "v0.2" : "v0.1";
-  const mkpAddress =
-    chainId === CHAIN_ID.MUMBAI
-      ? process.env.NEXT_PUBLIC_MUMBAI_MKP_ADDRESS!
-      : process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+  const mkpAddress = MKP_ADDRESS.get(chainId)!;
+
   const mkpMoneyAddress = process.env.NEXT_PUBLIC_MKP_MONEY_ADDRESS!;
 
   const erc721Contract = new ethers.Contract(
