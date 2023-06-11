@@ -7,6 +7,7 @@ import moment from "moment";
 import router from "next/router";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
+import { Tag } from "primereact/tag";
 import { useContext, useMemo } from "react";
 
 export interface IOfferReceivedListProps {
@@ -33,6 +34,9 @@ const OfferReceivedList = ({
       identifier: item.token_id,
       price: item.price,
       endTime: item.end_time,
+      isFulfilled: item.is_fulfilled,
+      isCancelled: item.is_cancelled,
+      isExpired: item.is_expired,
     };
   });
 
@@ -55,6 +59,29 @@ const OfferReceivedList = ({
         {rowData.offererAddress}
       </div>
     );
+  };
+
+  const eventStatusBodyTemplate = (rowData: IMakeOfferItem) => {
+    if (rowData.isFulfilled) {
+      return (
+        <Tag
+          severity="success"
+          value="Fulfilled"
+          style={{ width: "4.3rem" }}
+        ></Tag>
+      );
+    } else if (rowData.isCancelled) {
+      return <Tag severity="danger" value="Cancelled"></Tag>;
+    } else if (rowData.isExpired) {
+      return (
+        <Tag
+          severity="warning"
+          value="Expired"
+          style={{ width: "4.3rem" }}
+        ></Tag>
+      );
+    }
+    return null;
   };
 
   const imageBodyTemplate = (rowData: IMakeOfferItem) => {
@@ -99,23 +126,18 @@ const OfferReceivedList = ({
   };
 
   const fulfillBodyTemplate = (rowData: IMakeOfferItem) => {
-    return (
-      <i
-        className="text-green-500 pi pi-check-circle cursor-pointer hover:text-green-700"
-        style={{ fontSize: "2rem" }}
-        onClick={() => handleFulfillOrder(rowData)}
-      ></i>
-    );
-  };
-
-  const rejectBodyTemplate = (rowData: IMakeOfferItem) => {
-    return (
-      <i
-        className="text-red-500 pi pi-times-circle pi-book cursor-pointer hover:text-red-700"
-        style={{ fontSize: "2rem" }}
-        onClick={() => rejectFulfillOrder(rowData)}
-      ></i>
-    );
+    if (!rowData.isCancelled && !rowData.isExpired && !rowData.isFulfilled) {
+      return (
+        <i
+          className="text-green-500 pi pi-check-circle cursor-pointer hover:text-green-700"
+          style={{ fontSize: "2rem" }}
+          onClick={() => handleFulfillOrder(rowData)}
+        ></i>
+      );
+    }
+    else {
+      return null
+    }
   };
 
   const handleFulfillOrder = async (item: IMakeOfferItem) => {
@@ -165,16 +187,15 @@ const OfferReceivedList = ({
     }
   };
 
-  const rejectFulfillOrder = async (item: IMakeOfferItem) => {};
-
   return (
     <div id="list-make-offer">
-      <DataTable value={data} scrollable scrollHeight="20rem" stripedRows>
+      <DataTable value={data} scrollable scrollHeight="30rem" stripedRows>
         <Column
           header="Offerer"
           className="w-20"
           body={offererBodyTemplate}
         ></Column>
+        <Column header="Status" body={eventStatusBodyTemplate}></Column>
         <Column
           field="itemName"
           header="Name"
@@ -200,11 +221,6 @@ const OfferReceivedList = ({
           header="Fulfill"
           body={fulfillBodyTemplate}
         ></Column>
-        {/* <Column
-          field="reject"
-          header="Reject"
-          body={rejectBodyTemplate}
-        ></Column> */}
         <Column
           field=""
           header="View detail"

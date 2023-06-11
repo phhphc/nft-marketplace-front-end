@@ -246,6 +246,9 @@ export interface IMakeOfferItem {
   price: string;
   startTime: string;
   endTime: string;
+  isCancelled: boolean;
+  isFulfilled: boolean;
+  isExpired: boolean;
 }
 
 export interface IMetaDataProfile {

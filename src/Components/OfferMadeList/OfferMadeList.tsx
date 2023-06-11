@@ -7,6 +7,7 @@ import moment from "moment";
 import router from "next/router";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
+import { Tag } from "primereact/tag";
 import { useContext, useMemo } from "react";
 
 export interface IOfferMadeListProps {
@@ -33,6 +34,9 @@ const OfferMadeList = ({
       identifier: item.token_id,
       price: item.price,
       endTime: item.end_time,
+      isFulfilled: item.is_fulfilled,
+      isCancelled: item.is_cancelled,
+      isExpired: item.is_expired,
     };
   });
 
@@ -51,6 +55,29 @@ const OfferMadeList = ({
 
   const offererBodyTemplate = (rowData: IMakeOfferItem) => {
     return <div className="text-ellipsis overflow-hidden">You</div>;
+  };
+
+  const eventStatusBodyTemplate = (rowData: IMakeOfferItem) => {
+    if (rowData.isFulfilled) {
+      return (
+        <Tag
+          severity="success"
+          value="Fulfilled"
+          style={{ width: "4.3rem" }}
+        ></Tag>
+      );
+    } else if (rowData.isCancelled) {
+      return <Tag severity="danger" value="Cancelled"></Tag>;
+    } else if (rowData.isExpired) {
+      return (
+        <Tag
+          severity="warning"
+          value="Expired"
+          style={{ width: "4.3rem" }}
+        ></Tag>
+      );
+    }
+    return null;
   };
 
   const imageBodyTemplate = (rowData: IMakeOfferItem) => {
@@ -95,13 +122,17 @@ const OfferMadeList = ({
   };
 
   const cancelBodyTemplate = (rowData: IMakeOfferItem) => {
-    return (
-      <i
-        className="text-red-500 pi pi-times-circle pi-book cursor-pointer hover:text-red-700"
-        style={{ fontSize: "2rem" }}
-        onClick={() => handleCancelOrder(rowData)}
-      ></i>
-    );
+    if (!rowData.isCancelled && !rowData.isExpired && !rowData.isFulfilled) {
+      return (
+        <i
+          className="text-red-500 pi pi-times-circle pi-book cursor-pointer hover:text-red-700"
+          style={{ fontSize: "2rem" }}
+          onClick={() => handleCancelOrder(rowData)}
+        ></i>
+      );
+    } else {
+      return null;
+    }
   };
 
   const handleCancelOrder = async (item: IMakeOfferItem) => {
@@ -147,12 +178,13 @@ const OfferMadeList = ({
 
   return (
     <div id="list-make-offer">
-      <DataTable value={data} scrollable scrollHeight="20rem" stripedRows>
+      <DataTable value={data} scrollable scrollHeight="30rem" stripedRows>
         <Column
           header="Offerer"
           className="w-20"
           body={offererBodyTemplate}
         ></Column>
+        <Column header="Status" body={eventStatusBodyTemplate}></Column>
         <Column
           field="itemName"
           header="Name"
