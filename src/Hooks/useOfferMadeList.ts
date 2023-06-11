@@ -1,4 +1,6 @@
+import { IOfferItem } from "@Interfaces/index";
 import { getOfferList } from "@Services/ApiService";
+import { cloneDeep } from "lodash";
 import { useQuery } from "react-query";
 
 const useOfferMadeList = (owner: string) => {
@@ -7,7 +9,22 @@ const useOfferMadeList = (owner: string) => {
     queryFn: () => getOfferList({ from: owner }),
     staleTime: Infinity,
   });
-  const offerMadeList = result.data || [];
+  // const offerMadeList = result.data || [];
+
+  const offerMadeList: IOfferItem[] =
+    result.data?.map((offer) => {
+      return cloneDeep({
+        ...offer,
+        status: offer.is_fulfilled
+          ? "fulfilled"
+          : offer.is_cancelled
+          ? "cancelled"
+          : offer.is_expired
+          ? "expired"
+          : "none",
+      });
+    }) || [];
+
   return { ...result, offerMadeList };
 };
 
