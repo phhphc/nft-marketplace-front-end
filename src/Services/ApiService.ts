@@ -14,7 +14,7 @@ import {
   getTestItem20,
   toFixed,
 } from "@Utils/index";
-import { CURRENCY } from "@Constants/index";
+import { CHAIN_ID, CURRENCY } from "@Constants/index";
 import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
 import {
   ICollectionItem,
@@ -41,6 +41,7 @@ interface ISellNFTProps {
   afterApprove?: () => void;
   startDate: Date | null;
   endDate: Date | null;
+  chainId: number;
 }
 
 interface IMakeOfferProps {
@@ -247,8 +248,8 @@ export const makeOffer = async ({
   startDate,
   endDate,
 }: IMakeOfferProps) => {
-  const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
-  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+  const erc20Address = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_ADDRESS!;
+  const mkpAddress = process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
   const mkpMoneyAddress = process.env.NEXT_PUBLIC_MKP_MONEY_ADDRESS!;
 
   const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
@@ -342,7 +343,7 @@ export const transferCurrency = async ({
   price,
   unit,
 }: ITransferTETHToEthProps) => {
-  const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
+  const erc20Address = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_ADDRESS!;
 
   const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
 
@@ -369,9 +370,14 @@ export const sellNFT = async ({
   afterApprove,
   startDate,
   endDate,
+  chainId,
 }: ISellNFTProps) => {
   const erc721Address = item[0].token;
-  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+  const version = chainId === CHAIN_ID.MUMBAI ? "v0.2" : "v0.1";
+  const mkpAddress =
+    chainId === CHAIN_ID.MUMBAI
+      ? process.env.NEXT_PUBLIC_MUMBAI_MKP_ADDRESS!
+      : process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
   const mkpMoneyAddress = process.env.NEXT_PUBLIC_MKP_MONEY_ADDRESS!;
 
   const erc721Contract = new ethers.Contract(
@@ -439,7 +445,7 @@ export const sellNFT = async ({
       mkpMoneyAddress
     ),
   ];
-  const { chainId } = await provider.getNetwork();
+
   const { orderHash, value, orderComponents, startTime, endTime, signature } =
     await createOrder(
       mkpContractWithSigner,
@@ -467,7 +473,7 @@ export const sellNFT = async ({
   );
 
   await axios.post(
-    "/api/v0.1/order",
+    `/api/${version}/order`,
     transformDataRequestToSellNFT({
       orderHash,
       offerer: myAddress,
@@ -528,8 +534,8 @@ export const fulfillMakeOffer = async ({
   beforeApprove,
   afterApprove,
 }: IFulfillMakeOfferProps) => {
-  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
-  const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
+  const mkpAddress = process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
+  const erc20Address = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_ADDRESS!;
 
   const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
 
@@ -625,7 +631,7 @@ export const buyToken = async ({
   myWallet,
   provider,
 }: IBuyTokenProps) => {
-  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+  const mkpAddress = process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
 
   await provider.send("eth_requestAccounts", []);
 
@@ -697,7 +703,7 @@ export const cancelOrder = async ({
   myAddress,
 }: ICancelOrderProps) => {
   if (!orderHashes?.length) return;
-  const mkpAddress = process.env.NEXT_PUBLIC_MKP_ADDRESS!;
+  const mkpAddress = process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
 
   const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 

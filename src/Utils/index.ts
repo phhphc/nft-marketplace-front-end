@@ -132,7 +132,7 @@ export const getTestItem20 = (
   startAmount: BigNumberish = 1,
   endAmount: BigNumberish = 1,
   recipient?: string,
-  token = process.env.NEXT_PUBLIC_ERC20_ADDRESS
+  token = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_ADDRESS
 ) => {
   return getOfferOrConsiderationItem(
     1, // ERC20
@@ -610,5 +610,11 @@ export const toFixed = (x: any): string => {
       x += new Array(e + 1).join("0");
     }
   }
-  return x.toString();
+  const xString = x.toString();
+
+  if (xString.indexOf(".") === -1) return xString;
+
+  const arr = xString.split(".");
+  const fraction = arr[1].substr(0, 9);
+  return arr[0] + "." + fraction;
 };

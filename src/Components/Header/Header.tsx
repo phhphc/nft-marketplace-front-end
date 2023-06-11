@@ -24,6 +24,7 @@ import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import {
+  CHAIN_ID,
   CURRENCY_TRANSFER,
   CURRENCY_UNITS,
   NOTIFICATION_INFO,
@@ -97,7 +98,10 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
         const ETHBalance = await web3Context.state.web3.provider.getBalance(
           web3Context.state.web3.myAddress
         );
-        const erc20Address = process.env.NEXT_PUBLIC_ERC20_ADDRESS!;
+        const erc20Address =
+          web3Context.state.web3.chainId === CHAIN_ID.MUMBAI
+            ? process.env.NEXT_PUBLIC_MUMBAI_ERC20_ADDRESS!
+            : process.env.NEXT_PUBLIC_SEPOLIA_ERC20_ADDRESS!;
 
         const erc20Contract = new ethers.Contract(
           erc20Address,

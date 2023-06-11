@@ -146,6 +146,7 @@ const NFTCollectionTableList = ({
         afterApprove: () => {
           web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
         },
+        chainId: web3Context.state.web3.chainId,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -750,6 +751,7 @@ const NFTCollectionTableList = ({
         afterApprove: () => {
           web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
         },
+        chainId: web3Context.state.web3.chainId,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
