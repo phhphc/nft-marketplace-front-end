@@ -200,3 +200,18 @@ export const CHAIN_ID = {
   SEPOLIA: 11155111,
   MUMBAI: 80001,
 };
+
+export const MKP_ADDRESS = new Map<number, string>([
+  [CHAIN_ID.SEPOLIA, process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!],
+  [CHAIN_ID.MUMBAI, process.env.NEXT_PUBLIC_MUMBAI_MKP_ADDRESS!],
+]);
+
+export const ERC20_ADDRESS = new Map<number, string>([
+  [CHAIN_ID.SEPOLIA, process.env.NEXT_PUBLIC_SEPOLIA_ERC20_ADDRESS!],
+  [CHAIN_ID.MUMBAI, process.env.NEXT_PUBLIC_MUMBAI_ERC20_ADDRESS!],
+]);
+
+export const BACKEND_URL_VERSION = new Map<number, string>([
+  [CHAIN_ID.SEPOLIA, "v0.1"],
+  [CHAIN_ID.MUMBAI, "v0.2"],
+]);
