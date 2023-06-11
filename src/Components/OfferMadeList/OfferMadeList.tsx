@@ -1,5 +1,5 @@
 import { OFFER_CURRENCY_UNITS } from "@Constants/index";
-import { IMakeOfferItem, IOfferItem } from "@Interfaces/index";
+import { IOfferItem } from "@Interfaces/index";
 import { cancelOrder } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { showingPrice } from "@Utils/index";
@@ -7,7 +7,9 @@ import moment from "moment";
 import router from "next/router";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useContext, useMemo } from "react";
+import { MultiSelect } from "primereact/multiselect";
+import { Tag } from "primereact/tag";
+import { useContext, useEffect, useState } from "react";
 
 export interface IOfferMadeListProps {
   offerMadeList: IOfferItem[];
@@ -24,41 +26,75 @@ const OfferMadeList = ({
 }: IOfferMadeListProps) => {
   const web3Context = useContext(AppContext);
 
-  const data = offerMadeList.map((item: IOfferItem) => {
-    return {
-      offererAddress: item.from,
-      orderHash: item.order_hash,
-      itemName: item.nft_name,
-      itemImage: item.nft_image,
-      identifier: item.token_id,
-      price: item.price,
-      endTime: item.end_time,
-    };
-  });
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [data, setData] = useState<IOfferItem[]>(offerMadeList);
 
-  const nameBodyTemplate = (rowData: IMakeOfferItem) => {
+  useEffect(() => {
+    setData(offerMadeList);
+  }, [offerMadeList]);
+
+  const statuses: any[] = [
+    { label: "Fulfilled", value: "fulfilled" },
+    { label: "Cancelled", value: "cancelled" },
+    { label: "Expired", value: "expired" },
+    { label: "None", value: "none" },
+  ];
+
+  const handleFilterStatus = (statuses: any) => {
+    setSelectedStatus(statuses);
+    statuses.length == 0
+      ? setData(offerMadeList)
+      : setData(
+          offerMadeList.filter((offer) => statuses.includes(offer.status))
+        );
+  };
+
+  const nameBodyTemplate = (rowData: IOfferItem) => {
     return (
       <div>
         <a
           style={{ cursor: "pointer" }}
-          onClick={() => router.push(`/detail/${rowData.identifier}`)}
+          onClick={() => router.push(`/detail/${rowData.token_id}`)}
         >
-          {rowData.itemName || "Item name"}
+          {rowData.nft_name || "Item name"}
         </a>
       </div>
     );
   };
 
-  const offererBodyTemplate = (rowData: IMakeOfferItem) => {
+  const offererBodyTemplate = (rowData: IOfferItem) => {
     return <div className="text-ellipsis overflow-hidden">You</div>;
   };
 
-  const imageBodyTemplate = (rowData: IMakeOfferItem) => {
+  const eventStatusBodyTemplate = (rowData: IOfferItem) => {
+    if (rowData.is_fulfilled) {
+      return (
+        <Tag
+          severity="success"
+          value="Fulfilled"
+          style={{ width: "4.3rem" }}
+        ></Tag>
+      );
+    } else if (rowData.is_cancelled) {
+      return <Tag severity="danger" value="Cancelled"></Tag>;
+    } else if (rowData.is_expired) {
+      return (
+        <Tag
+          severity="warning"
+          value="Expired"
+          style={{ width: "4.3rem" }}
+        ></Tag>
+      );
+    }
+    return null;
+  };
+
+  const imageBodyTemplate = (rowData: IOfferItem) => {
     return (
       <img
         src={
-          rowData?.itemImage != "<nil>" && rowData?.itemImage != ""
-            ? rowData?.itemImage
+          rowData?.nft_image != "<nil>" && rowData?.nft_image != ""
+            ? rowData?.nft_image
             : "https://us.123rf.com/450wm/pavelstasevich/pavelstasevich1811/pavelstasevich181101028/112815904-no-image-available-icon-flat-vector-illustration.jpg?ver=6"
         }
         alt="item image"
@@ -67,17 +103,17 @@ const OfferMadeList = ({
     );
   };
 
-  const nftDetailBodyTemplate = (rowData: IMakeOfferItem) => {
+  const nftDetailBodyTemplate = (rowData: IOfferItem) => {
     return (
       <i
         className="text-yellow-500 pi pi-book cursor-pointer hover:text-yellow-600"
         style={{ fontSize: "2rem" }}
-        onClick={() => router.push(`/detail/${rowData.identifier}`)}
+        onClick={() => router.push(`/detail/${rowData.token_id}`)}
       ></i>
     );
   };
 
-  const priceBodyTemplate = (rowData: IMakeOfferItem): string => {
+  const priceBodyTemplate = (rowData: IOfferItem): string => {
     return showingPrice(
       rowData?.price || "0",
       OFFER_CURRENCY_UNITS[0].value,
@@ -85,26 +121,30 @@ const OfferMadeList = ({
     );
   };
 
-  const endTimeBodyTemplate = (rowData: IMakeOfferItem) => {
-    return moment(new Date(Number(rowData?.endTime) * 1000)).format() ===
+  const endTimeBodyTemplate = (rowData: IOfferItem) => {
+    return moment(new Date(Number(rowData?.end_time) * 1000)).format() ===
       "Invalid date"
       ? "None"
-      : moment(new Date(Number(rowData?.endTime) * 1000)).format(
+      : moment(new Date(Number(rowData?.end_time) * 1000)).format(
           "DD/MM/yyyy HH:mm"
         );
   };
 
-  const cancelBodyTemplate = (rowData: IMakeOfferItem) => {
-    return (
-      <i
-        className="text-red-500 pi pi-times-circle pi-book cursor-pointer hover:text-red-700"
-        style={{ fontSize: "2rem" }}
-        onClick={() => handleCancelOrder(rowData)}
-      ></i>
-    );
+  const cancelBodyTemplate = (rowData: IOfferItem) => {
+    if (!rowData.is_cancelled && !rowData.is_expired && !rowData.is_fulfilled) {
+      return (
+        <i
+          className="text-red-500 pi pi-times-circle pi-book cursor-pointer hover:text-red-700"
+          style={{ fontSize: "2rem" }}
+          onClick={() => handleCancelOrder(rowData)}
+        ></i>
+      );
+    } else {
+      return null;
+    }
   };
 
-  const handleCancelOrder = async (item: IMakeOfferItem) => {
+  const handleCancelOrder = async (item: IOfferItem) => {
     try {
       if (!web3Context.state.web3.provider) {
         web3Context.state.web3.toast.current &&
@@ -118,7 +158,7 @@ const OfferMadeList = ({
       }
       if (item) {
         await cancelOrder({
-          orderHashes: [item.orderHash],
+          orderHashes: [item.order_hash],
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
           myAddress: web3Context.state.web3.myAddress,
@@ -147,12 +187,30 @@ const OfferMadeList = ({
 
   return (
     <div id="list-make-offer">
-      <DataTable value={data} scrollable scrollHeight="20rem" stripedRows>
+      <MultiSelect
+        value={selectedStatus}
+        onChange={(e) => handleFilterStatus(e.value)}
+        options={statuses}
+        showSelectAll={false}
+        optionLabel="label"
+        placeholder="Select Status"
+        className="w-full md:w-20rem"
+        appendTo="self"
+        display="chip"
+      />
+      <DataTable
+        value={data}
+        scrollable
+        scrollHeight="30rem"
+        className="mt-5"
+        stripedRows
+      >
         <Column
           header="Offerer"
           className="w-20"
           body={offererBodyTemplate}
         ></Column>
+        <Column header="Status" body={eventStatusBodyTemplate}></Column>
         <Column
           field="itemName"
           header="Name"

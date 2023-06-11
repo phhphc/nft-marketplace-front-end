@@ -1,4 +1,7 @@
 #list-make-offer {
+  .p-multiselect-panel .p-multiselect-header {
+    display: none !important;
+  }
   th.image {
     width: 7rem;
   }

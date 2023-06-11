@@ -201,6 +201,7 @@ export interface IOfferItem {
   is_cancelled: boolean;
   is_fulfilled: boolean;
   is_expired: boolean;
+  status: string;
   owner: string;
 }
 
@@ -235,6 +236,7 @@ export interface IFormEditProfileInput {
 }
 
 export interface IMakeOfferItem {
+  owner: string;
   offerer: string;
   offererAddress: string;
   offer: OfferItem[];
@@ -246,6 +248,10 @@ export interface IMakeOfferItem {
   price: string;
   startTime: string;
   endTime: string;
+  isCancelled: boolean;
+  isFulfilled: boolean;
+  isExpired: boolean;
+  status: string;
 }
 
 export interface IMetaDataProfile {
