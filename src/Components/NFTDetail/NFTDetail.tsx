@@ -179,6 +179,7 @@ const NFTDetail = ({
           price: [item[0].listings[0].start_price],
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
+          chainId: web3Context.state.web3.chainId,
         });
         web3Context.state.web3.toast.current &&
           web3Context.state.web3.toast.current.show({
@@ -245,6 +246,7 @@ const NFTDetail = ({
         unit: selectedUnit,
         startDate: null,
         endDate: Array.isArray(durationDate) ? null : durationDate,
+        chainId: web3Context.state.web3.chainId,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -286,6 +288,7 @@ const NFTDetail = ({
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
           myAddress: web3Context.state.web3.myAddress,
+          chainId: web3Context.state.web3.chainId,
         });
         web3Context.state.web3.toast.current &&
           web3Context.state.web3.toast.current.show({

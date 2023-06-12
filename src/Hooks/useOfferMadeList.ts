@@ -3,10 +3,10 @@ import { getOfferList } from "@Services/ApiService";
 import { cloneDeep } from "lodash";
 import { useQuery } from "react-query";
 
-const useOfferMadeList = (owner: string) => {
+const useOfferMadeList = (owner: string, chainId: number) => {
   const result = useQuery({
     queryKey: ["OfferMadeList", owner],
-    queryFn: () => getOfferList({ from: owner }),
+    queryFn: () => getOfferList({ from: owner, chainId }),
     staleTime: Infinity,
   });
   // const offerMadeList = result.data || [];

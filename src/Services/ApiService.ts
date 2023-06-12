@@ -18,6 +18,7 @@ import {
   BACKEND_URL_VERSION,
   CHAIN_ID,
   CURRENCY,
+  ERC20_ADDRESS,
   MKP_ADDRESS,
 } from "@Constants/index";
 import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
@@ -58,11 +59,13 @@ interface IMakeOfferProps {
   unit: string;
   startDate: Date | null;
   endDate: Date | null;
+  chainId: number;
 }
 
 interface IGetOfferListProps {
   owner?: string;
   from?: string;
+  chainId: number;
 }
 
 interface ITransferTETHToEthProps {
@@ -70,11 +73,13 @@ interface ITransferTETHToEthProps {
   myWallet: any;
   price: string;
   unit: string;
+  chainId: number;
 }
 
 interface IGetOfferByTokenProps {
   tokenId: string;
   tokenAddress: string;
+  chainId: number;
 }
 
 interface IBuyTokenProps {
@@ -82,6 +87,7 @@ interface IBuyTokenProps {
   myWallet: any;
   orderHashes: string[];
   price: string[];
+  chainId: number;
 }
 
 interface IFulfillMakeOfferProps {
@@ -92,6 +98,7 @@ interface IFulfillMakeOfferProps {
   myAddress: string;
   beforeApprove?: () => void;
   afterApprove?: () => void;
+  chainId: number;
 }
 
 interface ICancelOrderProps {
@@ -99,6 +106,7 @@ interface ICancelOrderProps {
   myWallet: any;
   orderHashes: string[];
   myAddress: string;
+  chainId: number;
 }
 
 interface ICreateNFTServiceProps {
@@ -124,6 +132,7 @@ interface ICreateCollectionProps {
   link: string;
   blockchain: string;
   owner: string;
+  chainId: number;
 }
 
 interface ISaveProfileProps {
@@ -134,6 +143,7 @@ interface ISaveProfileProps {
   email?: string;
   address: string;
   signature: string;
+  chainId: number;
 }
 
 interface IIsApprovedForAllProps {
@@ -158,11 +168,13 @@ interface IHideNFTProps {
   token: string;
   identifier: string;
   isHidden: boolean;
+  chainId: number;
 }
 
 interface ISetViewdNotifProps {
   eventName: string;
   orderHash: string;
+  chainId: number;
 }
 
 export const getNFTCollectionListService = async (
@@ -170,11 +182,14 @@ export const getNFTCollectionListService = async (
     [k: string]: any;
   },
   provider: any,
-  myWallet: any
+  myWallet: any,
+  chainId: number
 ): Promise<any> => {
   let offset = 0;
 
   let result: any = [];
+
+  const version = BACKEND_URL_VERSION.get(chainId)!;
 
   while (true) {
     const params: { [k: string]: any } = {
@@ -183,7 +198,7 @@ export const getNFTCollectionListService = async (
       ...additionalParams,
     };
 
-    const res = await axios.get("/api/v0.1/nft", { params });
+    const res = await axios.get(`/api/${version}/nft`, { params });
     if (!res.data.data.nfts?.length) break;
 
     result = result.concat(res.data.data.nfts);
@@ -232,9 +247,11 @@ export const getNFTCollectionListService = async (
 export const getOfferByToken = async ({
   tokenId,
   tokenAddress,
+  chainId,
 }: IGetOfferByTokenProps): Promise<any> => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
-    .get("/api/v0.1/order/offer", {
+    .get(`/api/${version}/order/offer`, {
       params: transformDataRequestToSellNFT({ tokenId, tokenAddress }),
     })
     .then((response) => {
@@ -252,9 +269,11 @@ export const makeOffer = async ({
   unit,
   startDate,
   endDate,
+  chainId,
 }: IMakeOfferProps) => {
-  const erc20Address = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_ADDRESS!;
-  const mkpAddress = process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
+  const erc20Address = ERC20_ADDRESS.get(chainId)!;
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+  const mkpAddress = MKP_ADDRESS.get(chainId)!;
   const mkpMoneyAddress = process.env.NEXT_PUBLIC_MKP_MONEY_ADDRESS!;
 
   const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
@@ -298,7 +317,7 @@ export const makeOffer = async ({
       erc20Address
     ),
   ];
-  const { chainId } = await provider.getNetwork();
+
   const { orderHash, value, orderComponents, startTime, endTime, signature } =
     await createOrder(
       mkpContractWithSigner,
@@ -326,7 +345,7 @@ export const makeOffer = async ({
   );
 
   await axios.post(
-    "/api/v0.1/order",
+    `/api/${version}/order`,
     transformDataRequestToSellNFT({
       orderHash,
       offerer: myAddress,
@@ -347,8 +366,9 @@ export const transferCurrency = async ({
   myWallet,
   price,
   unit,
+  chainId,
 }: ITransferTETHToEthProps) => {
-  const erc20Address = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_ADDRESS!;
+  const erc20Address = ERC20_ADDRESS.get(chainId)!;
 
   const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
 
@@ -419,6 +439,7 @@ export const sellNFT = async ({
     myWallet,
     provider,
     myAddress,
+    chainId,
   });
 
   const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
@@ -536,9 +557,11 @@ export const fulfillMakeOffer = async ({
   myAddress,
   beforeApprove,
   afterApprove,
+  chainId,
 }: IFulfillMakeOfferProps) => {
-  const mkpAddress = process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
-  const erc20Address = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_ADDRESS!;
+  const mkpAddress = MKP_ADDRESS.get(chainId)!;
+  const erc20Address = ERC20_ADDRESS.get(chainId)!;
+  const version = BACKEND_URL_VERSION.get(chainId)!;
 
   const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
 
@@ -561,7 +584,7 @@ export const fulfillMakeOffer = async ({
 
   await increaseTx.wait();
 
-  const orderData = await axios.get("/api/v0.1/order", {
+  const orderData = await axios.get(`/api/${version}/order`, {
     params: {
       orderHash,
       isCancelled: false,
@@ -633,8 +656,10 @@ export const buyToken = async ({
   price,
   myWallet,
   provider,
+  chainId,
 }: IBuyTokenProps) => {
-  const mkpAddress = process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
+  const mkpAddress = MKP_ADDRESS.get(chainId)!;
+  const version = BACKEND_URL_VERSION.get(chainId);
 
   await provider.send("eth_requestAccounts", []);
 
@@ -644,7 +669,7 @@ export const buyToken = async ({
 
   const orderData = await Promise.all(
     orderHashes.map((item) =>
-      axios.get("/api/v0.1/order", {
+      axios.get(`/api/${version}/order`, {
         params: {
           orderHash: item,
           isCancelled: false,
@@ -704,9 +729,11 @@ export const cancelOrder = async ({
   myWallet,
   provider,
   myAddress,
+  chainId,
 }: ICancelOrderProps) => {
   if (!orderHashes?.length) return;
-  const mkpAddress = process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
+  const mkpAddress = MKP_ADDRESS.get(chainId)!;
+  const version = BACKEND_URL_VERSION.get(chainId);
 
   const mkpContract = new ethers.Contract(mkpAddress, mkpAbi, provider);
 
@@ -714,7 +741,7 @@ export const cancelOrder = async ({
 
   const orderData = await Promise.all(
     orderHashes.map((item) =>
-      axios.get("/api/v0.1/order", {
+      axios.get(`/api/${version}/order`, {
         params: {
           orderHash: item,
           isCancelled: false,
@@ -750,7 +777,8 @@ export const cancelOrder = async ({
   await tx.wait();
 };
 
-export const getOfferMadeList = async (myAddress: string) => {
+export const getOfferMadeList = async (myAddress: string, chainId: number) => {
+  const version = BACKEND_URL_VERSION.get(chainId);
   let offset = 0;
   let nfts: any = [];
 
@@ -759,7 +787,7 @@ export const getOfferMadeList = async (myAddress: string) => {
       limit: 100,
       offset,
     };
-    const nftRes = await axios.get("/api/v0.1/nft", { params });
+    const nftRes = await axios.get(`/api/${version}/nft`, { params });
     if (!nftRes.data.data.nfts?.length) break;
     nfts = nfts.concat(nftRes.data.data.nfts);
     offset += 100;
@@ -767,7 +795,7 @@ export const getOfferMadeList = async (myAddress: string) => {
   if (!nfts.length) return [];
 
   let offerMadeList: any = [];
-  const offerRes = await axios.get("/api/v0.1/order", {
+  const offerRes = await axios.get(`/api/${version}/order`, {
     params: {
       offerer: myAddress,
       isCancelled: false,
@@ -795,14 +823,18 @@ export const getOfferMadeList = async (myAddress: string) => {
     });
 };
 
-export const getOfferReceivedList = async (myAddress: string) => {
+export const getOfferReceivedList = async (
+  myAddress: string,
+  chainId: number
+) => {
+  const version = BACKEND_URL_VERSION.get(chainId);
   const params: { [k: string]: any } = {
     limit: 100,
     offset: 0,
     owner: myAddress,
   };
 
-  const myNftsRes = await axios.get("/api/v0.1/nft", { params });
+  const myNftsRes = await axios.get(`/api/${version}/nft`, { params });
 
   const myNfts = myNftsRes.data.data.nfts;
 
@@ -810,7 +842,7 @@ export const getOfferReceivedList = async (myAddress: string) => {
 
   const myMakeOffersList = await Promise.all(
     myNfts.map((item: INFTCollectionItem) =>
-      axios.get("/api/v0.1/order", {
+      axios.get(`/api/${version}/order`, {
         params: {
           considerationIdentifier: item.identifier,
           isCancelled: false,
@@ -845,9 +877,11 @@ export const getOfferReceivedList = async (myAddress: string) => {
 export const getOfferList = async ({
   owner,
   from,
+  chainId,
 }: IGetOfferListProps): Promise<IOfferItem[]> => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
-    .get("/api/v0.1/profile/offer", {
+    .get(`/api/${version}/profile/offer`, {
       params: { owner, from },
     })
     .then((response) => {
@@ -973,8 +1007,9 @@ export const createNFTCollectionService = async ({
   name,
   // url,
   description,
-}: // link,
-ICreateCollectionProps) => {
+  chainId,
+}: ICreateCollectionProps) => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   // const featuredImageCid = await handleUploadImageToPinata(featuredImage);
   const logoImageCid = await handleUploadImageToPinata(logoImage);
   const bannerImageCid = await handleUploadImageToPinata(bannerImage);
@@ -1049,7 +1084,7 @@ ICreateCollectionProps) => {
     });
 
     axios
-      .post("api/v0.1/collection", params, {
+      .post(`api/${version}/collection`, params, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1064,12 +1099,16 @@ ICreateCollectionProps) => {
 };
 
 export const getAllCollectionListService = async (
-  category: string
+  category: string,
+  chainId: number
 ): Promise<ICollectionItem[]> => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+  console.log("🚀 ~ file: ApiService.ts:1106 ~ version:", version);
   const url =
     category === "All"
-      ? `/api/v0.1/collection`
-      : `/api/v0.1/collection/${category}`;
+      ? `/api/${version}/collection`
+      : `/api/${version}/collection/${category}`;
+  console.log("🚀 ~ file: ApiService.ts:1108 ~ url:", url);
   return axios
     .get(url)
     .then((response) => {
@@ -1079,10 +1118,12 @@ export const getAllCollectionListService = async (
 };
 
 export const getCollectionByTokenService = async (
-  token: string
+  token: string,
+  chainId: number
 ): Promise<ICollectionItem[]> => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
-    .get("/api/v0.1/collection", {
+    .get(`/api/${version}/collection`, {
       params: { token: token },
     })
     .then((response) => {
@@ -1092,10 +1133,12 @@ export const getCollectionByTokenService = async (
 };
 
 export const getCollectionByOwnerService = async (
-  owner: string
+  owner: string,
+  chainId: number
 ): Promise<ICollectionItem[]> => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
-    .get("/api/v0.1/collection", {
+    .get(`/api/${version}/collection`, {
       params: { owner: owner },
     })
     .then((response) => {
@@ -1112,7 +1155,9 @@ export const saveProfileService = async ({
   email,
   address,
   signature,
+  chainId,
 }: ISaveProfileProps) => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   const metadata: { [k: string]: string } = {};
 
   if (bio) {
@@ -1146,17 +1191,21 @@ export const saveProfileService = async ({
     metadata: metadata,
   });
 
-  await axios.post("api/v0.1/profile", params, {
+  await axios.post(`api/${version}/profile`, params, {
     headers: {
       "Content-Type": "application/json",
     },
   });
 };
 
-export const getProfileService = async (owner: string): Promise<IProfile> => {
+export const getProfileService = async (
+  owner: string,
+  chainId: number
+): Promise<IProfile> => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   if (owner)
     return axios
-      .get(`/api/v0.1/profile/${owner}`)
+      .get(`/api/${version}/profile/${owner}`)
       .then((response) => {
         return response.data.data || { address: "", username: "" };
       })
@@ -1168,9 +1217,11 @@ export const getEventNFTService = async ({
   token,
   token_id,
   name,
+  chainId,
 }: any): Promise<INFTActivity[]> => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
-    .get("/api/v0.1/event", {
+    .get(`/api/${version}/event`, {
       params: { token, token_id, name },
     })
     .then((response) => {
@@ -1185,10 +1236,12 @@ export const getEventNFTService = async ({
 };
 
 export const getEventNFTByOwnerService = async (
-  owner: string
+  owner: string,
+  chainId: number
 ): Promise<INFTActivity[]> => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
-    .get("/api/v0.1/event", {
+    .get(`/api/${version}/event`, {
       params: { address: owner },
     })
     .then((response) => {
@@ -1206,12 +1259,14 @@ export const hideNFTService = async ({
   token,
   identifier,
   isHidden,
+  chainId,
 }: IHideNFTProps) => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   const params = JSON.stringify({
     isHidden: isHidden,
   });
 
-  await axios.patch(`/api/v0.1/nft/${token}/${identifier}`, params, {
+  await axios.patch(`/api/${version}/nft/${token}/${identifier}`, params, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -1219,10 +1274,12 @@ export const hideNFTService = async ({
 };
 
 export const getNotificationByOwnerService = async (
-  owner: string
+  owner: string,
+  chainId: number
 ): Promise<INotification[]> => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
-    .get("/api/v0.1/notification", {
+    .get(`/api/${version}/notification`, {
       params: { address: owner },
     })
     .then((response) => {
@@ -1239,13 +1296,15 @@ export const getNotificationByOwnerService = async (
 export const setViewdNotifService = async ({
   eventName,
   orderHash,
+  chainId,
 }: ISetViewdNotifProps) => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   const params = JSON.stringify({
     event_name: eventName,
     order_hash: orderHash,
   });
 
-  await axios.post("/api/v0.1/notification", params, {
+  await axios.post(`/api/${version}/notification`, params, {
     headers: {
       "Content-Type": "application/json",
     },

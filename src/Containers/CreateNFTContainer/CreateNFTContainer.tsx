@@ -7,7 +7,10 @@ import { useContext } from "react";
 const CreateNFTContainer = () => {
   const web3Context = useContext(AppContext);
   const myAddress = web3Context.state.web3.myAddress;
-  const { collection } = useCollectionByOwner(myAddress);
+  const { collection } = useCollectionByOwner(
+    myAddress,
+    web3Context.state.web3.chainId
+  );
   return (
     <>
       <CreateNFT collectionList={collection}></CreateNFT>

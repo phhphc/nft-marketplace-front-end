@@ -11,6 +11,7 @@ const NFTDetailContainer = () => {
   const { nftCollectionList, refetch } = useNFTCollectionList({
     provider: web3Context.state.web3.provider,
     myWallet: web3Context.state.web3.myWallet,
+    chainId: web3Context.state.web3.chainId,
   });
 
   const router = useRouter();
@@ -18,6 +19,7 @@ const NFTDetailContainer = () => {
 
   const { nftActivity, refetch: nftActivityRefetch } = useNFTActivity({
     token_id: tokenID,
+    chainId: web3Context.state.web3.chainId,
   });
 
   const nftDetail = useMemo(() => {

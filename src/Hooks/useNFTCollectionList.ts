@@ -9,6 +9,7 @@ interface IUseNFTCollectionListProps {
   isHidden?: boolean;
   provider: any;
   myWallet: any;
+  chainId: number;
 }
 
 const useNFTCollectionList = ({
@@ -17,14 +18,16 @@ const useNFTCollectionList = ({
   isHidden,
   provider,
   myWallet,
+  chainId,
 }: IUseNFTCollectionListProps) => {
   const result = useQuery({
-    queryKey: `nftCollectionList-${token}-${owner}-${isHidden}-${provider}-${myWallet}`,
+    queryKey: `nftCollectionList-${token}-${owner}-${isHidden}-${provider}-${myWallet}-${chainId}`,
     queryFn: () =>
       getNFTCollectionListService(
         { token, owner, isHidden },
         provider,
-        myWallet
+        myWallet,
+        chainId
       ),
     staleTime: Infinity,
     retry: true,

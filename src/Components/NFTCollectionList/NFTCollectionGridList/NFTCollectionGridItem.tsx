@@ -159,6 +159,7 @@ const NFTCollectionGridItem = ({
           price: [item[0].listings[0].start_price],
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
+          chainId: web3Context.state.web3.chainId,
         });
         web3Context.state.web3.toast.current &&
           web3Context.state.web3.toast.current.show({
@@ -200,6 +201,7 @@ const NFTCollectionGridItem = ({
           myWallet: web3Context.state.web3.myWallet,
           provider: web3Context.state.web3.provider,
           myAddress: web3Context.state.web3.myAddress,
+          chainId: web3Context.state.web3.chainId,
         });
         web3Context.state.web3.toast.current &&
           web3Context.state.web3.toast.current.show({
@@ -247,6 +249,7 @@ const NFTCollectionGridItem = ({
           token: item.token,
           identifier: item.identifier,
           isHidden: isHidden,
+          chainId: web3Context.state.web3.chainId,
         });
       });
       web3Context.state.web3.toast.current &&

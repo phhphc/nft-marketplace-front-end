@@ -1,12 +1,13 @@
 import { ICategory, ICollectionItem } from "@Interfaces/index";
 import { TabMenu } from "primereact/tabmenu";
 import { Carousel } from "primereact/carousel";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
 import Link from "next/link";
 import moment from "moment";
 import useCollectionListByCategory from "@Hooks/useCollectionListByCategory";
+import { AppContext } from "@Store/index";
 
 export interface ICollectionTabMenu {}
 
@@ -21,8 +22,12 @@ const CategoryTabMenu = ({}: ICollectionTabMenu) => {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const web3Context = useContext(AppContext);
 
-  const { collectionList } = useCollectionListByCategory(selectedCategory);
+  const { collectionList } = useCollectionListByCategory(
+    selectedCategory,
+    web3Context.state.web3.chainId
+  );
   function handleChangeActive(event: any) {
     setActiveIndex(event.index);
     setSelectedCategory(event.value.value);

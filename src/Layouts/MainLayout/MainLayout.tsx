@@ -13,14 +13,21 @@ export interface IMainLayoutProps {
 const MainLayout = ({ children }: IMainLayoutProps) => {
   const web3Context = useContext(AppContext);
   const { notification, refetch: notificationRefetch } = useNotificationByOwner(
-    web3Context.state.web3.myAddress
+    web3Context.state.web3.myAddress,
+    web3Context.state.web3.chainId
   );
   return (
     <div>
-      <Header notification={notification}
-              notificationRefetch={notificationRefetch}/>
-        <div className="px-5 pb-5 mt-24 min-h-screen">{children}</div>
-      <Footer />
+      {web3Context.state.web3.chainId && (
+        <>
+          <Header
+            notification={notification}
+            notificationRefetch={notificationRefetch}
+          />
+          <div className="px-5 pb-5 mt-24 min-h-screen">{children}</div>
+          <Footer />
+        </>
+      )}
     </div>
   );
 };
