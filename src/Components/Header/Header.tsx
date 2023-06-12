@@ -148,6 +148,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   const { nftCollectionList } = useNFTCollectionList({
     provider: web3Context.state.web3.provider,
     myWallet: web3Context.state.web3.myWallet,
+    chainId: web3Context.state.web3.chainId,
   });
   const [cartModalVisible, setCartModalVisible] = useState(false);
   // const totalPrice = useMemo(() => {
@@ -213,6 +214,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
           price: cart.map((item) => item.price),
           myWallet,
           provider,
+          chainId: web3Context.state.web3.chainId,
         });
         web3Context.state.web3.toast.current &&
           web3Context.state.web3.toast.current.show({
@@ -246,6 +248,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
           myWallet: web3Context.state.web3.myWallet,
           price: String(price),
           unit: unit,
+          chainId: web3Context.state.web3.chainId,
         });
       } else {
         return (
@@ -282,6 +285,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
       await setViewdNotifService({
         eventName: notif.event_name,
         orderHash: notif.order_hash,
+        chainId: web3Context.state.web3.chainId,
       });
       notificationRefetch();
     } catch (error) {

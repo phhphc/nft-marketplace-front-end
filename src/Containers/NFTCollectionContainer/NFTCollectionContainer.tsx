@@ -11,18 +11,25 @@ import { AppContext } from "@Store/index";
 const NFTCollectionContainer = () => {
   const router = useRouter();
   const web3Context = useContext(AppContext);
-  const { collection } = useCollectionByToken(router.query.token);
+  const { collection } = useCollectionByToken(
+    router.query.token,
+    web3Context.state.web3.chainId
+  );
   const { nftCollectionList, refetch } = useNFTCollectionList({
     token: router.query.token as string,
     isHidden: false,
     provider: web3Context.state.web3.provider,
     myWallet: web3Context.state.web3.myWallet,
+    chainId: web3Context.state.web3.chainId,
   });
 
   return (
     <>
       <ImageProfile collectionImage={collection}></ImageProfile>
-      <NFTInfor collectionInfo={collection} nftCollectionList={nftCollectionList}></NFTInfor>
+      <NFTInfor
+        collectionInfo={collection}
+        nftCollectionList={nftCollectionList}
+      ></NFTInfor>
       <NFTCollectionList
         nftCollectionList={nftCollectionList}
         mode={NFT_COLLECTION_MODE.CAN_BUY}

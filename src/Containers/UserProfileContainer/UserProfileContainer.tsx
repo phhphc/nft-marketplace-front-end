@@ -17,21 +17,28 @@ const UserProfileContainer = () => {
     owner: web3Context.state.web3.myAddress as string,
     provider: web3Context.state.web3.provider,
     myWallet: web3Context.state.web3.myWallet,
+    chainId: web3Context.state.web3.chainId,
   });
 
   const { offerReceivedList, refetch: offerReceivedListRefetch } =
-    useOfferReceivedList(web3Context.state.web3.myAddress);
+    useOfferReceivedList(
+      web3Context.state.web3.myAddress,
+      web3Context.state.web3.chainId
+    );
 
   const { offerMadeList, refetch: offerMadeListRefetch } = useOfferMadeList(
-    web3Context.state.web3.myAddress
+    web3Context.state.web3.myAddress,
+    web3Context.state.web3.chainId
   );
 
   const { profile, refetch: profileRefetch } = useProfile(
-    web3Context.state.web3.myAddress
+    web3Context.state.web3.myAddress,
+    web3Context.state.web3.chainId
   );
 
   const { nftActivity, refetch: nftActivityRefetch } = useNFTActivityByOwner(
-    web3Context.state.web3.myAddress
+    web3Context.state.web3.myAddress,
+    web3Context.state.web3.chainId
   );
 
   return (

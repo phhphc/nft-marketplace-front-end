@@ -11,10 +11,6 @@ export interface IMainLayoutProps {
 }
 
 const AdminLayout = ({ children }: IMainLayoutProps) => {
-  const web3Context = useContext(AppContext);
-  const { notification, refetch: notificationRefetch } = useNotificationByOwner(
-    web3Context.state.web3.myAddress
-  );
   return <div>This is only for admin</div>;
 };
 

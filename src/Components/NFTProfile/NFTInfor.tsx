@@ -9,6 +9,7 @@ import { AppContext } from "@Store/index";
 import { erc721Abi } from "@Constants/erc721Abi";
 import useNFTActivity from "@Hooks/useNFTActivity";
 import { useRouter } from "next/router";
+import { MKP_ADDRESS } from "@Constants/index";
 
 export interface ICollectionInfoProps {
   collectionInfo: ICollectionItem[];
@@ -26,11 +27,12 @@ const NFTInfor = ({
   const [isApprovedForAllNfts, setApprovalForAllNfts] = useState(false);
   const [refetch, setRefetch] = useState<number>(0);
   const web3Context = useContext(AppContext);
-  const mkpAddress = process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!;
+  const mkpAddress = MKP_ADDRESS.get(web3Context.state.web3.chainId)!;
   const router = useRouter();
   const token = router.query.token as string;
   const { nftActivity, refetch: nftActivityRefetch } = useNFTActivity({
     token: token,
+    chainId: web3Context.state.web3.chainId,
   });
 
   useEffect(() => {

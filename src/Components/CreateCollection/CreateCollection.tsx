@@ -65,6 +65,7 @@ const CreateCollection = () => {
         logoImage: data.logoImage[0],
         bannerImage: data.bannerImage[0],
         owner,
+        chainId: web3Context.state.web3.chainId,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
