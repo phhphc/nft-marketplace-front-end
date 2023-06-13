@@ -23,12 +23,13 @@ import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import {
+  CHAINID_CURRENCY,
   CHAIN_ID,
-  CURRENCY_TRANSFER,
-  CURRENCY_UNITS,
+  CHAINID_CURRENCY_TRANSFER,
   ERC20_ADDRESS,
   NFT_EVENT_NAME,
   NOTIFICATION_INFO,
+  CHAINID_CURRENCY_UNITS,
 } from "@Constants/index";
 import { Badge } from "primereact/badge";
 import { ListBox } from "primereact/listbox";
@@ -579,8 +580,11 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                         </div>
                         <span className="price text-sm">
                           {showingPrice(
+                            web3Context.state.web3.chainId,
                             cartItem[0].listings[0]?.start_price || "0",
-                            CURRENCY_UNITS[0].value,
+                            CHAINID_CURRENCY_UNITS.get(
+                              web3Context.state.web3.chainId
+                            )[0].value,
                             true
                           )}
                         </span>
@@ -602,8 +606,11 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                     <span className="text-xl font-semibold">Total price</span>
                     <span className="font-semibold">
                       {showingPrice(
+                        web3Context.state.web3.chainId,
                         totalPrice.toString(),
-                        CURRENCY_UNITS[0].value,
+                        CHAINID_CURRENCY_UNITS.get(
+                          web3Context.state.web3.chainId
+                        )[0].value,
                         true
                       )}
                     </span>
@@ -676,7 +683,8 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                       ></Tag>
                     </div>
                     <div className="text-center font-bold">
-                      {ethBalance} ETH
+                      {ethBalance}{" "}
+                      {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)}
                     </div>
                     <div className="text-center font-bold">
                       {erc20Balance} TETH
@@ -687,7 +695,8 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                       className="bg-violet-500 hover:bg-violet-600 h-16 rounded-md text-xl w-full text-white"
                       onClick={() => setVisible(true)}
                     >
-                      Transfer ETH{" "}
+                      Transfer{" "}
+                      {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)}{" "}
                       <span>
                         <i className="pi pi-arrow-right-arrow-left pl-2 pr-2"></i>
                         TETH
@@ -698,7 +707,10 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                         <div>
                           <p>Please input the type you want to transfer</p>
                           <p className="text-sm italic text-rose-500">
-                            * 1 TETH = 1 ETH
+                            * 1 TETH = 1{" "}
+                            {CHAINID_CURRENCY.get(
+                              web3Context.state.web3.chainId
+                            )}
                           </p>
                         </div>
                       }
@@ -730,7 +742,9 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                           onChange={(e) => {
                             setSelectedUnit(e.value);
                           }}
-                          options={CURRENCY_TRANSFER}
+                          options={CHAINID_CURRENCY_TRANSFER.get(
+                            web3Context.state.web3.chainId
+                          )}
                           optionLabel="name"
                           placeholder="Select a transfer type"
                           className="md:w-14rem"

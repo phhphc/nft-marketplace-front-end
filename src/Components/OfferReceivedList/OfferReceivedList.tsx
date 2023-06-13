@@ -117,6 +117,7 @@ const OfferReceivedList = ({
 
   const priceBodyTemplate = (rowData: IOfferItem): string => {
     return showingPrice(
+      web3Context.state.web3.chainId,
       rowData?.price || "0",
       OFFER_CURRENCY_UNITS[0].value,
       true

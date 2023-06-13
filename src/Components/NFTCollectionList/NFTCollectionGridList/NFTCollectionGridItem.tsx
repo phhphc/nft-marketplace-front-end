@@ -1,4 +1,6 @@
 import {
+  CHAINID_CURRENCY,
+  CHAIN_ID,
   COLLECTION_VIEW_TYPE,
   DURATION_NAME,
   DURATION_OPTIONS,
@@ -11,7 +13,7 @@ import {
   cancelOrder,
   hideNFTService,
 } from "@Services/ApiService";
-import { NFT_COLLECTION_MODE, CURRENCY_UNITS } from "@Constants/index";
+import { NFT_COLLECTION_MODE, CHAINID_CURRENCY_UNITS } from "@Constants/index";
 import { useContext, useState, useEffect, useRef } from "react";
 import { AppContext } from "@Store/index";
 import { Dialog } from "primereact/dialog";
@@ -458,8 +460,10 @@ const NFTCollectionGridItem = ({
               Price:
               <span className="pl-1">
                 {showingPrice(
+                  web3Context.state.web3.chainId,
                   item[0].listings[0]?.start_price || "0",
-                  CURRENCY_UNITS[0].value,
+                  CHAINID_CURRENCY_UNITS.get(web3Context.state.web3.chainId)[0]
+                    .value,
                   true
                 )}
               </span>
@@ -535,9 +539,13 @@ const NFTCollectionGridItem = ({
                 header={
                   <div>
                     <p>Please input the price that you want to sell</p>
-                    <p className="text-sm italic text-rose-500">
-                      * 1 ETH = 1,000,000,000 Gwei
-                    </p>
+                    {web3Context.state.web3.chainId !== CHAIN_ID.MUMBAI && (
+                      <p className="text-sm italic text-rose-500">
+                        * 1{" "}
+                        {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)} =
+                        1,000,000,000 Gwei
+                      </p>
+                    )}
                     <p className="text-sm italic text-rose-500">
                       * If resell at a higher price, all previous orders will be
                       canceled
@@ -576,7 +584,9 @@ const NFTCollectionGridItem = ({
                   <Dropdown
                     value={selectedUnit}
                     onChange={(e) => setSelectedUnit(e.value)}
-                    options={CURRENCY_UNITS}
+                    options={CHAINID_CURRENCY_UNITS.get(
+                      web3Context.state.web3.chainId
+                    )}
                     optionLabel="name"
                     placeholder="Select a unit"
                     className="md:w-14rem"

@@ -1,10 +1,11 @@
-import { CURRENCY_UNITS } from "@Constants/index";
+import { CHAINID_CURRENCY } from "@Constants/index";
 import { INFTActivity } from "@Interfaces/index";
+import { AppContext } from "@Store/index";
 import { showingPrice } from "@Utils/index";
 import moment from "moment";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Chart } from "primereact/chart";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export interface INFTPriceHistoryProps {
   nftSale: INFTActivity[];
@@ -13,6 +14,7 @@ export interface INFTPriceHistoryProps {
 const NFTPriceHistory = ({ nftSale }: INFTPriceHistoryProps) => {
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
+  const web3Context = useContext(AppContext);
 
   useEffect(() => {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -50,7 +52,11 @@ const NFTPriceHistory = ({ nftSale }: INFTPriceHistoryProps) => {
               let label = context.dataset.label || "";
 
               if (label && context.parsed.y !== null) {
-                label += ": " + context.parsed.y + " ETH";
+                label +=
+                  ": " +
+                  context.parsed.y +
+                  " " +
+                  CHAINID_CURRENCY.get(web3Context.state.web3.chainId);
               }
               return label;
             },
@@ -76,7 +82,7 @@ const NFTPriceHistory = ({ nftSale }: INFTPriceHistoryProps) => {
           },
           title: {
             display: true,
-            text: "ETH",
+            text: CHAINID_CURRENCY.get(web3Context.state.web3.chainId),
           },
         },
       },

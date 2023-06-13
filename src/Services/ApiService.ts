@@ -178,9 +178,9 @@ interface ISetViewdNotifProps {
 }
 
 interface IGetSaleEventByAddrMthYrProps {
-  month: number,
-  year: number,
-  address: string
+  month: number;
+  year: number;
+  address: string;
   chainId: number;
 }
 
@@ -458,19 +458,19 @@ export const sellNFT = async ({
   );
   const consideration = [
     getItemETH(
-      unit == CURRENCY.ETHER
+      unit == CURRENCY.ETHER || unit == CURRENCY.MATIC
         ? parseEther(toFixed(Number(price) * 0.99).toString())
         : parseGwei(toFixed(Number(price) * 0.99).toString()),
-      unit == CURRENCY.ETHER
+      unit == CURRENCY.ETHER || unit == CURRENCY.MATIC
         ? parseEther(toFixed(Number(price) * 0.99).toString())
         : parseGwei(toFixed(Number(price) * 0.99).toString()),
       myAddress
     ),
     getItemETH(
-      unit == CURRENCY.ETHER
+      unit == CURRENCY.ETHER || unit == CURRENCY.MATIC
         ? parseEther(toFixed(Number(price) * 0.01).toString())
         : parseGwei(toFixed(Number(price) * 0.01).toString()),
-      unit == CURRENCY.ETHER
+      unit == CURRENCY.ETHER || unit == CURRENCY.MATIC
         ? parseEther(toFixed(Number(price) * 0.01).toString())
         : parseGwei(toFixed(Number(price) * 0.01).toString()),
       mkpMoneyAddress
@@ -1287,7 +1287,7 @@ export const getNotificationByOwnerService = async (
   const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
     .get(`/api/${version}/notification`, {
-      params: { address: owner},
+      params: { address: owner },
     })
     .then((response) => {
       const res = response.data.data.notifications.sort(
@@ -1319,12 +1319,15 @@ export const setViewedNotifService = async ({
 };
 
 export const getSaleEventByAddrMthYrService = async ({
-  address, month, year, chainId
+  address,
+  month,
+  year,
+  chainId,
 }: IGetSaleEventByAddrMthYrProps): Promise<INFTActivity[]> => {
   const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
     .get(`/api/${version}/event`, {
-      params: { month, year, address, name:"sale" },
+      params: { month, year, address, name: "sale" },
     })
     .then((response) => {
       const res = response.data.data.events.sort(

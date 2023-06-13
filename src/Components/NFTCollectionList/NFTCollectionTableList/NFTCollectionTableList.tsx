@@ -10,7 +10,8 @@ import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import {
-  CURRENCY_UNITS,
+  CHAINID_CURRENCY,
+  CHAINID_CURRENCY_UNITS,
   DURATION_NAME,
   DURATION_OPTIONS,
   OFFER_CURRENCY_UNITS,
@@ -340,8 +341,9 @@ const NFTCollectionTableList = ({
     return (
       rowData[0].listings[0] &&
       showingPrice(
+        web3Context.state.web3.chainId,
         rowData[0].listings[0]?.start_price || "0",
-        CURRENCY_UNITS[0].value,
+        CHAINID_CURRENCY_UNITS.get(web3Context.state.web3.chainId)[0].value,
         true
       )
     );
@@ -386,7 +388,10 @@ const NFTCollectionTableList = ({
             header={
               <div>
                 <p>Please input the price that you want to make offer</p>
-                <p className="text-sm italic text-rose-500">* 1 TETH = 1 ETH</p>
+                <p className="text-sm italic text-rose-500">
+                  * 1 TETH = 1{" "}
+                  {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)}
+                </p>
               </div>
             }
             visible={dialogMakeOffer}
@@ -495,7 +500,8 @@ const NFTCollectionTableList = ({
                 <div>
                   <p>Please input the price that you want to sell</p>
                   <p className="text-sm italic text-rose-500">
-                    * 1 ETH = 1,000,000,000 Gwei
+                    * 1 {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)} =
+                    1,000,000,000 Gwei
                   </p>
                   <p className="text-sm italic text-rose-500">
                     * If resell at a higher price, all previous orders will be
@@ -535,7 +541,9 @@ const NFTCollectionTableList = ({
                 <Dropdown
                   value={selectedUnit}
                   onChange={(e) => setSelectedUnit(e.value)}
-                  options={CURRENCY_UNITS}
+                  options={CHAINID_CURRENCY_UNITS.get(
+                    web3Context.state.web3.chainId
+                  )}
                   optionLabel="name"
                   placeholder="Select a unit"
                   className="md:w-14rem"
@@ -619,7 +627,10 @@ const NFTCollectionTableList = ({
             header={
               <div>
                 <p>Please input the price that you want to make offer</p>
-                <p className="text-sm italic text-rose-500">* 1 TETH = 1 ETH</p>
+                <p className="text-sm italic text-rose-500">
+                  * 1 TETH = 1{" "}
+                  {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)}
+                </p>
               </div>
             }
             visible={dialogMakeOffer}
@@ -797,7 +808,9 @@ const NFTCollectionTableList = ({
                         Please input the price that you want to sell as bundle
                       </p>
                       <p className="text-sm italic text-rose-500">
-                        * 1 ETH = 1,000,000,000 Gwei
+                        * 1{" "}
+                        {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)} =
+                        1,000,000,000 Gwei
                       </p>
                       <p className="text-sm italic text-rose-500">
                         * If resell at a higher price, all previous orders will
@@ -837,7 +850,9 @@ const NFTCollectionTableList = ({
                     <Dropdown
                       value={selectedUnit}
                       onChange={(e) => setSelectedUnit(e.value)}
-                      options={CURRENCY_UNITS}
+                      options={CHAINID_CURRENCY_UNITS.get(
+                        web3Context.state.web3.chainId
+                      )}
                       optionLabel="name"
                       placeholder="Select a unit"
                       className="md:w-14rem"

@@ -9,7 +9,7 @@ import { AppContext } from "@Store/index";
 import { erc721Abi } from "@Constants/erc721Abi";
 import useNFTActivity from "@Hooks/useNFTActivity";
 import { useRouter } from "next/router";
-import { MKP_ADDRESS } from "@Constants/index";
+import { CHAINID_CURRENCY, MKP_ADDRESS } from "@Constants/index";
 
 export interface ICollectionInfoProps {
   collectionInfo: ICollectionItem[];
@@ -223,18 +223,28 @@ const NFTInfor = ({
         </div>
         <div className="pl-1">
           Total Volume{" "}
-          <span className="font-semibold pr-1">{totalVolume} ETH</span>
+          <span className="font-semibold pr-1">
+            {totalVolume} {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)}
+          </span>
         </div>
         <div className="pl-1">
           Floor Price
           <span className="font-semibold pr-1 pl-1">
-            {Number.isNaN(floorPrice) ? "--" : floorPrice + " ETH"}
+            {Number.isNaN(floorPrice)
+              ? "--"
+              : floorPrice +
+                " " +
+                CHAINID_CURRENCY.get(web3Context.state.web3.chainId)!}
           </span>
         </div>
         <div className="pl-1">
           Best Offer
           <span className="font-semibold pr-1 pl-1">
-            {Number.isNaN(bestOfferPrice) ? "--" : bestOfferPrice + " ETH"}
+            {Number.isNaN(bestOfferPrice)
+              ? "--"
+              : bestOfferPrice +
+                " " +
+                CHAINID_CURRENCY.get(web3Context.state.web3.chainId)!}
           </span>
         </div>
         <div className="pl-1">
@@ -281,7 +291,9 @@ const NFTInfor = ({
               severity="info"
               text="You gave the marketplace permission to transfer all your NFTs in this collection. Click here to withdraw!"
               className="approved cursor-pointer"
-              data-pr-tooltip="You won't pay extra ETH for the next time"
+              data-pr-tooltip={`You won't pay extra ${CHAINID_CURRENCY.get(
+                web3Context.state.web3.chainId
+              )} for the next time`}
               data-pr-position="left"
               onClick={() => handleCancelApproval()}
             />
@@ -292,7 +304,9 @@ const NFTInfor = ({
             <button
               className="bg-sky-500 hover:bg-sky-700 text-white rounded-md h-12 px-5 not-approved"
               onClick={() => handleSetApproval()}
-              data-pr-tooltip="Once you set permission, you won't pay extra ETH for the next time"
+              data-pr-tooltip={`Once you set permission, you won't pay extra ${CHAINID_CURRENCY.get(
+                web3Context.state.web3.chainId
+              )} for the next time`}
               data-pr-position="left"
             >
               Click here to set permission for the marketplace to transfer all
