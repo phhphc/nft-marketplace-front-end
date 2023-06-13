@@ -177,6 +177,12 @@ interface ISetViewdNotifProps {
   chainId: number;
 }
 
+interface IGetSaleEventByAddrMthYrProps {
+  month: number,
+  year: number,
+  address: string
+}
+
 export const getNFTCollectionListService = async (
   additionalParams: {
     [k: string]: any;
@@ -1309,4 +1315,22 @@ export const setViewedNotifService = async ({
       "Content-Type": "application/json",
     },
   });
+};
+
+export const getSaleEventByAddrMthYrService = async ({
+  address, month, year
+}: IGetSaleEventByAddrMthYrProps): Promise<INFTActivity[]> => {
+  return axios
+    .get("/api/v0.1/event", {
+      params: { month, year, address, name:"sale" },
+    })
+    .then((response) => {
+      const res = response.data.data.events.sort(
+        (a: INFTActivity, b: INFTActivity) => {
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+        }
+      );
+      return res || [];
+    })
+    .catch((err) => {});
 };

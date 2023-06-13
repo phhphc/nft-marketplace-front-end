@@ -11,6 +11,12 @@ import { TabView, TabPanel } from "primereact/tabview";
 import OfferMadeList from "@Components/OfferMadeList/OfferMadeList";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import ProfileStatistics from "@Components/ProfileStatistics/ProfileStatistics";
+
+interface IMonthYear {
+  month: number;
+  year: number;
+}
 
 export interface IUserProfileTabsProps {
   nftCollectionList: INFTCollectionItem[][];
@@ -22,6 +28,10 @@ export interface IUserProfileTabsProps {
   nftRefetch: () => void;
   nftActivity: INFTActivity[];
   nftActivityRefetch: () => void;
+  nftSaleByMonth: INFTActivity[];
+  nftSaleRefetch: () => void;
+  monthYear: IMonthYear;
+  handleChangeMonthYear: (cmd: string) => void;
 }
 
 const UserProfileTabs = ({
@@ -34,6 +44,10 @@ const UserProfileTabs = ({
   nftRefetch,
   nftActivity,
   nftActivityRefetch,
+  nftSaleByMonth,
+  nftSaleRefetch,
+  monthYear,
+  handleChangeMonthYear
 }: IUserProfileTabsProps) => {
   const router = useRouter();
 
@@ -57,6 +71,14 @@ const UserProfileTabs = ({
         </TabPanel>
         <TabPanel header="My Activities">
           <NFTActivity nftActivity={nftActivity}></NFTActivity>
+        </TabPanel>
+        <TabPanel header="Statistics">
+          <ProfileStatistics
+            nftSaleByMonth={nftSaleByMonth}
+            refetch={nftSaleRefetch}
+            month={monthYear.month}
+            year={monthYear.year}
+            handleChangeMonth={handleChangeMonthYear}/>
         </TabPanel>
         <TabPanel header="Offers received">
           <OfferReceivedList
