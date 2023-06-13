@@ -36,7 +36,7 @@ const NFTCollectionGridList = ({
 }: INFTCollectionGridListProps) => {
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
-  const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const [selectedUnit, setSelectedUnit] = useState<string>("ETH");
   const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
   const [durationDate, setDurationDate] = useState<Date | Date[] | null>(null);
 
@@ -62,6 +62,28 @@ const NFTCollectionGridList = ({
   const web3Context = useContext(AppContext);
 
   const handleSellBundle = async () => {
+    if (durationDate === null) {
+      return (
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please input the duration!",
+          life: 5000,
+        })
+      );
+    }
+    if (price === 0) {
+      return (
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "The price must be higher than 0!",
+          life: 5000,
+        })
+      );
+    }
     try {
       setVisible(false);
       if (!web3Context.state.web3.provider) {
@@ -193,7 +215,7 @@ const NFTCollectionGridList = ({
                   </div>
                   <div className="flex gap-8 mb-2">
                     <div className="flex flex-column items-center gap-5">
-                      <div className="text-xl font-bold">Duration:</div>
+                      <div className="text-xl font-bold">* Duration:</div>
                       {DURATION_OPTIONS.map((duration) => {
                         return (
                           <div key={duration.key} className="flex items-center">

@@ -73,6 +73,17 @@ const NFTCollectionGridItem = ({
   const web3Context = useContext(AppContext);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
+    if (durationDate === null) {
+      return (
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please input the duration!",
+          life: 5000,
+        })
+      );
+    }
     if (price === 0) {
       return (
         web3Context.state.web3.toast.current &&
@@ -276,7 +287,7 @@ const NFTCollectionGridItem = ({
   };
 
   const [visible, setVisible] = useState(false);
-  const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const [selectedUnit, setSelectedUnit] = useState<string>("ETH");
   const [selectedItemBundleIndex, setSelectedItemBundleIndex] = useState(0);
 
   useEffect(() => {
@@ -594,7 +605,7 @@ const NFTCollectionGridItem = ({
                 </div>
                 <div className="flex gap-8 mb-2">
                   <div className="flex flex-column items-center gap-5">
-                    <div className="text-xl font-bold">Duration:</div>
+                    <div className="text-xl font-bold">* Duration:</div>
                     {DURATION_OPTIONS.map((duration) => {
                       return (
                         <div key={duration.key} className="flex items-center">

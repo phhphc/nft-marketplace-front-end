@@ -3,7 +3,6 @@ import { Tooltip } from "primereact/tooltip";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { ICollectionItem, INFTCollectionItem } from "@Interfaces/index";
 import moment from "moment";
-import { Message } from "primereact/message";
 import { isApprovedForAll, setApprovedForAll } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { erc721Abi } from "@Constants/erc721Abi";
@@ -284,37 +283,44 @@ const NFTInfor = ({
           </span>
         </button>
       </div>
-      <div className="pt-1 flex justify-end animate-bounce">
-        {isApprovedForAllNfts ? (
-          <div>
-            <Message
-              severity="info"
-              text="You gave the marketplace permission to transfer all your NFTs in this collection. Click here to withdraw!"
-              className="approved cursor-pointer"
-              data-pr-tooltip={`You won't pay extra ${CHAINID_CURRENCY.get(
-                web3Context.state.web3.chainId
-              )} for the next time`}
-              data-pr-position="left"
-              onClick={() => handleCancelApproval()}
-            />
-            <Tooltip target=".approved" />
-          </div>
-        ) : (
-          <div>
-            <button
-              className="bg-sky-500 hover:bg-sky-700 text-white rounded-md h-12 px-5 not-approved"
-              onClick={() => handleSetApproval()}
-              data-pr-tooltip={`Once you set permission, you won't pay extra ${CHAINID_CURRENCY.get(
-                web3Context.state.web3.chainId
-              )} for the next time`}
-              data-pr-position="left"
-            >
-              Click here to set permission for the marketplace to transfer all
-              your NFTs in this collection
-            </button>
-            <Tooltip target=".not-approved" />
-          </div>
-        )}
+      <div className="pt-1 flex justify-end gap-3 items-center">
+        <i
+          className="pi pi-arrow-circle-right animate-bounce"
+          style={{ fontSize: "2rem", color: "blue" }}
+        ></i>
+        <div>
+          {isApprovedForAllNfts ? (
+            <div>
+              <button
+                className="bg-sky-500 hover:bg-sky-700 text-white rounded-md h-12 px-5 approved"
+                data-pr-tooltip={`You won't pay extra ${CHAINID_CURRENCY.get(
+                  web3Context.state.web3.chainId
+                )} for the next time`}
+                data-pr-position="left"
+                onClick={() => handleCancelApproval()}
+              >
+                You gave the marketplace permission to transfer all your NFTs in
+                this collection. Click here to withdraw!
+              </button>
+              <Tooltip target=".approved" />
+            </div>
+          ) : (
+            <div>
+              <button
+                className="bg-sky-500 hover:bg-sky-700 text-white rounded-md h-12 px-5 not-approved"
+                onClick={() => handleSetApproval()}
+                data-pr-tooltip={`Once you set permission, you won't pay extra ${CHAINID_CURRENCY.get(
+                  web3Context.state.web3.chainId
+                )} for the next time`}
+                data-pr-position="left"
+              >
+                Click here to set permission for the marketplace to transfer all
+                your NFTs in this collection
+              </button>
+              <Tooltip target=".not-approved" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

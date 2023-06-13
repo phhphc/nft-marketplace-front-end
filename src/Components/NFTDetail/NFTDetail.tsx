@@ -95,6 +95,17 @@ const NFTDetail = ({
   }, [nftDetail[0]?.listings?.[0]?.end_time]);
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
+    if (durationDate === null) {
+      return (
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please input the duration!",
+          life: 5000,
+        })
+      );
+    }
     if (price === 0) {
       return (
         web3Context.state.web3.toast.current &&
@@ -212,7 +223,7 @@ const NFTDetail = ({
         web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Please input the end time!",
+          detail: "Please input the duration!",
           life: 5000,
         })
       );
@@ -335,7 +346,7 @@ const NFTDetail = ({
   const [visible, setVisible] = useState(false);
   const [dialogMakeOffer, setDialogMakeOffer] = useState(false);
   const [price, setPrice] = useState<number>(0);
-  const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const [selectedUnit, setSelectedUnit] = useState<string>("ETH");
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   useEffect(() => {
@@ -748,7 +759,7 @@ const NFTDetail = ({
                       </div>
                       <div className="flex gap-8 mb-2">
                         <div className="flex flex-column items-center gap-5">
-                          <div className="text-xl font-bold">Duration:</div>
+                          <div className="text-xl font-bold">* Duration:</div>
                           {DURATION_OPTIONS.map((duration) => {
                             return (
                               <div
