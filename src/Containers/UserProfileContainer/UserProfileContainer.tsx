@@ -82,6 +82,7 @@ const UserProfileContainer = () => {
     address: web3Context.state.web3.myAddress as string,
     month: monthYear.month,
     year: monthYear.year,
+    chainId: web3Context.state.web3.chainId,
   });
 
   return (
