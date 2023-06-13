@@ -45,7 +45,7 @@ const NFTCollectionTableList = ({
   const [visible, setVisible] = useState(false);
   const [visibleBundle, setVisibleBundle] = useState(false);
   const [price, setPrice] = useState<number>(0);
-  const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const [selectedUnit, setSelectedUnit] = useState<string>("ETH");
   const [selectedNFTs, setSelectedNFTs] = useState<INFTCollectionItem[][]>([]);
   const [dialogMakeOffer, setDialogMakeOffer] = useState(false);
   const [checked, setChecked] = useState(false);
@@ -103,6 +103,17 @@ const NFTCollectionTableList = ({
   };
 
   const handleSellNFT = async (item: INFTCollectionItem[]) => {
+    if (durationDate === null) {
+      return (
+        web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please input the duration!",
+          life: 5000,
+        })
+      );
+    }
     if (price === 0) {
       return (
         web3Context.state.web3.toast.current &&
@@ -558,7 +569,7 @@ const NFTCollectionTableList = ({
               </div>
               <div className="flex gap-8 mb-2">
                 <div className="flex flex-column items-center gap-5">
-                  <div className="text-xl font-bold">Duration:</div>
+                  <div className="text-xl font-bold">* Duration:</div>
                   {DURATION_OPTIONS.map((duration) => {
                     return (
                       <div key={duration.key} className="flex items-center">
@@ -873,7 +884,7 @@ const NFTCollectionTableList = ({
                   </div>
                   <div className="flex gap-8 mb-2">
                     <div className="flex flex-column items-center gap-5">
-                      <div className="text-xl font-bold">Duration:</div>
+                      <div className="text-xl font-bold">* Duration:</div>
                       {DURATION_OPTIONS.map((duration) => {
                         return (
                           <div key={duration.key} className="flex items-center">

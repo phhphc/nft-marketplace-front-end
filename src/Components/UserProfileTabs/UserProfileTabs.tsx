@@ -62,7 +62,7 @@ const UserProfileTabs = ({
 
   return (
     <div className="mt-5">
-      <TabView activeIndex={router.query.notif === "offer_received" ? 2 : 0}>
+      <TabView activeIndex={router.query.notif === "offer_received" ? 3 : 0}>
         <TabPanel header="My NFTs">
           <NFTUserProfileTabs
             nftCollectionList={nftCollectionList}
