@@ -1,7 +1,6 @@
 import Image from "next/image";
 import logo from "@Assets/logo.png";
 import metamaskLogo from "@Assets/metamask-logo.png";
-import { InputText } from "primereact/inputtext";
 import { Tooltip } from "primereact/tooltip";
 import { Sidebar } from "primereact/sidebar";
 import Link from "next/link";
@@ -14,7 +13,7 @@ import { INFTCollectionItem, INotification } from "@Interfaces/index";
 import { handleRemoveFromCart, showingPrice } from "@Utils/index";
 import {
   buyToken,
-  setViewdNotifService,
+  setViewedNotifService,
   transferCurrency,
 } from "@Services/ApiService";
 import { erc20Abi } from "@Constants/erc20Abi";
@@ -28,13 +27,14 @@ import {
   CURRENCY_TRANSFER,
   CURRENCY_UNITS,
   ERC20_ADDRESS,
+  NFT_EVENT_NAME,
   NOTIFICATION_INFO,
 } from "@Constants/index";
 import { Badge } from "primereact/badge";
 import { ListBox } from "primereact/listbox";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { RadioButton } from "primereact/radiobutton";
+import { TabView, TabPanel } from "primereact/tabview";
 
 export interface IHeaderProps {
   notification: INotification[];
@@ -55,6 +55,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   const [visible, setVisible] = useState(false);
   const [price, setPrice] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
+  const [isUnreadNotifs, setIsUnreadNotifs] = useState<boolean>(false);
   const router = useRouter();
 
   const handleConnectWallet = async () => {
@@ -280,9 +281,9 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
     }
   };
 
-  const setViewdNotification = async (notif: INotification) => {
+  const setViewedNotification = async (notif: INotification) => {
     try {
-      await setViewdNotifService({
+      await setViewedNotifService({
         eventName: notif.event_name,
         orderHash: notif.order_hash,
         chainId: web3Context.state.web3.chainId,
@@ -295,7 +296,8 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
 
   const clickToNotification = (notif: INotification) => {
     setNotificationVisible(false);
-    setViewdNotification(notif);
+    setIsUnreadNotifs(false);
+    setViewedNotification(notif);
     if (NOTIFICATION_INFO.OFFER_RECEIVED === notif.info) {
       router.push({
         pathname: "/user-profile",
@@ -333,6 +335,10 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
         onClick={() => {
           clickToNotification(notif);
         }}
+        className={
+          "p-2 rounded-md " +
+          (notif.is_viewed === false ? "font-medium" : "font-normal")
+        }
       >
         <div className="flex gap-3 items-center rounded">
           <img
@@ -347,18 +353,20 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
               <div className="text-sm text-emerald-500">
                 {moment(notif.date).startOf("minute").fromNow()}
               </div>
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setViewdNotification(notif);
-                }}
-              >
-                <Tag
-                  className="hover:bg-green-700"
-                  severity="success"
-                  value="Click as seen"
-                ></Tag>
-              </div>
+              {!notif.is_viewed && (
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setViewedNotification(notif);
+                  }}
+                >
+                  <Tag
+                    className="hover:bg-green-700"
+                    severity="success"
+                    value="Click as read"
+                  ></Tag>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -375,13 +383,13 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
         </Link>
 
         {/* Search bar */}
-        <span id="search-bar" className="p-input-icon-left">
+        {/* <span id="search-bar" className="p-input-icon-left">
           <i className="pi pi-search" />
           <InputText
             placeholder="Search NFTs, collections, and accounts"
             className="w-96 h-10"
           />
-        </span>
+        </span> */}
 
         <div
           id="navbar"
@@ -393,12 +401,20 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
               {/* Notification */}
               <button
                 className="w-10 h-10 rounded-full hover:bg-gray-300"
-                onClick={() => setNotificationVisible(true)}
+                onClick={() => {
+                  setNotificationVisible(true), setIsUnreadNotifs(false);
+                }}
               >
                 <i className="pi pi-bell p-overlay-badge text-black text-3xl">
-                  {notification.length > 0 && (
+                  {notification.filter(
+                    (notif: INotification) => notif.is_viewed === false
+                  ).length > 0 && (
                     <Badge
-                      value={notification.length}
+                      value={
+                        notification.filter(
+                          (notif: INotification) => notif.is_viewed === false
+                        ).length
+                      }
                       severity="danger"
                     ></Badge>
                   )}
@@ -407,15 +423,107 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
               <Sidebar
                 position="right"
                 visible={notificationVisible}
-                onHide={() => setNotificationVisible(false)}
+                onHide={() => {
+                  setNotificationVisible(false);
+                }}
               >
-                <h2 className="text-2xl font-bold mb-2">Notification</h2>
-                <ListBox
-                  options={notification}
-                  optionLabel="name"
-                  itemTemplate={notificationListTemplate}
-                  className=""
-                />
+                <h2 className="text-2xl font-bold mb-3">Notifications</h2>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setIsUnreadNotifs(false)}
+                    className={
+                      "px-5 py-1 rounded-md font-medium " +
+                      (isUnreadNotifs
+                        ? "hover:bg-slate-200"
+                        : "bg-sky-200 text-blue-700 rounded-md")
+                    }
+                  >
+                    All {"(" + notification.length + ")"}
+                  </button>
+                  <button
+                    onClick={() => setIsUnreadNotifs(true)}
+                    className={
+                      "px-3 py-1 rounded-md font-medium " +
+                      (isUnreadNotifs
+                        ? "bg-sky-200 text-blue-700 rounded-md"
+                        : "hover:bg-slate-200")
+                    }
+                  >
+                    Unread{" "}
+                    {"(" +
+                      notification.filter(
+                        (notif: INotification) => notif.is_viewed === false
+                      ).length +
+                      ")"}
+                  </button>
+                </div>
+                <div className="">
+                  <TabView className="w-full">
+                    <TabPanel header="Listing" className="w-full">
+                      <ListBox
+                        options={
+                          isUnreadNotifs
+                            ? notification.filter(
+                                (notif: INotification) =>
+                                  notif.is_viewed == false &&
+                                  notif.event_name ===
+                                    NFT_EVENT_NAME.LISTING.toLowerCase()
+                              )
+                            : notification.filter(
+                                (notif: INotification) =>
+                                  notif.event_name ===
+                                  NFT_EVENT_NAME.LISTING.toLowerCase()
+                              )
+                        }
+                        optionLabel="name"
+                        itemTemplate={notificationListTemplate}
+                        className="w-full"
+                      />
+                    </TabPanel>
+                    <TabPanel header="Offer" className="w-full">
+                      <ListBox
+                        options={
+                          isUnreadNotifs
+                            ? notification.filter(
+                                (notif: INotification) =>
+                                  notif.is_viewed == false &&
+                                  notif.event_name ===
+                                    NFT_EVENT_NAME.OFFER.toLowerCase()
+                              )
+                            : notification.filter(
+                                (notif: INotification) =>
+                                  notif.event_name ===
+                                  NFT_EVENT_NAME.OFFER.toLowerCase()
+                              )
+                        }
+                        optionLabel="name"
+                        itemTemplate={notificationListTemplate}
+                        className="w-full"
+                      />
+                    </TabPanel>
+                    <TabPanel header="Sale" className="w-full">
+                      <ListBox
+                        options={
+                          isUnreadNotifs
+                            ? notification.filter(
+                                (notif: INotification) =>
+                                  notif.is_viewed == false &&
+                                  notif.event_name ===
+                                    NFT_EVENT_NAME.SALE.toLowerCase()
+                              )
+                            : notification.filter(
+                                (notif: INotification) =>
+                                  notif.event_name ===
+                                  NFT_EVENT_NAME.SALE.toLowerCase()
+                              )
+                        }
+                        optionLabel="name"
+                        itemTemplate={notificationListTemplate}
+                        className="w-full"
+                      />
+                    </TabPanel>
+                  </TabView>
+                </div>
               </Sidebar>
               {/* Cart */}
               <button
