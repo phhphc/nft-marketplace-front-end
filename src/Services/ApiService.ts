@@ -181,6 +181,7 @@ interface IGetSaleEventByAddrMthYrProps {
   month: number,
   year: number,
   address: string
+  chainId: number;
 }
 
 export const getNFTCollectionListService = async (
@@ -1318,10 +1319,11 @@ export const setViewedNotifService = async ({
 };
 
 export const getSaleEventByAddrMthYrService = async ({
-  address, month, year
+  address, month, year, chainId
 }: IGetSaleEventByAddrMthYrProps): Promise<INFTActivity[]> => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
-    .get("/api/v0.1/event", {
+    .get(`/api/${version}/event`, {
       params: { month, year, address, name:"sale" },
     })
     .then((response) => {
