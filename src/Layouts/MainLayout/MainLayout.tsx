@@ -18,7 +18,7 @@ const MainLayout = ({ children }: IMainLayoutProps) => {
   );
   return (
     <div>
-      {web3Context.state.web3.chainId && (
+      {!!web3Context.state.web3.chainId && (
         <>
           <Header
             notification={notification}

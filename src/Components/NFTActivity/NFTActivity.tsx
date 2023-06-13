@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { MultiSelect } from "primereact/multiselect";
 import { INFTActivity, INFTEvent } from "@Interfaces/index";
 import { showingPrice } from "@Utils/index";
-import { CURRENCY_UNITS, NFT_EVENT_NAME } from "@Constants/index";
+import { CHAINID_CURRENCY_UNITS, NFT_EVENT_NAME } from "@Constants/index";
 import { AppContext } from "@Store/index";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -100,7 +100,12 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
   };
   const priceBodyTemplate = (rowData: INFTActivity): string => {
     return rowData.price
-      ? showingPrice(rowData?.price || "0", CURRENCY_UNITS[0].value, true)
+      ? showingPrice(
+          web3Context.state.web3.chainId,
+          rowData?.price || "0",
+          CHAINID_CURRENCY_UNITS.get(web3Context.state.web3.chainId)[0].value,
+          true
+        )
       : "";
   };
   const fromBodyTemplate = (rowData: INFTActivity) => {

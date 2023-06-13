@@ -24,6 +24,8 @@ import {
   TO_NUMBER_MAPPING_WITH_ITEM_TYPE,
   MAPPING_STRING_TO_BIG_NUMBER,
   STRING_HEX_TO_NUMBER,
+  CHAINID_CURRENCY,
+  CHAIN_ID,
 } from "@Constants/index";
 import { IWeb3Context, WEB3_ACTION_TYPES } from "@Store/index";
 
@@ -578,18 +580,21 @@ export const toFulfillmentComponents = (
   arr.map(([orderIndex, itemIndex]) => ({ orderIndex, itemIndex }));
 
 export const showingPrice = (
+  chainId = CHAIN_ID.SEPOLIA,
   price: string,
   currency?: string,
   isOnlyShowEth = false
 ): string => {
   const eth = price.slice(0, -18);
   const gwei = price.slice(-18, -9);
-  const ethShowingPrice = eth ? `${Number(eth)} ${currency || "ETH"}` : "";
+  const ethShowingPrice = eth
+    ? `${Number(eth)} ${currency || CHAINID_CURRENCY.get(chainId)}}`
+    : "";
   const gweiShowingPrice = gwei ? `${Number(gwei)} GWEI` : "";
   if (isOnlyShowEth) {
     return (
       (Number(eth) + Number(gwei) / 1000000000).toString() + " " + currency ||
-      "ETH"
+      CHAINID_CURRENCY.get(chainId)!
     );
   }
   return ethShowingPrice + gweiShowingPrice;

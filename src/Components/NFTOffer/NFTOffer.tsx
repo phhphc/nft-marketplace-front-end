@@ -1,4 +1,4 @@
-import { CURRENCY_UNITS } from "@Constants/index";
+import { CHAINID_CURRENCY_UNITS } from "@Constants/index";
 import { INFTActivity } from "@Interfaces/index";
 import { AppContext } from "@Store/index";
 import { showingPrice } from "@Utils/index";
@@ -16,7 +16,12 @@ export interface INFTOffersProps {
 const NFTOffer = ({ nftOffer }: INFTOffersProps) => {
   const web3Context = useContext(AppContext);
   const priceBodyTemplate = (rowData: INFTActivity): string => {
-    return showingPrice(rowData?.price || "0", CURRENCY_UNITS[0].value, true);
+    return showingPrice(
+      web3Context.state.web3.chainId,
+      rowData?.price || "0",
+      CHAINID_CURRENCY_UNITS.get(web3Context.state.web3.chainId)[0].value,
+      true
+    );
   };
   const fromBodyTemplate = (rowData: INFTActivity) => {
     return (

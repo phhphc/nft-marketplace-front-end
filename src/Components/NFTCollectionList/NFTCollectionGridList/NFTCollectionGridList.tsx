@@ -1,7 +1,8 @@
 import NFTCollectionGridItem from "./NFTCollectionGridItem";
 import {
+  CHAINID_CURRENCY,
   COLLECTION_VIEW_TYPE,
-  CURRENCY_UNITS,
+  CHAINID_CURRENCY_UNITS,
   DURATION_NAME,
   DURATION_OPTIONS,
 } from "@Constants/index";
@@ -140,7 +141,9 @@ const NFTCollectionGridList = ({
                         Please input the price that you want to sell as bundle
                       </p>
                       <p className="text-sm italic text-rose-500">
-                        * 1 ETH = 1,000,000,000 Gwei
+                        * 1{" "}
+                        {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)} =
+                        1,000,000,000 Gwei
                       </p>
                       <p className="text-sm italic text-rose-500">
                         * If resell at a higher price, all previous orders will
@@ -180,7 +183,9 @@ const NFTCollectionGridList = ({
                     <Dropdown
                       value={selectedUnit}
                       onChange={(e) => setSelectedUnit(e.value)}
-                      options={CURRENCY_UNITS}
+                      options={CHAINID_CURRENCY_UNITS.get(
+                        web3Context.state.web3.chainId
+                      )}
                       optionLabel="name"
                       placeholder="Select a unit"
                       className="md:w-14rem"
