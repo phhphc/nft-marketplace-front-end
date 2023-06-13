@@ -1280,7 +1280,7 @@ export const getNotificationByOwnerService = async (
   const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
     .get(`/api/${version}/notification`, {
-      params: { address: owner },
+      params: { address: owner},
     })
     .then((response) => {
       const res = response.data.data.notifications.sort(
@@ -1293,7 +1293,7 @@ export const getNotificationByOwnerService = async (
     .catch((err) => {});
 };
 
-export const setViewdNotifService = async ({
+export const setViewedNotifService = async ({
   eventName,
   orderHash,
   chainId,
