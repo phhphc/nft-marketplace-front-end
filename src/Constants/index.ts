@@ -143,6 +143,7 @@ export const CURRENCY = {
   GWEI: "Gwei",
   TETHER: "TETH",
   MATIC: "MATIC",
+  TATIC: "TATIC",
 };
 
 export const CURRENCY_UNITS = [
@@ -158,14 +159,18 @@ export const OFFER_CURRENCY_UNITS = [
   { name: CURRENCY.TETHER, value: CURRENCY.TETHER },
 ];
 
+export const MUMBAI_OFFER_CURRENCY_UNITS = [
+  { name: CURRENCY.TATIC, value: CURRENCY.TATIC },
+];
+
 export const CURRENCY_TRANSFER = [
   { name: CURRENCY.ETHER + " To " + CURRENCY.TETHER, value: CURRENCY.ETHER },
   { name: CURRENCY.TETHER + " To " + CURRENCY.ETHER, value: CURRENCY.TETHER },
 ];
 
 export const MUMBAI_CURRENCY_TRANSFER = [
-  { name: CURRENCY.MATIC + " To " + CURRENCY.TETHER, value: CURRENCY.MATIC },
-  { name: CURRENCY.TETHER + " To " + CURRENCY.MATIC, value: CURRENCY.TETHER },
+  { name: CURRENCY.MATIC + " To " + CURRENCY.TATIC, value: CURRENCY.MATIC },
+  { name: CURRENCY.TATIC + " To " + CURRENCY.MATIC, value: CURRENCY.TATIC },
 ];
 
 export const STRING_HEX_TO_NUMBER: any = {
@@ -239,4 +244,14 @@ export const CHAINID_CURRENCY_UNITS = new Map<number, any>([
 export const CHAINID_CURRENCY_TRANSFER = new Map<number, any>([
   [CHAIN_ID.SEPOLIA, CURRENCY_TRANSFER],
   [CHAIN_ID.MUMBAI, MUMBAI_CURRENCY_TRANSFER],
+]);
+
+export const CHAINID_OFFER_CURRENCY_TRANSFER = new Map<number, any>([
+  [CHAIN_ID.SEPOLIA, OFFER_CURRENCY_UNITS],
+  [CHAIN_ID.MUMBAI, MUMBAI_OFFER_CURRENCY_UNITS],
+]);
+
+export const ERC20_NAME = new Map<number, string>([
+  [CHAIN_ID.SEPOLIA, CURRENCY.TETHER],
+  [CHAIN_ID.MUMBAI, CURRENCY.TATIC],
 ]);

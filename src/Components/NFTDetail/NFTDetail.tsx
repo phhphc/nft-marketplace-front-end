@@ -23,7 +23,8 @@ import {
   DURATION_NAME,
   DURATION_OPTIONS,
   NFT_EVENT_NAME,
-  OFFER_CURRENCY_UNITS,
+  CHAINID_OFFER_CURRENCY_TRANSFER,
+  ERC20_NAME,
 } from "@Constants/index";
 import {
   handleAddToCart,
@@ -542,7 +543,9 @@ const NFTDetail = ({
                               Please input the price that you want to make offer
                             </p>
                             <p className="text-sm italic text-rose-500">
-                              * 1 TETH = 1{" "}
+                              * 1{" "}
+                              {ERC20_NAME.get(web3Context.state.web3.chainId)} =
+                              1{" "}
                               {CHAINID_CURRENCY.get(
                                 web3Context.state.web3.chainId
                               )}
@@ -579,9 +582,15 @@ const NFTDetail = ({
                             min={0}
                           />
                           <Dropdown
-                            value={OFFER_CURRENCY_UNITS[0].value}
+                            value={
+                              CHAINID_OFFER_CURRENCY_TRANSFER.get(
+                                web3Context.state.web3.chainId
+                              )[0].value
+                            }
                             onChange={(e) => setSelectedUnit(e.value)}
-                            options={OFFER_CURRENCY_UNITS}
+                            options={CHAINID_OFFER_CURRENCY_TRANSFER.get(
+                              web3Context.state.web3.chainId
+                            )}
                             optionLabel="name"
                             placeholder="Select a unit"
                             className="md:w-14rem"

@@ -1,4 +1,4 @@
-import { OFFER_CURRENCY_UNITS } from "@Constants/index";
+import { CHAINID_OFFER_CURRENCY_TRANSFER } from "@Constants/index";
 import { IOfferItem } from "@Interfaces/index";
 import { cancelOrder } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
@@ -117,7 +117,8 @@ const OfferMadeList = ({
     return showingPrice(
       web3Context.state.web3.chainId,
       rowData?.price || "0",
-      OFFER_CURRENCY_UNITS[0].value,
+      CHAINID_OFFER_CURRENCY_TRANSFER.get(web3Context.state.web3.chainId)[0]
+        .value,
       true
     );
   };

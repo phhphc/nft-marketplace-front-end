@@ -382,7 +382,7 @@ export const transferCurrency = async ({
   const erc20ContractWithSigner = erc20Contract.connect(myWallet);
 
   const tx =
-    unit === CURRENCY.TETHER
+    unit === CURRENCY.TETHER || unit === CURRENCY.TATIC
       ? await erc20ContractWithSigner.sell(parseEther(price))
       : await erc20ContractWithSigner.buy({
           value: parseEther(price),

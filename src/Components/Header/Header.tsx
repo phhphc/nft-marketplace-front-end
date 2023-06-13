@@ -30,6 +30,7 @@ import {
   NFT_EVENT_NAME,
   NOTIFICATION_INFO,
   CHAINID_CURRENCY_UNITS,
+  ERC20_NAME,
 } from "@Constants/index";
 import { Badge } from "primereact/badge";
 import { ListBox } from "primereact/listbox";
@@ -687,7 +688,8 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                       {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)}
                     </div>
                     <div className="text-center font-bold">
-                      {erc20Balance} TETH
+                      {erc20Balance}{" "}
+                      {ERC20_NAME.get(web3Context.state.web3.chainId)}
                     </div>
                   </div>
                   <div className="mt-5">
@@ -699,7 +701,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                       {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)}{" "}
                       <span>
                         <i className="pi pi-arrow-right-arrow-left pl-2 pr-2"></i>
-                        TETH
+                        {ERC20_NAME.get(web3Context.state.web3.chainId)}
                       </span>
                     </button>
                     <Dialog
@@ -707,7 +709,8 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                         <div>
                           <p>Please input the type you want to transfer</p>
                           <p className="text-sm italic text-rose-500">
-                            * 1 TETH = 1{" "}
+                            * 1 {ERC20_NAME.get(web3Context.state.web3.chainId)}{" "}
+                            = 1{" "}
                             {CHAINID_CURRENCY.get(
                               web3Context.state.web3.chainId
                             )}
