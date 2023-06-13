@@ -1,5 +1,5 @@
 import UserInfor from "@Components/UserProfile/UserInfor";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
 import { AppContext } from "@Store/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
 import UserImage from "@Components/UserProfile/UserImage";
@@ -9,9 +9,46 @@ import UserProfileTabs from "@Components/UserProfileTabs/UserProfileTabs";
 import useNFTActivityByOwner from "@Hooks/useNFTActivityByOwner";
 import { Message } from "primereact/message";
 import useOfferMadeList from "@Hooks/useOfferMadeList";
+import useSaleEventByAddrMthYr from "@Hooks/useEventProfileStatistics";
 
 const UserProfileContainer = () => {
   const web3Context = useContext(AppContext);
+  const [monthYear, setMonthYear] = useState(() => {
+    let today = new Date();
+    return {
+      month: today.getMonth() + 1,
+      year: today.getFullYear(),
+    };
+  });
+  const handleChangeMonthYear = (cmd: string) => {
+    if (cmd === "next") {
+      setMonthYear((prev) => {
+        if (prev.month === 12) {
+          return {
+            month: 1,
+            year: prev.year + 1,
+          };
+        }
+        return {
+          ...prev,
+          month: prev.month + 1,
+        };
+      });
+    } else if (cmd === "prev") {
+      setMonthYear((prev) => {
+        if (prev.month === 1) {
+          return {
+            month: 12,
+            year: prev.year - 1,
+          };
+        }
+        return {
+          ...prev,
+          month: prev.month - 1,
+        };
+      });
+    }
+  };
 
   const { nftCollectionList, refetch } = useNFTCollectionList({
     owner: web3Context.state.web3.myAddress as string,
@@ -41,6 +78,12 @@ const UserProfileContainer = () => {
     web3Context.state.web3.chainId
   );
 
+  const { nftSaleByMth, refetch: nftSaleRefetch } = useSaleEventByAddrMthYr({
+    address: web3Context.state.web3.myAddress as string,
+    month: monthYear.month,
+    year: monthYear.year,
+  });
+
   return (
     <>
       {web3Context.state.web3.provider ? (
@@ -61,6 +104,10 @@ const UserProfileContainer = () => {
               nftRefetch={refetch}
               nftActivity={nftActivity}
               nftActivityRefetch={nftActivityRefetch}
+              nftSaleByMonth={nftSaleByMth}
+              nftSaleRefetch={nftSaleRefetch}
+              monthYear={monthYear}
+              handleChangeMonthYear={handleChangeMonthYear}
             ></UserProfileTabs>
           </div>
         </>
