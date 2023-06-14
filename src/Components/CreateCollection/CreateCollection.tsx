@@ -14,23 +14,18 @@ import { createNFTCollectionService } from "@Services/ApiService";
 import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 
 const CreateCollection = () => {
+  const [inputDesc, setInputDesc] = useState("");
   const categories: ICategory[] = [
     { label: "Art", value: "Art" },
     { label: "Gaming", value: "Gaming" },
     { label: "Photography", value: "Photography" },
     { label: "Memberships", value: "Memberships" },
-    // { label: "Domain names", value: "Domain" },
-    // { label: "Music", value: "Music" },
-    // { label: "PFPs", value: "Pfp" },
-    // { label: "Sports Collectibles", value: "Sport" },
-    // { label: "Virtual Worlds", value: "Virtual" },
-    // { label: "No category", value: "No" },
   ];
 
-  const blockchains: IBlockchain[] = [
-    { blockchainName: "Ethereum", value: "ethereum" },
-    { blockchainName: "Polygon", value: "polygon" },
-  ];
+  // const blockchains: IBlockchain[] = [
+  //   { blockchainName: "Ethereum", value: "ethereum" },
+  //   { blockchainName: "Polygon", value: "polygon" },
+  // ];
 
   const [logoFile, setLogoFile] = useState("");
   function handleChangeLogo(e: any) {
@@ -51,6 +46,10 @@ const CreateCollection = () => {
     setBannerFile("");
     resetField("bannerImage");
   }
+
+  const handleInputDesc = (e: any) => {
+    setInputDesc(e.target.value);
+  };
 
   const web3Context = useContext(AppContext);
   const owner = web3Context.state.web3.myAddress;
@@ -86,18 +85,17 @@ const CreateCollection = () => {
       reset();
       setLogoFile("");
       setBannerFile("");
+      setInputDesc("");
     }
   };
 
   return (
     <div className="create-collection w-5/12 ml-auto mr-auto">
       <h1 className="text-4xl font-semibold pt-6">Create a Collection</h1>
-      <div className="pt-6 pb-1 text-sm">
-        <span className="text-red-500">*</span> Required fields
-      </div>
+      <div className="pt-6 pb-1 text-sm">* Required fields</div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <label className="text-lg font-medium">Logo image *</label>
+          <label className="text-lg font-medium">* Logo image</label>
           <p>
             This image will also be used for navigation. 350 x 350 recommended.
           </p>
@@ -158,11 +156,10 @@ const CreateCollection = () => {
         </div> */}
 
         <div className="pt-4">
-          <label className="text-lg font-medium">Banner image</label>
+          <label className="text-lg font-medium">* Banner image</label>
           <p>
-            This image will appear at the top of your collection page. Avoid
-            including too much text in this banner image, as the dimensions
-            change on different devices. 1400 x 350 recommended.
+            This image will appear at the top of your collection page. 1400 x
+            350 recommended.
           </p>
           <div className="flex pt-3">
             <div className="upload-banner-btn-wrapper">
@@ -198,7 +195,7 @@ const CreateCollection = () => {
         <Controller
           render={({ field }) => (
             <div className="pt-4">
-              <label className="text-lg font-medium">Name *</label>
+              <label className="text-lg font-medium">* Name</label>
               <div>
                 <InputText
                   {...field}
@@ -236,12 +233,15 @@ const CreateCollection = () => {
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">Description</label>
-              <div>
-                <InputText
+              <div className="h-40">
+                <textarea
                   {...field}
-                  className="w-full"
+                  {...register("description")}
+                  value={inputDesc}
+                  onChange={handleInputDesc}
+                  className="w-full h-40 border border-solid border-gray-300 rounded-md p-3"
                   placeholder="Provide a detailed description of your collection"
-                />
+                ></textarea>
               </div>
             </div>
           )}
@@ -252,7 +252,7 @@ const CreateCollection = () => {
         <Controller
           render={({ field }) => (
             <div className="pt-4">
-              <label className="text-lg font-medium">Category</label>
+              <label className="text-lg font-medium">* Category</label>
               <Dropdown
                 {...field}
                 {...register("category", { required: true })}
