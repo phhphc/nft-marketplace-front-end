@@ -2,7 +2,6 @@ import React, { useRef, useState, useContext, useEffect } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { Image } from "primereact/image";
 import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { IBlockchain, ICollection, IFormNewNFTInput } from "@Interfaces/index";
@@ -16,6 +15,7 @@ export interface ICreateNFTProps {
 
 const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
   const web3Context = useContext(AppContext);
+  const [inputDesc, setInputDesc] = useState("");
 
   let collections: ICollectionItem[];
   if (collectionList) {
@@ -24,10 +24,10 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
     });
   }
 
-  const blockchains: IBlockchain[] = [
-    { blockchainName: "Ethereum", value: "ethereum" },
-    { blockchainName: "Polygon", value: "polygon" },
-  ];
+  // const blockchains: IBlockchain[] = [
+  //   { blockchainName: "Ethereum", value: "ethereum" },
+  //   { blockchainName: "Polygon", value: "polygon" },
+  // ];
 
   const [featuredFile, setFeaturedFile] = useState<string>("");
 
@@ -39,6 +39,10 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
     setFeaturedFile("");
     resetField("featuredImage");
   }
+
+  const handleInputDesc = (e: any) => {
+    setInputDesc(e.target.value);
+  };
 
   const { register, resetField, control, handleSubmit, reset } =
     useForm<IFormNewNFTInput>();
@@ -69,23 +73,19 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
     } finally {
       reset();
       setFeaturedFile("");
+      setInputDesc("");
     }
   };
 
   return (
     <div className="create-nft w-1/2 ml-auto mr-auto">
       <h1 className="text-4xl font-semibold pt-6">Create NFT</h1>
-      <div className="pt-6 pb-1 text-sm">
-        <span className="text-red-500">*</span> Required fields
-      </div>
+      <div className="pt-6 text-sm">* Required fields</div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="pt-4">
-          <label className="text-lg font-medium">
-            Image, Video, Audio, or 3D Model *
-          </label>
+        <div className="pt-1">
+          <label className="text-lg font-medium">* Image</label>
           <p className="text-gray-500">
-            File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG,
-            GLB, GLTF.
+            File types supported: JPG, JPEG, PNG, AVIF
           </p>
           <div className="flex pt-3">
             <div className="upload-featured-btn-wrapper">
@@ -118,7 +118,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
         <Controller
           render={({ field }) => (
             <div className="pt-4">
-              <label className="text-lg font-medium">Name *</label>
+              <label className="text-lg font-medium">* Name</label>
               <div>
                 <InputText
                   {...field}
@@ -157,16 +157,15 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">Description</label>
-              <p className="text-gray-500">
-                The description will be included on the item's detail page
-                underneath its image. Markdown syntax is supported.
-              </p>
-              <div>
-                <InputText
+              <div className="h-40">
+                <textarea
                   {...field}
-                  className="w-full"
-                  placeholder="Provide a detailed description of your item"
-                />
+                  {...register("description")}
+                  value={inputDesc}
+                  onChange={handleInputDesc}
+                  className="w-full h-40 border border-solid border-gray-300 rounded-md p-3"
+                  placeholder="Provide a detailed description of your NFT"
+                ></textarea>
               </div>
             </div>
           )}
@@ -177,7 +176,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
         <Controller
           render={({ field }) => (
             <div className="pt-4">
-              <label className="text-lg font-medium">Collection</label>
+              <label className="text-lg font-medium">* Collection</label>
               <Dropdown
                 {...field}
                 options={collections}
@@ -191,7 +190,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
           control={control}
         />
 
-        <Controller
+        {/* <Controller
           render={({ field }) => (
             <div className="pt-4">
               <label className="text-lg font-medium">Supply</label>
@@ -213,7 +212,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
           )}
           name="supply"
           control={control}
-        />
+        /> */}
 
         {/* <Controller
           render={({ field }) => (
