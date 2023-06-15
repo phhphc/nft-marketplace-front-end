@@ -285,3 +285,14 @@ export interface INotification {
   nft_image: string;
   nft_name: string;
 }
+
+export enum ROLE_NAME {
+  USER = "user",
+  ADMIN = "admin",
+  MODERATOR = "moderator",
+}
+
+export interface ROLE_ITEM {
+  id: number;
+  name: ROLE_NAME;
+}

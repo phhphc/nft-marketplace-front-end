@@ -5,6 +5,7 @@ import { erc20Abi } from "@Constants/erc20Abi";
 import { mkpAbi } from "@Constants/mkpAbi";
 import { erc721CollectionAbi } from "@Constants/erc721CollectionAbi";
 import FormData from "form-data";
+import { SiweMessage } from "siwe";
 import {
   getTestItem721,
   getItemETH,
@@ -180,6 +181,58 @@ interface ISetViewdNotifProps {
 interface IGetSaleEventByAddrMthYrProps {
   month: number;
   year: number;
+  address: string;
+  chainId: number;
+}
+
+export interface ICreateEthereumSignedAuthTokenProps {
+  provider: any;
+  myAddress: string;
+  chainId: number;
+}
+
+export interface ISignMessageProps {
+  provider: any;
+  myAddress: string;
+  chainId: number;
+}
+export interface ILoginWithEthereumProps {
+  provider: any;
+  myAddress: string;
+  chainId: number;
+}
+
+export interface IFetchNonceProps {
+  address: string;
+  chainId: number;
+}
+
+export interface ICreateMessageProps {
+  address: string;
+  chainId: number;
+  nonce: any;
+}
+
+export interface ICreateSignatureProps {
+  address: string;
+  chainId: number;
+  nonce: any;
+}
+
+export interface IAuthSignatureProps {
+  address: string;
+  chainId: number;
+  message: any;
+  signature: any;
+}
+
+export interface ISignEIP191Props {
+  provider: any;
+  myAddress: string;
+  chainId: number;
+}
+
+interface IGetUserProps {
   address: string;
   chainId: number;
 }
@@ -1284,6 +1337,7 @@ export const getNotificationByOwnerService = async (
   owner: string,
   chainId: number
 ): Promise<INotification[]> => {
+  if (!chainId) return [];
   const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
     .get(`/api/${version}/notification`, {
@@ -1338,4 +1392,217 @@ export const getSaleEventByAddrMthYrService = async ({
       return res || [];
     })
     .catch((err) => {});
+};
+
+export const createEthereumSignedAuthToken = async ({
+  provider,
+  myAddress,
+  chainId,
+}: ICreateEthereumSignedAuthTokenProps) => {
+  const typedData = JSON.stringify({
+    domain: {
+      chainId,
+      name: "Lover",
+      version: "1.0",
+    },
+    message: {
+      marketplace: "0x1aE99B75dC4F5Fd9B3cb191b31dde7eB7dA9D0Bb",
+      admin: myAddress,
+      signer: "0x6b9FE9aE37908e1d80796139132B77c9c671e0C6",
+      royalty: "0.001",
+      createdAt: `${Date.now()}`,
+    },
+    primaryType: "MarketplaceSettings",
+    types: {
+      EIP712Domain: [
+        { name: "name", type: "string" },
+        { name: "version", type: "string" },
+        { name: "chainId", type: "uint256" },
+      ],
+      MarketplaceSettings: [
+        { name: "marketplace", type: "address" },
+        { name: "admin", type: "address" },
+        { name: "signer", type: "address" },
+        { name: "royalty", type: "string" },
+        { name: "createdAt", type: "uint256" },
+      ],
+    },
+  });
+
+  const accounts = await window.ethereum.request({
+    method: "eth_requestAccounts",
+  });
+  var from = accounts[0];
+
+  var params = [from, typedData];
+  var method = "eth_signTypedData_v4";
+
+  const signature = await window.ethereum.request({ method, params });
+
+  return {
+    typed_data: btoa(typedData),
+    signature,
+  };
+};
+
+const signMessage = async ({
+  provider,
+  myAddress,
+  chainId,
+}: ISignMessageProps) => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+  const data = await createEthereumSignedAuthToken({
+    provider,
+    myAddress,
+    chainId,
+  });
+  console.log(data);
+  axios({
+    method: "post",
+    url: `/api/${version}/marketplace-settings`,
+    data: data,
+  })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log("Some error happened, check the backend...");
+    });
+};
+
+const loginWithEthereum = async ({
+  provider,
+  myAddress,
+  chainId,
+}: ILoginWithEthereumProps) => {
+  var nonce = await fetchNonce({ address: myAddress, chainId });
+  //const message = createMessage(signer.address, nonce)
+  const data = await createSignature({
+    address: myAddress,
+    nonce,
+    chainId,
+  });
+  return data;
+};
+
+export const fetchNonce = async ({ address, chainId }: IFetchNonceProps) => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+  const res = await axios({
+    method: "get",
+    url: `/api/${version}/auth/${address}/nonce`,
+  });
+
+  console.log(res.data.data.nonce);
+  return res.data.data.nonce;
+};
+
+export const createMessage = ({
+  address,
+  chainId,
+  nonce,
+}: ICreateMessageProps) => {
+  console.log(address);
+  const domain = window.location.host;
+  const origin = window.location.host;
+  const statement =
+    "Welcome to Clover Marketplace. Please sign this message to login.";
+  const siweMessage = new SiweMessage({
+    domain,
+    address,
+    statement,
+    uri: origin,
+    version: "1",
+    chainId,
+    nonce,
+  });
+  return siweMessage.prepareMessage();
+  return (
+    "clover.com wants to sign in with your Ethereum account:\n" +
+    address +
+    "\n" +
+    "\n" +
+    "Log in to Clover Marketplace" +
+    "\n" +
+    "\n" +
+    "URI: https://clover.com/login\n" +
+    "Version: 1\n" +
+    "Nonce: " +
+    nonce +
+    "\n"
+    // "Chain ID: " + chainId +"\n" +
+    // "Issued At: " + issuedAt + "\n" +
+    // "Expiration Time: " + expiresAt + "\n"
+  );
+};
+
+const createSignature = async ({
+  address,
+  chainId,
+  nonce,
+}: ICreateSignatureProps) => {
+  const message = createMessage({ address, nonce, chainId });
+  const accounts = await window.ethereum.request({
+    method: "eth_requestAccounts",
+  });
+  var from = accounts[0];
+  const sign = await window.ethereum.request({
+    method: "personal_sign",
+    params: [message, from],
+  });
+  console.log(sign);
+  const data = await authSignature({
+    address: from,
+    message,
+    signature: sign,
+    chainId,
+  });
+  return data;
+};
+
+const authSignature = async ({
+  address,
+  chainId,
+  message,
+  signature,
+}: IAuthSignatureProps) => {
+  //setVerified(false)
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+  const res = await axios({
+    method: "post",
+    url: `/api/${version}/auth/login`,
+    data: {
+      address: address,
+      message: message,
+      signature: signature,
+    },
+  });
+
+  return res;
+};
+
+export const signEIP191 = async ({
+  provider,
+  myAddress,
+  chainId,
+}: ISignEIP191Props) => {
+  const data = await loginWithEthereum({ provider, myAddress, chainId });
+  return data.data.data;
+
+  // const createSignature = async (nonce) => {
+  //   const message = createMessage(address, nonce)
+  //   const signedMessage = await signMessageAsync({message})
+  //   authSignature(message, signedMessage)
+  // }
+};
+
+export const getUser = async ({ address, chainId }: IGetUserProps) => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+
+  const res = await axios.get(`/api/${version}/user/${address}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return res.data.data.user;
 };
