@@ -2,16 +2,19 @@ import Header from "@Components/Header/Header";
 import Footer from "@Components/Footer/Footer";
 import { useContext } from "react";
 import { AppContext } from "@Store/index";
-import { Message } from "primereact/message";
-import { SUPPORTED_NETWORK } from "@Constants/index";
-import useNotificationByOwner from "@Hooks/useNotificationByOwner";
+import { signEIP191 } from "@Services/ApiService";
 
-export interface IMainLayoutProps {
+export interface IAdminLayoutProps {
   children: React.ReactNode;
 }
 
-const AdminLayout = ({ children }: IMainLayoutProps) => {
-  return <div>This is only for admin</div>;
+const AdminLayout = ({ children }: IAdminLayoutProps) => {
+  const web3Context = useContext(AppContext);
+  console.log(
+    "🚀 ~ file: AdminLayout.tsx:13 ~ AdminLayout ~ web3Context:",
+    web3Context
+  );
+  return <div></div>;
 };
 
 export default AdminLayout;

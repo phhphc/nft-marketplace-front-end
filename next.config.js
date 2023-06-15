@@ -47,6 +47,22 @@ module.exports = () => {
         destination: `${process.env.BACKEND_SEPOLIA_URL}/notification`,
       },
       {
+        source: "/api/v0.1/auth/login",
+        destination: `${process.env.BACKEND_SEPOLIA_URL}/auth/login`,
+      },
+      {
+        source: "/api/v0.1/marketplace-settings",
+        destination: `${process.env.BACKEND_SEPOLIA_URL}/marketplace-settings`,
+      },
+      {
+        source: "/api/v0.1/auth/:address*/nonce",
+        destination: `${process.env.BACKEND_SEPOLIA_URL}/auth/:address*/nonce`,
+      },
+      {
+        source: "/api/v0.1/user/:address*",
+        destination: `${process.env.BACKEND_SEPOLIA_URL}/user/:address*`,
+      },
+      {
         source: "/api/v0.2/nft",
         destination: `${process.env.BACKEND_MUMBAI_URL}/nft`,
       },

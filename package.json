@@ -36,6 +36,7 @@
     "react-query": "^3.39.3",
     "sass": "^1.57.1",
     "sharp": "^0.31.3",
+    "siwe": "^2.1.4",
     "typescript": "4.9.4"
   },
   "devDependencies": {

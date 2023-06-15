@@ -97,7 +97,7 @@ const NFTCollectionGridItem = ({
     }
     try {
       setVisible(false);
-      if (!web3Context.state.web3.provider) {
+      if (!web3Context.state.web3.authToken) {
         web3Context.state.web3.toast.current &&
           web3Context.state.web3.toast.current.show({
             severity: "error",
@@ -155,7 +155,7 @@ const NFTCollectionGridItem = ({
 
   const handleBuyToken = async (item?: INFTCollectionItem[]) => {
     try {
-      if (!web3Context.state.web3.provider) {
+      if (!web3Context.state.web3.authToken) {
         console.log(web3Context);
         web3Context.state.web3.toast.current &&
           web3Context.state.web3.toast.current.show({
@@ -196,7 +196,7 @@ const NFTCollectionGridItem = ({
 
   const handleCancelOrder = async (item?: INFTCollectionItem[]) => {
     try {
-      if (!web3Context.state.web3.provider) {
+      if (!web3Context.state.web3.authToken) {
         web3Context.state.web3.toast.current &&
           web3Context.state.web3.toast.current.show({
             severity: "error",
@@ -507,7 +507,7 @@ const NFTCollectionGridItem = ({
                 <button
                   className="w-12 h-12 bg-red-500 hover:bg-red-700 rounded-r-md border-white"
                   onClick={() => {
-                    if (!web3Context.state.web3.provider) {
+                    if (!web3Context.state.web3.authToken) {
                       web3Context.state.web3.toast.current &&
                         web3Context.state.web3.toast.current.show({
                           severity: "error",

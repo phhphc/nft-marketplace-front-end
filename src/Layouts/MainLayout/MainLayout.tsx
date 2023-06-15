@@ -12,6 +12,7 @@ export interface IMainLayoutProps {
 
 const MainLayout = ({ children }: IMainLayoutProps) => {
   const web3Context = useContext(AppContext);
+
   const { notification, refetch: notificationRefetch } = useNotificationByOwner(
     web3Context.state.web3.myAddress,
     web3Context.state.web3.chainId

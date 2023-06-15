@@ -155,7 +155,7 @@ const OfferReceivedList = ({
 
   const handleFulfillOrder = async (item: IOfferItem) => {
     try {
-      if (!web3Context.state.web3.provider) {
+      if (!web3Context.state.web3.authToken) {
         web3Context.state.web3.toast.current &&
           web3Context.state.web3.toast.current.show({
             severity: "error",

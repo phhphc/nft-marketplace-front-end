@@ -26,6 +26,7 @@ import {
   STRING_HEX_TO_NUMBER,
   CHAINID_CURRENCY,
   CHAIN_ID,
+  BACKEND_URL_VERSION,
 } from "@Constants/index";
 import { IWeb3Context, WEB3_ACTION_TYPES } from "@Store/index";
 

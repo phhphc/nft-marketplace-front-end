@@ -20,6 +20,8 @@ export enum WEB3_ACTION_TYPES {
   SET_BUNDLE = "SET_BUNDLE",
   ADD_LOADING = "ADD_LOADING",
   REMOVE_LOADING = "REMOVE_LOADING",
+  LOGIN = "LOGIN",
+  LOGOUT = "LOGOUT",
 }
 
 export interface ICart {
@@ -37,6 +39,7 @@ export interface IWeb3 {
   listItemsSellBundle: INFTCollectionItem[];
   loading: boolean;
   toast: any;
+  authToken: string;
 }
 
 export interface IWeb3Action {
@@ -60,6 +63,7 @@ const initialState: IState = {
     toast: {
       current: null,
     },
+    authToken: "",
   },
 };
 
@@ -87,29 +91,32 @@ const AppProvider = ({ children }: IAppProvider) => {
 
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("shoppingCart") || "[]");
+    const authToken = localStorage.getItem("authToken") || "";
 
     const fetchData = async () => {
+      if (await window.ethereum._metamask.isUnlocked()) {
+        dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
+      }
       dispatch({
         type: WEB3_ACTION_TYPES.CHANGE,
         payload: {
           toast,
           cart,
+          authToken,
+          chainId: Number(window.ethereum.networkVersion),
         },
       });
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       await provider.send("eth_requestAccounts", []);
 
       const signer = provider.getSigner();
-      const { chainId } = await provider.getNetwork();
 
       dispatch({
         type: WEB3_ACTION_TYPES.CHANGE,
         payload: {
           provider,
           myAddress: await signer.getAddress(),
-
           myWallet: signer,
-          chainId,
         },
       });
     };
@@ -130,6 +137,7 @@ const AppProvider = ({ children }: IAppProvider) => {
         localStorage.setItem("shoppingCart", JSON.stringify([]));
         window.location.reload();
       });
+
       window.ethereum.on("chainChanged", () => {
         dispatch({
           type: WEB3_ACTION_TYPES.CHANGE,
