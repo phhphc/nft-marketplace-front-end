@@ -94,7 +94,7 @@ const AppProvider = ({ children }: IAppProvider) => {
     const authToken = localStorage.getItem("authToken") || "";
 
     const fetchData = async () => {
-      if (await window.ethereum._metamask.isUnlocked()) {
+      if (await window.ethereum?._metamask?.isUnlocked()) {
         dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
       }
       dispatch({
@@ -126,6 +126,7 @@ const AppProvider = ({ children }: IAppProvider) => {
   useEffect(() => {
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", () => {
+        dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
         dispatch({
           type: WEB3_ACTION_TYPES.CHANGE,
           payload: {

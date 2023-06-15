@@ -94,7 +94,8 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
         web3Context.state.web3.myWallet &&
         web3Context.state.web3.myAddress
       ) {
-        setWalletConnected(true);
+        if (await window.ethereum?._metamask?.isUnlocked())
+          setWalletConnected(true);
         const ETHBalance = await web3Context.state.web3.provider.getBalance(
           web3Context.state.web3.myAddress
         );
