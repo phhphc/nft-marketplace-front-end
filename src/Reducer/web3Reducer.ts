@@ -40,7 +40,7 @@ const web3Reducer = (state: IWeb3, action: IWeb3Action) => {
         loading: false,
       };
     case WEB3_ACTION_TYPES.LOGIN:
-      localStorage.setItem("authToken", JSON.stringify(action.payload));
+      localStorage.setItem("authToken", action.payload);
       return {
         ...state,
         authToken: JSON.stringify(action.payload),

@@ -1656,6 +1656,7 @@ export const setBlockAccount = async ({
 
   await axios.patch(
     `/api/${version}/user/${address}/block?is_block=${isBlock}`,
+    {},
     {
       headers: {
         "Content-Type": "application/json",
