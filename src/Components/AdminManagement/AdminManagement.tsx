@@ -336,7 +336,7 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
             filter
             filterPlaceholder="Search by address"
             sortable
-            className="w-2/5"
+            className="w-1/3"
           />
           <Column
             field="role"
