@@ -20,6 +20,11 @@ const AdminLayout = ({ children }: IAdminLayoutProps) => {
 
   if (!user) return <></>;
 
+  const isBlock = !!user?.is_block;
+
+  if (isBlock && web3Context.state.web3.authToken)
+    web3Context.dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
+
   const isAdmin = !!user?.roles?.some(
     (item: any) => item.name === ROLE_NAME.ADMIN
   );
