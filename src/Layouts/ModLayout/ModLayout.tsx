@@ -1,7 +1,7 @@
 import Header from "@Components/Header/Header";
 import Footer from "@Components/Footer/Footer";
 import { useContext } from "react";
-import { AppContext } from "@Store/index";
+import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { Message } from "primereact/message";
 import { SUPPORTED_NETWORK } from "@Constants/index";
 import useNotificationByOwner from "@Hooks/useNotificationByOwner";
@@ -26,6 +26,11 @@ const ModLayout = ({ children }: IModLayoutProps) => {
     (item: any) =>
       item.name === ROLE_NAME.ADMIN || item.name === ROLE_NAME.MODERATOR
   );
+
+  const isBlock = !!user?.is_block;
+
+  if (isBlock && web3Context.state.web3.authToken)
+    web3Context.dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
 
   return <div>{isMod ? children : "This is only for moderator"}</div>;
 };
