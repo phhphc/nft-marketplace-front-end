@@ -3,6 +3,8 @@ import Footer from "@Components/Footer/Footer";
 import { useContext } from "react";
 import { AppContext } from "@Store/index";
 import { signEIP191 } from "@Services/ApiService";
+import useUser from "@Hooks/useUser";
+import { ROLE_NAME } from "@Interfaces/index";
 
 export interface IAdminLayoutProps {
   children: React.ReactNode;
@@ -10,11 +12,19 @@ export interface IAdminLayoutProps {
 
 const AdminLayout = ({ children }: IAdminLayoutProps) => {
   const web3Context = useContext(AppContext);
-  console.log(
-    "🚀 ~ file: AdminLayout.tsx:13 ~ AdminLayout ~ web3Context:",
-    web3Context
+
+  const { user } = useUser(
+    web3Context.state.web3.myAddress,
+    web3Context.state.web3.chainId
   );
-  return <div></div>;
+
+  if (!user) return <></>;
+
+  const isAdmin = !!user?.roles?.some(
+    (item: any) => item.name === ROLE_NAME.ADMIN
+  );
+
+  return <div>{isAdmin ? children : "This is only for admin"}</div>;
 };
 
 export default AdminLayout;

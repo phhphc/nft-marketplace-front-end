@@ -237,6 +237,31 @@ interface IGetUserProps {
   chainId: number;
 }
 
+interface IGetAllUsersProps {
+  chainId: number;
+}
+
+interface ISetBlockAccountProps {
+  chainId: number;
+  authToken: string;
+  isBlock: boolean;
+  address: string;
+}
+
+interface ISetRoleProps {
+  chainId: number;
+  authToken: string;
+  roleId: number;
+  address: string;
+}
+
+interface IDeleteRoleProps {
+  chainId: number;
+  authToken: string;
+  roleId: number;
+  address: string;
+}
+
 export const getNFTCollectionListService = async (
   additionalParams: {
     [k: string]: any;
@@ -1596,6 +1621,7 @@ export const signEIP191 = async ({
 };
 
 export const getUser = async ({ address, chainId }: IGetUserProps) => {
+  if (!chainId) return null;
   const version = BACKEND_URL_VERSION.get(chainId)!;
 
   const res = await axios.get(`/api/${version}/user/${address}`, {
@@ -1605,4 +1631,74 @@ export const getUser = async ({ address, chainId }: IGetUserProps) => {
   });
 
   return res.data.data.user;
+};
+
+export const getAllUsers = async ({ chainId }: IGetAllUsersProps) => {
+  if (!chainId) return [];
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+
+  const res = await axios.get(`/api/${version}/user?offset=0&limit=100`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return res.data.data.users;
+};
+
+export const setBlockAccount = async ({
+  authToken,
+  address,
+  chainId,
+  isBlock,
+}: ISetBlockAccountProps) => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+
+  await axios.patch(
+    `/api/${version}/user/${address}/block?is_block=${isBlock}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    }
+  );
+};
+
+export const setRole = async ({
+  authToken,
+  address,
+  chainId,
+  roleId,
+}: ISetRoleProps) => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+
+  await axios.post(
+    `/api/${version}/user/${address}/user/role?address=${address}&role_id=${roleId}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    }
+  );
+};
+
+export const deleteRole = async ({
+  authToken,
+  address,
+  chainId,
+  roleId,
+}: IDeleteRoleProps) => {
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+
+  await axios.delete(
+    `/api/${version}/user/${address}/user/role?address=${address}&role_id=${roleId}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    }
+  );
 };

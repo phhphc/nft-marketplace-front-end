@@ -4,6 +4,7 @@ import LoadingPage from "@Components/LoadingPage/LoadingPage";
 import { ReactElement, useContext } from "react";
 import { AppContext } from "@Store/index";
 import ModLayout from "@Layouts/ModLayout/ModLayout";
+import ModContainer from "@Containers/ModContainer/ModContainer";
 
 export default function ModPage() {
   const web3Context = useContext(AppContext);
@@ -15,7 +16,9 @@ export default function ModPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main></main>
+      <main>
+        <ModContainer />
+      </main>
     </>
   );
 }

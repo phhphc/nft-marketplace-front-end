@@ -6,7 +6,7 @@ const useUser = (address: string, chainId: number) => {
     queryKey: ["User", address, chainId],
     queryFn: () => getUser({ address, chainId }),
   });
-  const user = result.data || [];
+  const user = result.data || null;
   return { ...result, user };
 };
 

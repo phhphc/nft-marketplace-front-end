@@ -9,7 +9,11 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ethers } from "ethers";
 import { WEB3_ACTION_TYPES } from "@Store/index";
 import useNFTCollectionList from "@Hooks/useNFTCollectionList";
-import { INFTCollectionItem, INotification } from "@Interfaces/index";
+import {
+  INFTCollectionItem,
+  INotification,
+  ROLE_NAME,
+} from "@Interfaces/index";
 import { handleRemoveFromCart, showingPrice } from "@Utils/index";
 import {
   buyToken,
@@ -38,6 +42,7 @@ import { ListBox } from "primereact/listbox";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { TabView, TabPanel } from "primereact/tabview";
+import useUser from "@Hooks/useUser";
 
 export interface IHeaderProps {
   notification: INotification[];
@@ -47,6 +52,20 @@ export interface IHeaderProps {
 const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   const logOutInterval = useRef<any>();
   const web3Context = useContext(AppContext);
+
+  const { user } = useUser(
+    web3Context.state.web3.myAddress,
+    web3Context.state.web3.chainId
+  );
+
+  const isMod = !!user?.roles?.some(
+    (item: any) =>
+      item.name === ROLE_NAME.ADMIN || item.name === ROLE_NAME.MODERATOR
+  );
+
+  const isAdmin = !!user?.roles?.some(
+    (item: any) => item.name === ROLE_NAME.ADMIN
+  );
 
   // Wallet
   const [walletConnected, setWalletConnected] = useState(false);
@@ -419,6 +438,12 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
               </button>
             ) : (
               <button onClick={handleLogin}>Login</button>
+            )}
+            {web3Context.state.web3.authToken && isAdmin && (
+              <Link href="/admin">Admin</Link>
+            )}
+            {web3Context.state.web3.authToken && isMod && (
+              <Link href="/mod">Mod</Link>
             )}
             {web3Context.state.web3.authToken && (
               <>
