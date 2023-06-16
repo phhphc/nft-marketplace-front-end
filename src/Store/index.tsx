@@ -94,7 +94,7 @@ const AppProvider = ({ children }: IAppProvider) => {
     const authToken = localStorage.getItem("authToken") || "";
 
     const fetchData = async () => {
-      if (await window.ethereum?._metamask?.isUnlocked()) {
+      if (await !window.ethereum?._metamask?.isUnlocked()) {
         dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
       }
       dispatch({
