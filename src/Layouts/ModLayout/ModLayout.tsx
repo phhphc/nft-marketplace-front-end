@@ -14,6 +14,10 @@ export interface IModLayoutProps {
 
 const ModLayout = ({ children }: IModLayoutProps) => {
   const web3Context = useContext(AppContext);
+  const { notification, refetch: notificationRefetch } = useNotificationByOwner(
+    web3Context.state.web3.myAddress,
+    web3Context.state.web3.chainId
+  );
 
   const { user } = useUser(
     web3Context.state.web3.myAddress,
@@ -32,7 +36,26 @@ const ModLayout = ({ children }: IModLayoutProps) => {
   if (isBlock && web3Context.state.web3.authToken)
     web3Context.dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
 
-  return <div>{isMod ? children : "This is only for moderator"}</div>;
+  return (
+    <div>
+      {isMod ? (
+        <div>
+          {!!web3Context.state.web3.chainId && (
+            <>
+              <Header
+                notification={notification}
+                notificationRefetch={notificationRefetch}
+              />
+              <div className="px-5 pb-5 mt-24 min-h-screen">{children}</div>
+              <Footer />
+            </>
+          )}
+        </div>
+      ) : (
+        "This is only for Moderator"
+      )}
+    </div>
+  );
 };
 
 export default ModLayout;

@@ -10,16 +10,16 @@ import { TriStateCheckbox } from "primereact/tristatecheckbox";
 import { Dropdown } from "primereact/dropdown";
 import { Tag } from "primereact/tag";
 import { InputSwitch } from "primereact/inputswitch";
-import { deleteRole, setBlockAccount, setRole } from "@Services/ApiService";
+import { setBlockAccount } from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { Button } from "primereact/button";
 
-export interface IAdminManagementProps {
+export interface IModManagementProps {
   users: IUser[];
   usersRefetch: () => void;
 }
 
-const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
+const ModManagement = ({ users, usersRefetch }: IModManagementProps) => {
   console.log("users", users);
   const web3Context = useContext(AppContext);
   const usersData = users.map((user: IUser) => {
@@ -98,61 +98,13 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
     }
   };
 
-  const rolesSetting: any[] = [
-    { label: ROLE_NAME.ADMIN.toUpperCase(), value: 1 },
-    { label: ROLE_NAME.MODERATOR.toUpperCase(), value: 2 },
-    { label: ROLE_NAME.USER.toUpperCase(), value: 3 },
-  ];
-
   const roleBodyTemplate = (rowData: IUser) => {
-    const [selectedSetRole, setSelectedRole] = useState(null);
-    const [selectedDeleteRole, setSelectedDeleteRole] = useState(null);
     return (
-      <div className="flex justify-between items-center">
-        <Tag
-          value={rowData.role.toUpperCase()}
-          severity={getSeverity(rowData.role)}
-          style={{ width: "6rem", height: "2rem" }}
-        />
-        <div>
-          <Dropdown
-            value={selectedSetRole}
-            options={
-              rowData.role === ROLE_NAME.USER
-                ? rolesSetting.filter((role) => role.value !== 3)
-                : rowData.role === ROLE_NAME.MODERATOR
-                ? rolesSetting.filter((role) => role.value !== 2)
-                : rolesSetting
-            }
-            optionLabel="label"
-            onChange={(e) => {
-              console.log(e);
-              setSelectedRole(e.value);
-              handleSetRole(rowData, e.value);
-            }}
-            placeholder="Set Role"
-            showClear
-          />
-          <Dropdown
-            value={selectedDeleteRole}
-            options={
-              rowData.role === ROLE_NAME.ADMIN
-                ? rolesSetting.filter((role) => role.value !== 1)
-                : rowData.role === ROLE_NAME.MODERATOR
-                ? rolesSetting.filter((role) => role.value !== 2)
-                : []
-            }
-            optionLabel="label"
-            onChange={(e) => {
-              console.log(e);
-              setSelectedDeleteRole(e.value);
-              handleDeleteRole(rowData, e.value);
-            }}
-            placeholder="Delete Role"
-            showClear
-          />
-        </div>
-      </div>
+      <Tag
+        value={rowData.role.toUpperCase()}
+        severity={getSeverity(rowData.role)}
+        style={{ width: "6rem", height: "2rem" }}
+      />
     );
   };
 
@@ -182,7 +134,7 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
 
   const statusBodyTemplate = (rowData: IUser) => {
     const [blocked, setBlocked] = useState<boolean>(rowData.is_block);
-    return rowData.role !== ROLE_NAME.ADMIN ? (
+    return rowData.role === ROLE_NAME.USER ? (
       <div className="flex gap-5">
         <i
           className="pi pi-check-circle text-green-500"
@@ -251,68 +203,10 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
     }
   };
 
-  const handleSetRole = async (user: IUser, roleId: number) => {
-    try {
-      await setRole({
-        authToken: web3Context.state.web3.authToken,
-        address: user.address,
-        chainId: web3Context.state.web3.chainId,
-        roleId: roleId,
-      });
-      web3Context.state.web3.toast.current &&
-        web3Context.state.web3.toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Set role successfully!",
-          life: 5000,
-        });
-    } catch (error) {
-      console.log(error);
-      web3Context.state.web3.toast.current &&
-        web3Context.state.web3.toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Fail to set role!",
-          life: 5000,
-        });
-    } finally {
-      usersRefetch();
-    }
-  };
-
-  const handleDeleteRole = async (user: IUser, roleId: number) => {
-    try {
-      await deleteRole({
-        authToken: web3Context.state.web3.authToken,
-        address: user.address,
-        chainId: web3Context.state.web3.chainId,
-        roleId: roleId,
-      });
-      web3Context.state.web3.toast.current &&
-        web3Context.state.web3.toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Delete role successfully!",
-          life: 5000,
-        });
-    } catch (error) {
-      console.log(error);
-      web3Context.state.web3.toast.current &&
-        web3Context.state.web3.toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Fail to delete role!",
-          life: 5000,
-        });
-    } finally {
-      usersRefetch();
-    }
-  };
-
   return (
     <div className="admin-management pt-5">
       <div className="flex justify-center">
-        <Message text="YOU ARE IN ADMIN MODE" />
+        <Message text="YOU ARE IN MODERATOR MODE" />
       </div>
       <div className="pt-5">
         <DataTable
@@ -346,7 +240,7 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
             filter
             filterElement={roleRowFilterTemplate}
             sortable
-            className="w-2/5"
+            className="w-1/3"
           />
           <Column
             field="is_block"
@@ -362,4 +256,4 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
   );
 };
 
-export default AdminManagement;
+export default ModManagement;

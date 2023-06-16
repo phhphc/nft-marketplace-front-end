@@ -50,7 +50,7 @@ const AdminLayout = ({ children }: IAdminLayoutProps) => {
           )}
         </div>
       ) : (
-        "This is only for admin"
+        "This is only for Admin"
       )}
     </div>
   );
