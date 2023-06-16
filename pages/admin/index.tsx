@@ -4,6 +4,7 @@ import LoadingPage from "@Components/LoadingPage/LoadingPage";
 import { ReactElement, useContext } from "react";
 import { AppContext } from "@Store/index";
 import AdminLayout from "@Layouts/AdminLayout/AdminLayout";
+import AdminContainer from "@Containers/AdminContainer/AdminContainer";
 
 export default function AdminPage() {
   const web3Context = useContext(AppContext);
@@ -15,7 +16,9 @@ export default function AdminPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main></main>
+      <main>
+        <AdminContainer />
+      </main>
     </>
   );
 }
