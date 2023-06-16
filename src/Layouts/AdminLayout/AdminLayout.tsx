@@ -1,7 +1,7 @@
 import Header from "@Components/Header/Header";
 import Footer from "@Components/Footer/Footer";
 import { useContext } from "react";
-import { AppContext } from "@Store/index";
+import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { signEIP191 } from "@Services/ApiService";
 import useUser from "@Hooks/useUser";
 import { ROLE_NAME } from "@Interfaces/index";
