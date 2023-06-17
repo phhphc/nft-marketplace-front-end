@@ -420,6 +420,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                   label="Admin Dashboard"
                   severity="success"
                   className="h-2/3"
+                  text
                 />
               </Link>
             </span>
@@ -430,6 +431,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                 label="Moderator Dashboard"
                 severity="warning"
                 className="h-2/3"
+                text
               />
             </Link>
           )}
