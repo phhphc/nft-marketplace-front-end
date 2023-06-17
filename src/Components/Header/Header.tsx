@@ -408,10 +408,32 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   return (
     <div id="header" className="fixed top-0 right-0 left-0 h-24 z-10">
       <div className="flex h-full w-full bg-gray-100 shadow items-center justify-between px-10">
-        {/* Logo */}
-        <Link href="/" id="logo">
-          <Image className="h-16 w-36" src={logo} alt="Clover logo" />
-        </Link>
+        <div className="flex gap-6 items-center">
+          {/* Logo */}
+          <Link href="/" id="logo">
+            <Image className="h-16 w-36" src={logo} alt="Clover logo" />
+          </Link>
+          {web3Context.state.web3.authToken && isAdmin && (
+            <span>
+              <Link href="/admin">
+                <Button
+                  label="Admin Dashboard"
+                  severity="success"
+                  className="h-2/3"
+                />
+              </Link>
+            </span>
+          )}
+          {web3Context.state.web3.authToken && isMod && (
+            <Link href="/mod">
+              <Button
+                label="Moderator Dashboard"
+                severity="warning"
+                className="h-2/3"
+              />
+            </Link>
+          )}
+        </div>
 
         {/* Search bar */}
         {/* <span id="search-bar" className="p-input-icon-left">
@@ -429,22 +451,23 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
           >
             {/* Profile icon and wallet icon when connecting to wallet */}
             {web3Context.state.web3.authToken ? (
-              <button
-                onClick={() => {
-                  handleLogOut();
-                }}
-              >
-                Log out
-              </button>
+              <></>
             ) : (
-              <button onClick={handleLogin}>Login</button>
+              <Button
+                label="Log in"
+                severity="success"
+                outlined
+                rounded
+                onClick={handleLogin}
+                className="w-40"
+              />
             )}
-            {web3Context.state.web3.authToken && isAdmin && (
+            {/* {web3Context.state.web3.authToken && isAdmin && (
               <Link href="/admin">Admin</Link>
             )}
             {web3Context.state.web3.authToken && isMod && (
               <Link href="/mod">Mod</Link>
-            )}
+            )} */}
             {web3Context.state.web3.authToken && (
               <>
                 {/* Notification */}
@@ -816,7 +839,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                       href={`/user-profile`}
                       className="py-3 w-full hover:bg-slate-200 rounded-t-lg border-b"
                     >
-                      <span className="ml-4">Profile</span>
+                      <span className="ml-4">My Profile</span>
                     </Link>
                     <Link
                       href={`/my-collections`}
@@ -834,8 +857,20 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                       href={`/create-nft`}
                       className="py-3 w-full hover:bg-slate-200 rounded-b-lg border-b"
                     >
-                      <span className="ml-4">Create NFT</span>
+                      <span className="ml-4">New NFT</span>
                     </Link>
+                    {web3Context.state.web3.authToken ? (
+                      <button
+                        onClick={() => {
+                          handleLogOut();
+                        }}
+                        className="py-3 w-full hover:bg-slate-200 rounded-b-lg border-b"
+                      >
+                        <span className="pi pi-sign-out"></span> Log out
+                      </button>
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 </Link>
               </>

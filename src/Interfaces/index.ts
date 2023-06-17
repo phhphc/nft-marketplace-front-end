@@ -296,3 +296,12 @@ export interface ROLE_ITEM {
   id: number;
   name: ROLE_NAME;
 }
+
+export interface IUser {
+  address: string;
+  is_block: boolean;
+  nonce: string;
+  roles: ROLE_ITEM[];
+  role: string;
+  roleId: number;
+}

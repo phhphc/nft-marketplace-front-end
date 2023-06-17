@@ -5,6 +5,7 @@ import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 import { signEIP191 } from "@Services/ApiService";
 import useUser from "@Hooks/useUser";
 import { ROLE_NAME } from "@Interfaces/index";
+import useNotificationByOwner from "@Hooks/useNotificationByOwner";
 
 export interface IAdminLayoutProps {
   children: React.ReactNode;
@@ -12,6 +13,10 @@ export interface IAdminLayoutProps {
 
 const AdminLayout = ({ children }: IAdminLayoutProps) => {
   const web3Context = useContext(AppContext);
+  const { notification, refetch: notificationRefetch } = useNotificationByOwner(
+    web3Context.state.web3.myAddress,
+    web3Context.state.web3.chainId
+  );
 
   const { user } = useUser(
     web3Context.state.web3.myAddress,
@@ -29,7 +34,26 @@ const AdminLayout = ({ children }: IAdminLayoutProps) => {
     (item: any) => item.name === ROLE_NAME.ADMIN
   );
 
-  return <div>{isAdmin ? children : "This is only for admin"}</div>;
+  return (
+    <div>
+      {isAdmin ? (
+        <div>
+          {!!web3Context.state.web3.chainId && (
+            <>
+              <Header
+                notification={notification}
+                notificationRefetch={notificationRefetch}
+              />
+              <div className="px-5 pb-5 mt-24 min-h-screen">{children}</div>
+              <Footer />
+            </>
+          )}
+        </div>
+      ) : (
+        "This is only for Admin"
+      )}
+    </div>
+  );
 };
 
 export default AdminLayout;

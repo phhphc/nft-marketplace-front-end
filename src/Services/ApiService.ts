@@ -1646,6 +1646,26 @@ export const getAllUsers = async ({ chainId }: IGetAllUsersProps) => {
   return res.data.data.users;
 };
 
+// export const setBlockAccount = async ({
+//   authToken,
+//   address,
+//   chainId,
+//   isBlock,
+// }: ISetBlockAccountProps) => {
+//   const version = BACKEND_URL_VERSION.get(chainId)!;
+
+//   await axios.patch(
+//     `/api/${version}/user/${address}/block?is_block=${isBlock}`,
+//     {},
+//     {
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${authToken}`,
+//       },
+//     }
+//   );
+// };
+
 export const setBlockAccount = async ({
   authToken,
   address,
@@ -1655,7 +1675,8 @@ export const setBlockAccount = async ({
   const version = BACKEND_URL_VERSION.get(chainId)!;
 
   await axios.patch(
-    `/api/${version}/user/${address}/block?is_block=${isBlock}`,
+    `/api/${version}/user/block`,
+    { address: address, is_block: isBlock },
     {
       headers: {
         "Content-Type": "application/json",
@@ -1674,7 +1695,11 @@ export const setRole = async ({
   const version = BACKEND_URL_VERSION.get(chainId)!;
 
   await axios.post(
-    `/api/${version}/user/${address}/user/role?address=${address}&role_id=${roleId}`,
+    `/api/${version}/user/role`,
+    {
+      address: address,
+      role_id: roleId,
+    },
     {
       headers: {
         "Content-Type": "application/json",
@@ -1692,13 +1717,14 @@ export const deleteRole = async ({
 }: IDeleteRoleProps) => {
   const version = BACKEND_URL_VERSION.get(chainId)!;
 
-  await axios.delete(
-    `/api/${version}/user/${address}/user/role?address=${address}&role_id=${roleId}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
-    }
-  );
+  await axios.delete(`/api/${version}/user/role`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
+    },
+    data: {
+      address: address,
+      role_id: roleId,
+    },
+  });
 };
