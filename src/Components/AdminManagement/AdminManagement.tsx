@@ -20,7 +20,6 @@ export interface IAdminManagementProps {
 }
 
 const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
-  console.log("users", users);
   const web3Context = useContext(AppContext);
   const usersData = users.map((user: IUser) => {
     const isAdmin = !!user?.roles?.some(
@@ -90,11 +89,11 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
   const getSeverity = (role: string) => {
     switch (role) {
       case ROLE_NAME.ADMIN:
-        return "danger";
+        return "success";
       case ROLE_NAME.MODERATOR:
         return "warning";
       case ROLE_NAME.USER:
-        return "success";
+        return "info";
     }
   };
 
@@ -106,7 +105,6 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
 
   const roleBodyTemplate = (rowData: IUser) => {
     const [selectedSetRole, setSelectedRole] = useState(null);
-    const [selectedDeleteRole, setSelectedDeleteRole] = useState(null);
     return (
       <div className="flex justify-between items-center">
         <Tag
@@ -114,44 +112,38 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
           severity={getSeverity(rowData.role)}
           style={{ width: "6rem", height: "2rem" }}
         />
-        <div>
-          <Dropdown
-            value={selectedSetRole}
-            options={
-              rowData.role === ROLE_NAME.USER
-                ? rolesSetting.filter((role) => role.value !== 3)
-                : rowData.role === ROLE_NAME.MODERATOR
-                ? rolesSetting.filter((role) => role.value !== 2)
-                : rolesSetting
-            }
-            optionLabel="label"
-            onChange={(e) => {
-              console.log(e);
-              setSelectedRole(e.value);
-              handleSetRole(rowData, e.value);
+        {rowData.role !== ROLE_NAME.USER ? (
+          <Button
+            rounded
+            outlined
+            severity="danger"
+            aria-label="Cancel"
+            label="Delete Role"
+            onClick={() => {
+              handleDeleteRole(rowData);
             }}
-            placeholder="Set Role"
-            showClear
           />
-          <Dropdown
-            value={selectedDeleteRole}
-            options={
-              rowData.role === ROLE_NAME.ADMIN
-                ? rolesSetting.filter((role) => role.value !== 1)
-                : rowData.role === ROLE_NAME.MODERATOR
-                ? rolesSetting.filter((role) => role.value !== 2)
-                : []
-            }
-            optionLabel="label"
-            onChange={(e) => {
-              console.log(e);
-              setSelectedDeleteRole(e.value);
-              handleDeleteRole(rowData, e.value);
-            }}
-            placeholder="Delete Role"
-            showClear
-          />
-        </div>
+        ) : (
+          <></>
+        )}
+        <Dropdown
+          value={selectedSetRole}
+          options={
+            rowData.role === ROLE_NAME.USER
+              ? rolesSetting.filter((role) => role.value !== 3)
+              : rowData.role === ROLE_NAME.MODERATOR
+              ? rolesSetting.filter((role) => role.value !== 2)
+              : []
+          }
+          optionLabel="label"
+          onChange={(e) => {
+            console.log(e.value);
+            setSelectedRole(e.value);
+            handleSetRole(rowData, e.value);
+          }}
+          placeholder="Set Role"
+          showClear
+        />
       </div>
     );
   };
@@ -234,8 +226,8 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
         web3Context.state.web3.toast.current.show({
           severity: "success",
           summary: "Success",
-          detail: "Set status successfully!",
-          life: 5000,
+          detail: "Set status account successfully!",
+          life: 3000,
         });
     } catch (error) {
       console.log(error);
@@ -243,8 +235,8 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
         web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Fail to set status!",
-          life: 5000,
+          detail: "Fail to set status account!",
+          life: 3000,
         });
     } finally {
       usersRefetch();
@@ -264,7 +256,7 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
           severity: "success",
           summary: "Success",
           detail: "Set role successfully!",
-          life: 5000,
+          life: 3000,
         });
     } catch (error) {
       console.log(error);
@@ -273,27 +265,27 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
           severity: "error",
           summary: "Error",
           detail: "Fail to set role!",
-          life: 5000,
+          life: 3000,
         });
     } finally {
       usersRefetch();
     }
   };
 
-  const handleDeleteRole = async (user: IUser, roleId: number) => {
+  const handleDeleteRole = async (user: IUser) => {
     try {
       await deleteRole({
         authToken: web3Context.state.web3.authToken,
         address: user.address,
         chainId: web3Context.state.web3.chainId,
-        roleId: roleId,
+        roleId: user.roleId,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
           severity: "success",
           summary: "Success",
           detail: "Delete role successfully!",
-          life: 5000,
+          life: 3000,
         });
     } catch (error) {
       console.log(error);
@@ -302,7 +294,7 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
           severity: "error",
           summary: "Error",
           detail: "Fail to delete role!",
-          life: 5000,
+          life: 3000,
         });
     } finally {
       usersRefetch();

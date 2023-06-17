@@ -90,11 +90,11 @@ const ModManagement = ({ users, usersRefetch }: IModManagementProps) => {
   const getSeverity = (role: string) => {
     switch (role) {
       case ROLE_NAME.ADMIN:
-        return "danger";
+        return "success";
       case ROLE_NAME.MODERATOR:
         return "warning";
       case ROLE_NAME.USER:
-        return "success";
+        return "info";
     }
   };
 
@@ -187,7 +187,7 @@ const ModManagement = ({ users, usersRefetch }: IModManagementProps) => {
           severity: "success",
           summary: "Success",
           detail: "Set status successfully!",
-          life: 5000,
+          life: 3000,
         });
     } catch (error) {
       console.log(error);
@@ -196,7 +196,7 @@ const ModManagement = ({ users, usersRefetch }: IModManagementProps) => {
           severity: "error",
           summary: "Error",
           detail: "Fail to set status!",
-          life: 5000,
+          life: 3000,
         });
     } finally {
       usersRefetch();

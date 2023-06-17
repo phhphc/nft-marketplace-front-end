@@ -418,7 +418,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
               <Link href="/admin">
                 <Button
                   label="Admin Dashboard"
-                  severity="danger"
+                  severity="success"
                   className="h-2/3"
                 />
               </Link>
