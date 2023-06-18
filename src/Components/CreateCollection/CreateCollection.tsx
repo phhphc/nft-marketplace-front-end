@@ -15,6 +15,7 @@ import { AppContext, WEB3_ACTION_TYPES } from "@Store/index";
 
 const CreateCollection = () => {
   const [inputDesc, setInputDesc] = useState("");
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const categories: ICategory[] = [
     { label: "Art", value: "Art" },
     { label: "Gaming", value: "Gaming" },
@@ -59,12 +60,14 @@ const CreateCollection = () => {
 
   const onSubmit = async (data: IFormCollectionInput) => {
     try {
+      setIsSubmit(true);
       await createNFTCollectionService({
         ...data,
         logoImage: data.logoImage[0],
         bannerImage: data.bannerImage[0],
         owner,
         chainId: web3Context.state.web3.chainId,
+        authToken: web3Context.state.web3.authToken,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -82,6 +85,7 @@ const CreateCollection = () => {
           life: 5000,
         });
     } finally {
+      setIsSubmit(false);
       reset();
       setLogoFile("");
       setBannerFile("");
@@ -310,7 +314,7 @@ const CreateCollection = () => {
 
         {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
-          <Button label="Create" />
+          <Button label="Create" disabled={isSubmit} />
         </div>
       </form>
     </div>
