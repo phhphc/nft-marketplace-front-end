@@ -136,6 +136,7 @@ interface ICreateCollectionProps {
   blockchain: string;
   owner: string;
   chainId: number;
+  authToken: string;
 }
 
 interface ISaveProfileProps {
@@ -1153,6 +1154,7 @@ export const createNFTCollectionService = async ({
   // url,
   description,
   chainId,
+  authToken,
 }: ICreateCollectionProps) => {
   const version = BACKEND_URL_VERSION.get(chainId)!;
   // const featuredImageCid = await handleUploadImageToPinata(featuredImage);
@@ -1232,6 +1234,7 @@ export const createNFTCollectionService = async ({
       .post(`api/${version}/collection`, params, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
         },
       })
       .then(function (response) {})

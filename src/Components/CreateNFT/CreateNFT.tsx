@@ -15,6 +15,7 @@ export interface ICreateNFTProps {
 
 const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
   const web3Context = useContext(AppContext);
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [inputDesc, setInputDesc] = useState("");
 
   let collections: ICollectionItem[];
@@ -49,6 +50,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
 
   const onSubmit = async (data: IFormNewNFTInput) => {
     try {
+      setIsSubmit(true);
       await createNFTService({
         ...data,
         featuredImage: data.featuredImage[0],
@@ -71,6 +73,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
           life: 5000,
         });
     } finally {
+      setIsSubmit(false);
       reset();
       setFeaturedFile("");
       setInputDesc("");
@@ -237,7 +240,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
 
         {/* <input type="submit" /> */}
         <div className="card flex justify-content-center pt-4">
-          <Button label="Create" />
+          <Button label="Create" disabled={isSubmit} />
         </div>
       </form>
     </div>
