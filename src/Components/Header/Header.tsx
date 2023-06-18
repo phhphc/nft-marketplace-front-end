@@ -103,6 +103,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   const handleLogOut = () => {
     web3Context.dispatch({
       type: WEB3_ACTION_TYPES.LOGOUT,
+      payload: { myAddress: web3Context.state.web3.myAddress },
     });
   };
 
@@ -336,7 +337,10 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
     console.log("🚀 ~ file: Header.tsx:320 ~ handleLogin ~ data:", data);
     web3Context.dispatch({
       type: WEB3_ACTION_TYPES.LOGIN,
-      payload: data.auth_token,
+      payload: {
+        authToken: data.auth_token,
+        myAddress: web3Context.state.web3.myAddress,
+      },
     });
   };
 
@@ -832,10 +836,13 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                   </div>
                 </Sidebar>
                 {/* Profile */}
-                <Link href={`/user-profile`} className="profile-btn relative">
-                  <button className="rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center">
+                <div className="profile-btn relative">
+                  <Link
+                    href={`/user-profile`}
+                    className="rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center"
+                  >
                     <i className="pi pi-user text-black text-3xl"></i>
-                  </button>
+                  </Link>
 
                   <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
                     <Link
@@ -875,7 +882,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                       <></>
                     )}
                   </div>
-                </Link>
+                </div>
               </>
             )}
             {/* Wallet if not connect to wallet */}
