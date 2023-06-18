@@ -97,6 +97,7 @@ const AppProvider = ({ children }: IAppProvider) => {
       if (await !window.ethereum?._metamask?.isUnlocked()) {
         dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
       }
+
       dispatch({
         type: WEB3_ACTION_TYPES.CHANGE,
         payload: {
@@ -122,6 +123,17 @@ const AppProvider = ({ children }: IAppProvider) => {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (!!window.ethereum?.networkVersion) {
+      dispatch({
+        type: WEB3_ACTION_TYPES.CHANGE,
+        payload: {
+          chainId: Number(window.ethereum.networkVersion),
+        },
+      });
+    }
+  }, [state.web3.provider]);
 
   useEffect(() => {
     if (window.ethereum) {
