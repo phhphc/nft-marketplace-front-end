@@ -305,3 +305,10 @@ export interface IUser {
   role: string;
   roleId: number;
 }
+
+export interface IMkpInfo {
+  id: number;
+  marketplace: string;
+  beneficiary: string;
+  royalty: number;
+}

@@ -67,6 +67,8 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
     (item: any) => item.name === ROLE_NAME.ADMIN
   );
 
+  const isBlock = !!user?.is_block;
+
   // Wallet
   const [walletConnected, setWalletConnected] = useState(false);
   const [refetch, setRefetch] = useState<number>(0);
@@ -329,6 +331,16 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   };
 
   const handleLogin = async () => {
+    if (isBlock) {
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Your account is blocked!",
+          life: 5000,
+        });
+      return;
+    }
     const data = await signEIP191({
       provider: web3Context.state.web3.provider,
       myAddress: web3Context.state.web3.myAddress,
@@ -342,6 +354,13 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
         myAddress: web3Context.state.web3.myAddress,
       },
     });
+    web3Context.state.web3.toast.current &&
+      web3Context.state.web3.toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Login successfully!",
+        life: 5000,
+      });
   };
 
   const notificationListTemplate = (notif: INotification) => {

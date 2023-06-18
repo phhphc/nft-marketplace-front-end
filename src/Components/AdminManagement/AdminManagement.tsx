@@ -1,25 +1,40 @@
-import { IUser, ROLE_ITEM, ROLE_NAME } from "@Interfaces/index";
+import { IMkpInfo, IUser, ROLE_ITEM, ROLE_NAME } from "@Interfaces/index";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { FilterMatchMode, FilterOperator } from "primereact/api";
 import { Message } from "primereact/message";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import { TriStateCheckbox } from "primereact/tristatecheckbox";
 import { Dropdown } from "primereact/dropdown";
 import { Tag } from "primereact/tag";
 import { InputSwitch } from "primereact/inputswitch";
-import { deleteRole, setBlockAccount, setRole } from "@Services/ApiService";
+import {
+  deleteRole,
+  editMkpInfo,
+  setBlockAccount,
+  setRole,
+} from "@Services/ApiService";
 import { AppContext } from "@Store/index";
 import { Button } from "primereact/button";
+import { InputNumber } from "primereact/inputnumber";
+import { CHAINID_CURRENCY, CHAINID_CURRENCY_UNITS } from "@Constants/index";
 
 export interface IAdminManagementProps {
   users: IUser[];
   usersRefetch: () => void;
+  mkpInfo: IMkpInfo;
+  mkpInfoRefetch: () => void;
 }
 
-const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
+const AdminManagement = ({
+  users,
+  usersRefetch,
+  mkpInfo,
+  mkpInfoRefetch,
+}: IAdminManagementProps) => {
+  console.log("mkpInfo", mkpInfo);
   const web3Context = useContext(AppContext);
   const usersData = users.map((user: IUser) => {
     const isAdmin = !!user?.roles?.some(
@@ -214,6 +229,13 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
     </div>
   );
 
+  const [royalty, setRoyalty] = useState<number>(mkpInfo.royalty);
+  const [beneficiary, setBeneficiary] = useState<string>(mkpInfo.beneficiary);
+  useEffect(() => {
+    setRoyalty(mkpInfo.royalty);
+    setBeneficiary(mkpInfo.beneficiary);
+  }, [mkpInfo]);
+
   const handleSetBlockAccount = async (user: IUser) => {
     try {
       await setBlockAccount({
@@ -226,7 +248,9 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
         web3Context.state.web3.toast.current.show({
           severity: "success",
           summary: "Success",
-          detail: "Set status account successfully!",
+          detail: user.is_block
+            ? "Unblock account successfully!"
+            : "Block account successfully!",
           life: 3000,
         });
     } catch (error) {
@@ -235,7 +259,9 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
         web3Context.state.web3.toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Fail to set status account!",
+          detail: user.is_block
+            ? "Fail to unblock account!"
+            : "Fail to block account!",
           life: 3000,
         });
     } finally {
@@ -301,10 +327,87 @@ const AdminManagement = ({ users, usersRefetch }: IAdminManagementProps) => {
     }
   };
 
+  const handleEditMkpInfo = async () => {
+    console.log("royalty", royalty);
+    try {
+      await editMkpInfo({
+        chainId: web3Context.state.web3.chainId,
+        beneficiary: beneficiary,
+        royalty: royalty,
+        authToken: web3Context.state.web3.authToken,
+      });
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Edit marketplace info successfully!",
+          life: 3000,
+        });
+      mkpInfoRefetch();
+    } catch (error) {
+      console.log(error);
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Fail to edit marketplace info!",
+          life: 3000,
+        });
+    }
+  };
+
   return (
     <div className="admin-management pt-5">
       <div className="flex justify-center">
         <Message text="YOU ARE IN ADMIN MODE" />
+      </div>
+      <div className="pt-5 flex gap-6">
+        <div>
+          <label htmlFor="royalty" className="font-bold block mb-2">
+            Current Exchange royalty: {mkpInfo.royalty} (
+            {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)})
+          </label>
+          <InputNumber
+            inputId="royalty"
+            placeholder="Input the royalty"
+            value={royalty}
+            onValueChange={(e: any) => setRoyalty(e.value)}
+            minFractionDigits={2}
+            maxFractionDigits={5}
+            min={0.00001}
+            max={0.99999}
+            showButtons
+            step={0.01}
+            suffix={` ${CHAINID_CURRENCY.get(web3Context.state.web3.chainId)}`}
+          />
+          <Button
+            icon="pi pi-save"
+            className="rounded-s"
+            onClick={() => {
+              handleEditMkpInfo();
+            }}
+          />
+        </div>
+        <div className="w-1/2">
+          <label className="font-bold block mb-2">
+            Current Beneficiary : {mkpInfo.beneficiary}
+          </label>
+          <div className="w-full">
+            <InputText
+              placeholder="Input the beneficiary"
+              value={beneficiary}
+              onChange={(e) => setBeneficiary(e.target.value)}
+              className="w-5/6"
+            />
+            <Button
+              icon="pi pi-save"
+              className="rounded-s"
+              onClick={() => {
+                handleEditMkpInfo();
+              }}
+            />
+          </div>
+        </div>
       </div>
       <div className="pt-5">
         <DataTable
