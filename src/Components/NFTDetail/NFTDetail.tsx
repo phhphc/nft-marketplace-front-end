@@ -527,7 +527,7 @@ const NFTDetail = ({
                                 (
                                   Number(
                                     nftDetail[0].listings[0]?.start_price
-                                  ) * nftDetail.length || 0
+                                  ) || 0
                                 ).toString()
                               );
                             }}

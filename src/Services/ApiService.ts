@@ -717,15 +717,31 @@ export const fulfillMakeOffer = async ({
 
   const mkpContractWithSigner = mkpContract.connect(myWallet);
 
+  const mkpMoneyAddress = process.env.NEXT_PUBLIC_MKP_MONEY_ADDRESS!;
+
+  let mkpInfo;
+
+  try {
+    const res = await getMkpInfo({ chainId });
+    mkpInfo = res;
+  } catch (err) {
+    mkpInfo = {
+      id: 1,
+      marketplace: mkpAddress,
+      beneficiary: mkpMoneyAddress,
+      royalty: 0.01,
+    };
+  }
+
   const buyTx = await erc20ContractWithSigner.buy({
-    value: (Number(price) / 101).toString(),
+    value: Math.round(Number(price) / (100 + mkpInfo.royalty * 100)).toString(),
   });
 
   await buyTx.wait();
 
   const increaseTx = await erc20ContractWithSigner.increaseAllowance(
     mkpAddress,
-    (Number(price) / 101).toString()
+    Math.round(Number(price) / (100 + mkpInfo.royalty * 100)).toString()
   );
 
   await increaseTx.wait();
@@ -1205,8 +1221,8 @@ export const createNFTCollectionService = async ({
       signer
     );
     const contract = await newContract.deploy(
-      "MeoMeoMeo",
-      "MMM",
+      name,
+      name.slice(0, 2),
       "https://abc.com"
     );
 

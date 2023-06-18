@@ -34,7 +34,6 @@ const AdminManagement = ({
   mkpInfo,
   mkpInfoRefetch,
 }: IAdminManagementProps) => {
-  console.log("mkpInfo", mkpInfo);
   const web3Context = useContext(AppContext);
   const usersData = users.map((user: IUser) => {
     const isAdmin = !!user?.roles?.some(
@@ -127,7 +126,8 @@ const AdminManagement = ({
           severity={getSeverity(rowData.role)}
           style={{ width: "6rem", height: "2rem" }}
         />
-        {rowData.role !== ROLE_NAME.USER ? (
+        {rowData.role !== ROLE_NAME.USER &&
+        web3Context.state.web3.myAddress !== rowData.address ? (
           <Button
             rounded
             outlined
@@ -141,24 +141,28 @@ const AdminManagement = ({
         ) : (
           <></>
         )}
-        <Dropdown
-          value={selectedSetRole}
-          options={
-            rowData.role === ROLE_NAME.USER
-              ? rolesSetting.filter((role) => role.value !== 3)
-              : rowData.role === ROLE_NAME.MODERATOR
-              ? rolesSetting.filter((role) => role.value !== 2)
-              : []
-          }
-          optionLabel="label"
-          onChange={(e) => {
-            console.log(e.value);
-            setSelectedRole(e.value);
-            handleSetRole(rowData, e.value);
-          }}
-          placeholder="Set Role"
-          showClear
-        />
+        {web3Context.state.web3.myAddress !== rowData.address ? (
+          <Dropdown
+            value={selectedSetRole}
+            options={
+              rowData.role === ROLE_NAME.USER
+                ? rolesSetting.filter((role) => role.value !== 3)
+                : rowData.role === ROLE_NAME.MODERATOR
+                ? rolesSetting.filter((role) => role.value === 1)
+                : []
+            }
+            optionLabel="label"
+            onChange={(e) => {
+              console.log(e.value);
+              setSelectedRole(e.value);
+              handleSetRole(rowData, e.value);
+            }}
+            placeholder="Set Role"
+            showClear
+          />
+        ) : (
+          <></>
+        )}
       </div>
     );
   };
@@ -328,7 +332,6 @@ const AdminManagement = ({
   };
 
   const handleEditMkpInfo = async () => {
-    console.log("royalty", royalty);
     try {
       await editMkpInfo({
         chainId: web3Context.state.web3.chainId,
@@ -364,8 +367,7 @@ const AdminManagement = ({
       <div className="pt-5 flex gap-6">
         <div>
           <label htmlFor="royalty" className="font-bold block mb-2">
-            Current Exchange royalty: {mkpInfo.royalty} (
-            {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)})
+            Current Exchange Royalty: {mkpInfo.royalty}
           </label>
           <InputNumber
             inputId="royalty"
@@ -378,7 +380,6 @@ const AdminManagement = ({
             max={0.99999}
             showButtons
             step={0.01}
-            suffix={` ${CHAINID_CURRENCY.get(web3Context.state.web3.chainId)}`}
           />
           <Button
             icon="pi pi-save"
