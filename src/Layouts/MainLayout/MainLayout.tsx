@@ -20,7 +20,8 @@ const MainLayout = ({ children }: IMainLayoutProps) => {
 
   const { notification, refetch: notificationRefetch } = useNotificationByOwner(
     web3Context.state.web3.myAddress,
-    web3Context.state.web3.chainId
+    web3Context.state.web3.chainId,
+    web3Context.state.web3.authToken
   );
 
   const isBlock = !!user?.is_block;

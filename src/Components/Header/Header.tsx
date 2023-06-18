@@ -217,7 +217,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   ) => {
     setCartModalVisible(false);
     try {
-      if (!provider) {
+      if (!web3Context.state.web3.authToken) {
         web3Context.state.web3.toast.current &&
           web3Context.state.web3.toast.current.show({
             severity: "error",
@@ -305,6 +305,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
         eventName: notif.event_name,
         orderHash: notif.order_hash,
         chainId: web3Context.state.web3.chainId,
+        authToken: web3Context.state.web3.authToken,
       });
       notificationRefetch();
     } catch (error) {

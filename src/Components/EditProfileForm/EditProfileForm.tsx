@@ -70,6 +70,7 @@ const EditProfileForm = ({
         signature:
           "0x528c15b2906218f648a19ec8967303d45cb0ef4165dd0e0d83f95d09ba175db361e3f90e24d1d5854c",
         chainId: web3Context.state.web3.chainId,
+        authToken: web3Context.state.web3.authToken,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({

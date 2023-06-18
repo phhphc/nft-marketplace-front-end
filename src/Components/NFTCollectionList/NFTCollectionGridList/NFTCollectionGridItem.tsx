@@ -131,6 +131,7 @@ const NFTCollectionGridItem = ({
           web3Context.dispatch({ type: WEB3_ACTION_TYPES.REMOVE_LOADING });
         },
         chainId: web3Context.state.web3.chainId,
+        authToken: web3Context.state.web3.authToken,
       });
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
@@ -263,6 +264,7 @@ const NFTCollectionGridItem = ({
           identifier: item.identifier,
           isHidden: isHidden,
           chainId: web3Context.state.web3.chainId,
+          authToken: web3Context.state.web3.authToken,
         });
       });
       web3Context.state.web3.toast.current &&

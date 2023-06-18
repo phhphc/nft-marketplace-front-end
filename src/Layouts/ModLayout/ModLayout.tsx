@@ -16,7 +16,8 @@ const ModLayout = ({ children }: IModLayoutProps) => {
   const web3Context = useContext(AppContext);
   const { notification, refetch: notificationRefetch } = useNotificationByOwner(
     web3Context.state.web3.myAddress,
-    web3Context.state.web3.chainId
+    web3Context.state.web3.chainId,
+    web3Context.state.web3.authToken
   );
 
   const { user } = useUser(
