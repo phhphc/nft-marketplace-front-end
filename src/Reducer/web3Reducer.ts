@@ -40,18 +40,28 @@ const web3Reducer = (state: IWeb3, action: IWeb3Action) => {
         loading: false,
       };
     case WEB3_ACTION_TYPES.LOGIN:
-      localStorage.setItem("authToken", action.payload);
+      const authTokenObjLogin = JSON.parse(
+        localStorage.getItem("authTokenObj") || "{}"
+      );
+
+      authTokenObjLogin[action.payload.myAddress] = action.payload.authToken;
+      localStorage.setItem("authTokenObj", JSON.stringify(authTokenObjLogin));
       return {
         ...state,
-        authToken: JSON.stringify(action.payload),
+        authToken: action.payload.authToken,
       };
     case WEB3_ACTION_TYPES.LOGOUT:
-      localStorage.setItem("authToken", "");
+      const authTokenObjLogout = JSON.parse(
+        localStorage.getItem("authTokenObj") || "{}"
+      );
+
+      delete authTokenObjLogout[action.payload.myAddress];
+      localStorage.setItem("authTokenObj", JSON.stringify(authTokenObjLogout));
       return {
         ...state,
-
         authToken: "",
       };
+
     default:
       return state;
   }

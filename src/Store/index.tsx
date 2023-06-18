@@ -91,11 +91,20 @@ const AppProvider = ({ children }: IAppProvider) => {
 
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("shoppingCart") || "[]");
-    const authToken = localStorage.getItem("authToken") || "";
+    const authTokenObj = JSON.parse(
+      localStorage.getItem("authTokenObj") || "{}"
+    );
+    console.log(
+      "🚀 ~ file: index.tsx:97 ~ useEffect ~ authTokenObj:",
+      authTokenObj
+    );
 
     const fetchData = async () => {
       if (await !window.ethereum?._metamask?.isUnlocked()) {
-        dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
+        dispatch({
+          type: WEB3_ACTION_TYPES.LOGOUT,
+          payload: { myAddress: state.web3.myAddress },
+        });
       }
 
       dispatch({
@@ -103,7 +112,6 @@ const AppProvider = ({ children }: IAppProvider) => {
         payload: {
           toast,
           cart,
-          authToken,
           chainId: Number(window.ethereum.networkVersion),
         },
       });
@@ -118,6 +126,7 @@ const AppProvider = ({ children }: IAppProvider) => {
           provider,
           myAddress: await signer.getAddress(),
           myWallet: signer,
+          authToken: authTokenObj[await signer.getAddress()],
         },
       });
     };
@@ -138,7 +147,6 @@ const AppProvider = ({ children }: IAppProvider) => {
   useEffect(() => {
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", () => {
-        dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
         dispatch({
           type: WEB3_ACTION_TYPES.CHANGE,
           payload: {
