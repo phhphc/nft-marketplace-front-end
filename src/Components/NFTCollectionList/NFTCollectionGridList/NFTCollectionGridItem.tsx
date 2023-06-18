@@ -524,8 +524,7 @@ const NFTCollectionGridItem = ({
                       item[0].listings[0].order_hash,
                       1,
                       (
-                        Number(item[0].listings[0]?.start_price) *
-                          item.length || 0
+                        Number(item[0].listings[0]?.start_price)|| 0
                       ).toString()
                     );
                   }}

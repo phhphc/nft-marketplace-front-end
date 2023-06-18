@@ -27,9 +27,12 @@ const ModLayout = ({ children }: IModLayoutProps) => {
 
   if (!user) return <></>;
 
+  const isNotAdmin = !!user?.roles?.every(
+    (item: any) => item.name !== ROLE_NAME.ADMIN
+  );
+
   const isMod = !!user?.roles?.some(
-    (item: any) =>
-      item.name === ROLE_NAME.ADMIN || item.name === ROLE_NAME.MODERATOR
+    (item: any) => item.name === ROLE_NAME.MODERATOR
   );
 
   const isBlock = !!user?.is_block;
@@ -42,7 +45,7 @@ const ModLayout = ({ children }: IModLayoutProps) => {
 
   return (
     <div>
-      {isMod ? (
+      {isMod && isNotAdmin ? (
         <div>
           {!!web3Context.state.web3.chainId && (
             <>

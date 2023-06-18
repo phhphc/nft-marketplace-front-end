@@ -59,8 +59,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   );
 
   const isMod = !!user?.roles?.some(
-    (item: any) =>
-      item.name === ROLE_NAME.ADMIN || item.name === ROLE_NAME.MODERATOR
+    (item: any) => item.name === ROLE_NAME.MODERATOR
   );
 
   const isAdmin = !!user?.roles?.some(
@@ -449,7 +448,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
               </Link>
             </span>
           )}
-          {web3Context.state.web3.authToken && isMod && (
+          {web3Context.state.web3.authToken && isMod && !isAdmin && (
             <Link href="/mod">
               <Button
                 label="Moderator Dashboard"
