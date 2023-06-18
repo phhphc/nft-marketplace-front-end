@@ -74,6 +74,10 @@ module.exports = () => {
         source: "/api/v0.1/user",
         destination: `${process.env.BACKEND_SEPOLIA_URL}/user`,
       },
+      {
+        source: "/api/v0.1/settings",
+        destination: `${process.env.BACKEND_SEPOLIA_URL}/settings`,
+      },
 
       {
         source: "/api/v0.2/nft",
@@ -146,6 +150,10 @@ module.exports = () => {
       {
         source: "/api/v0.2/user",
         destination: `${process.env.BACKEND_MUMBAI_URL}/user`,
+      },
+      {
+        source: "/api/v0.2/settings",
+        destination: `${process.env.BACKEND_MUMBAI_URL}/settings`,
       },
     ];
   };

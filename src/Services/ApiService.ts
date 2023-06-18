@@ -49,6 +49,7 @@ interface ISellNFTProps {
   startDate: Date | null;
   endDate: Date | null;
   chainId: number;
+  authToken: string;
 }
 
 interface IMakeOfferProps {
@@ -61,6 +62,7 @@ interface IMakeOfferProps {
   startDate: Date | null;
   endDate: Date | null;
   chainId: number;
+  authToken: string;
 }
 
 interface IGetOfferListProps {
@@ -145,6 +147,7 @@ interface ISaveProfileProps {
   address: string;
   signature: string;
   chainId: number;
+  authToken: string;
 }
 
 interface IIsApprovedForAllProps {
@@ -170,12 +173,14 @@ interface IHideNFTProps {
   identifier: string;
   isHidden: boolean;
   chainId: number;
+  authToken: string;
 }
 
 interface ISetViewdNotifProps {
   eventName: string;
   orderHash: string;
   chainId: number;
+  authToken: string;
 }
 
 interface IGetSaleEventByAddrMthYrProps {
@@ -260,6 +265,17 @@ interface IDeleteRoleProps {
   authToken: string;
   roleId: number;
   address: string;
+}
+
+interface IEditMkpInfoProps {
+  chainId: number;
+  authToken: string;
+  royalty: number;
+  beneficiary: string;
+}
+
+interface IGetMkpInfoProps {
+  chainId: number;
 }
 
 export const getNFTCollectionListService = async (
@@ -355,6 +371,7 @@ export const makeOffer = async ({
   startDate,
   endDate,
   chainId,
+  authToken,
 }: IMakeOfferProps) => {
   const erc20Address = ERC20_ADDRESS.get(chainId)!;
   const version = BACKEND_URL_VERSION.get(chainId)!;
@@ -365,15 +382,31 @@ export const makeOffer = async ({
 
   const erc20ContractWithSigner = erc20Contract.connect(myWallet);
 
+  let mkpInfo;
+
+  try {
+    const res = await getMkpInfo({ chainId });
+    mkpInfo = res;
+  } catch (err) {
+    mkpInfo = {
+      id: 1,
+      marketplace: mkpAddress,
+      beneficiary: mkpMoneyAddress,
+      royalty: 0.01,
+    };
+  }
+
   const buyTx = await erc20ContractWithSigner.buy({
-    value: parseEther(toFixed(Number(price) * 1.01).toString()),
+    value: parseEther(
+      toFixed(Number(price) * (1 + mkpInfo.royalty)).toString()
+    ),
   });
 
   await buyTx.wait();
 
   const increaseTx = await erc20ContractWithSigner.increaseAllowance(
     mkpAddress,
-    parseEther(toFixed(Number(price) * 1.01).toString())
+    parseEther(toFixed(Number(price) * (1 + mkpInfo.royalty)).toString())
   );
 
   await increaseTx.wait();
@@ -385,8 +418,8 @@ export const makeOffer = async ({
   const offer = [
     getTestItem20(
       0,
-      parseEther(toFixed(Number(price) * 1.01).toString()),
-      parseEther(toFixed(Number(price) * 1.01).toString()),
+      parseEther(toFixed(Number(price) * (1 + mkpInfo.royalty)).toString()),
+      parseEther(toFixed(Number(price) * (1 + mkpInfo.royalty)).toString()),
       undefined,
       erc20Address
     ),
@@ -396,9 +429,9 @@ export const makeOffer = async ({
     getTestItem721(item.identifier, 1, 1, myAddress, item.token),
     getTestItem20(
       0,
-      parseEther(toFixed(Number(price) * 0.01).toString()),
-      parseEther(toFixed(Number(price) * 0.01).toString()),
-      mkpMoneyAddress,
+      parseEther(toFixed(Number(price) * mkpInfo.royalty).toString()),
+      parseEther(toFixed(Number(price) * mkpInfo.royalty).toString()),
+      mkpInfo.beneficiary,
       erc20Address
     ),
   ];
@@ -442,7 +475,13 @@ export const makeOffer = async ({
       endTime,
       salt: orderComponents.salt,
       counter: orderComponents.counter,
-    })
+    }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    }
   );
 };
 
@@ -481,6 +520,7 @@ export const sellNFT = async ({
   startDate,
   endDate,
   chainId,
+  authToken,
 }: ISellNFTProps) => {
   const erc721Address = item[0].token;
   const version = BACKEND_URL_VERSION.get(chainId)!;
@@ -531,27 +571,41 @@ export const sellNFT = async ({
 
   const mkpContractWithSigner = mkpContract.connect(myWallet);
 
+  let mkpInfo;
+
+  try {
+    const res = await getMkpInfo({ chainId });
+    mkpInfo = res;
+  } catch (err) {
+    mkpInfo = {
+      id: 1,
+      marketplace: mkpAddress,
+      beneficiary: mkpMoneyAddress,
+      royalty: 0.01,
+    };
+  }
+
   const offer = item.map((nft) =>
     getTestItem721(nft.identifier, 1, 1, undefined, nft.token)
   );
   const consideration = [
     getItemETH(
       unit == CURRENCY.ETHER || unit == CURRENCY.MATIC
-        ? parseEther(toFixed(Number(price) * 0.99).toString())
-        : parseGwei(toFixed(Number(price) * 0.99).toString()),
+        ? parseEther(toFixed(Number(price) * (1 - mkpInfo.royalty)).toString())
+        : parseGwei(toFixed(Number(price) * (1 - mkpInfo.royalty)).toString()),
       unit == CURRENCY.ETHER || unit == CURRENCY.MATIC
-        ? parseEther(toFixed(Number(price) * 0.99).toString())
-        : parseGwei(toFixed(Number(price) * 0.99).toString()),
+        ? parseEther(toFixed(Number(price) * (1 - mkpInfo.royalty)).toString())
+        : parseGwei(toFixed(Number(price) * (1 - mkpInfo.royalty)).toString()),
       myAddress
     ),
     getItemETH(
       unit == CURRENCY.ETHER || unit == CURRENCY.MATIC
-        ? parseEther(toFixed(Number(price) * 0.01).toString())
-        : parseGwei(toFixed(Number(price) * 0.01).toString()),
+        ? parseEther(toFixed(Number(price) * mkpInfo.royalty).toString())
+        : parseGwei(toFixed(Number(price) * mkpInfo.royalty).toString()),
       unit == CURRENCY.ETHER || unit == CURRENCY.MATIC
-        ? parseEther(toFixed(Number(price) * 0.01).toString())
-        : parseGwei(toFixed(Number(price) * 0.01).toString()),
-      mkpMoneyAddress
+        ? parseEther(toFixed(Number(price) * mkpInfo.royalty).toString())
+        : parseGwei(toFixed(Number(price) * mkpInfo.royalty).toString()),
+      mkpInfo.beneficiary
     ),
   ];
 
@@ -594,7 +648,13 @@ export const sellNFT = async ({
       endTime,
       salt: orderComponents.salt,
       counter: orderComponents.counter,
-    })
+    }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    }
   );
 };
 
@@ -1241,46 +1301,52 @@ export const saveProfileService = async ({
   address,
   signature,
   chainId,
+  authToken,
 }: ISaveProfileProps) => {
-  const version = BACKEND_URL_VERSION.get(chainId)!;
-  const metadata: { [k: string]: string } = {};
+  try {
+    const version = BACKEND_URL_VERSION.get(chainId)!;
+    const metadata: { [k: string]: string } = {};
 
-  if (bio) {
-    metadata.bio = bio;
+    if (bio) {
+      metadata.bio = bio;
+    }
+    if (email) {
+      metadata.email = email;
+    }
+
+    if (profileImage) {
+      typeof profileImage === "string"
+        ? (metadata.image_url = profileImage)
+        : (metadata.image_url =
+            "https://gateway.pinata.cloud/ipfs/" +
+            (await handleUploadImageToPinata(profileImage)));
+    }
+
+    if (profileBanner) {
+      typeof profileBanner === "string"
+        ? (metadata.banner_url = profileBanner)
+        : (metadata.banner_url =
+            "https://gateway.pinata.cloud/ipfs/" +
+            (await handleUploadImageToPinata(profileBanner)));
+    }
+
+    const params = JSON.stringify({
+      username: username,
+      address: address,
+      signature:
+        "0x528c15b2906218f648a19ec8967303d45cb0ef4165dd0e0d83f95d09ba175db361e3f90e24d1d5854c",
+      metadata: metadata,
+    });
+
+    await axios.post(`api/${version}/profile`, params, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+  } catch (err) {
+    console.log(err);
   }
-  if (email) {
-    metadata.email = email;
-  }
-
-  if (profileImage) {
-    typeof profileImage === "string"
-      ? (metadata.image_url = profileImage)
-      : (metadata.image_url =
-          "https://gateway.pinata.cloud/ipfs/" +
-          (await handleUploadImageToPinata(profileImage)));
-  }
-
-  if (profileBanner) {
-    typeof profileBanner === "string"
-      ? (metadata.banner_url = profileBanner)
-      : (metadata.banner_url =
-          "https://gateway.pinata.cloud/ipfs/" +
-          (await handleUploadImageToPinata(profileBanner)));
-  }
-
-  const params = JSON.stringify({
-    username: username,
-    address: address,
-    signature:
-      "0x528c15b2906218f648a19ec8967303d45cb0ef4165dd0e0d83f95d09ba175db361e3f90e24d1d5854c",
-    metadata: metadata,
-  });
-
-  await axios.post(`api/${version}/profile`, params, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
 };
 
 export const getProfileService = async (
@@ -1345,6 +1411,7 @@ export const hideNFTService = async ({
   identifier,
   isHidden,
   chainId,
+  authToken,
 }: IHideNFTProps) => {
   const version = BACKEND_URL_VERSION.get(chainId)!;
   const params = JSON.stringify({
@@ -1354,19 +1421,26 @@ export const hideNFTService = async ({
   await axios.patch(`/api/${version}/nft/${token}/${identifier}`, params, {
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
     },
   });
 };
 
 export const getNotificationByOwnerService = async (
   owner: string,
-  chainId: number
+  chainId: number,
+  authToken: string
 ): Promise<INotification[]> => {
   if (!chainId) return [];
   const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
     .get(`/api/${version}/notification`, {
       params: { address: owner },
+
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
     })
     .then((response) => {
       const res = response.data.data.notifications.sort(
@@ -1383,6 +1457,7 @@ export const setViewedNotifService = async ({
   eventName,
   orderHash,
   chainId,
+  authToken,
 }: ISetViewdNotifProps) => {
   const version = BACKEND_URL_VERSION.get(chainId)!;
   const params = JSON.stringify({
@@ -1393,6 +1468,7 @@ export const setViewedNotifService = async ({
   await axios.post(`/api/${version}/notification`, params, {
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
     },
   });
 };
@@ -1727,4 +1803,49 @@ export const deleteRole = async ({
       role_id: roleId,
     },
   });
+};
+
+export const getMkpInfo = async ({ chainId }: IGetMkpInfoProps) => {
+  if (!chainId) return null;
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+  const mkpAddress = MKP_ADDRESS.get(chainId)!;
+
+  const res = await axios.get(
+    `/api/${version}/settings?marketplace=${mkpAddress}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return res.data.data;
+};
+
+export const editMkpInfo = async ({
+  chainId,
+  beneficiary,
+  royalty,
+  authToken,
+}: IEditMkpInfoProps) => {
+  if (!chainId) return null;
+  const version = BACKEND_URL_VERSION.get(chainId)!;
+  const mkpAddress = MKP_ADDRESS.get(chainId)!;
+
+  const res = await axios.post(
+    `/api/${version}/settings`,
+    {
+      marketplace: mkpAddress,
+      beneficiary,
+      royalty,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    }
+  );
+
+  return res.data.data;
 };
