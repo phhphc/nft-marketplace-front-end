@@ -94,6 +94,15 @@ const AdminManagement = ({
     return <div>{column.rowIndex + 1}</div>;
   };
 
+  const addressBodyTemplate = (rowData: IUser) => {
+    return (
+      <div>
+        {rowData.address}{" "}
+        {web3Context.state.web3.myAddress === rowData.address ? "(You)" : ""}
+      </div>
+    );
+  };
+
   const [roles] = useState([
     ROLE_NAME.ADMIN,
     ROLE_NAME.MODERATOR,
@@ -120,7 +129,7 @@ const AdminManagement = ({
   const roleBodyTemplate = (rowData: IUser) => {
     const [selectedSetRole, setSelectedRole] = useState(null);
     return (
-      <div className="flex justify-between items-center">
+      <div className="flex gap-20 items-center">
         <Tag
           value={rowData.role.toUpperCase()}
           severity={getSeverity(rowData.role)}
@@ -141,7 +150,8 @@ const AdminManagement = ({
         ) : (
           <></>
         )}
-        {web3Context.state.web3.myAddress !== rowData.address ? (
+        {web3Context.state.web3.myAddress !== rowData.address &&
+        rowData.role !== ROLE_NAME.ADMIN ? (
           <Dropdown
             value={selectedSetRole}
             options={
@@ -425,7 +435,7 @@ const AdminManagement = ({
           showGridlines
           rowHover={true}
         >
-          <Column field="" header="No. " body={noBodyTemplate} className="" />
+          <Column field="" header="No. " body={noBodyTemplate} />
           <Column
             field="address"
             header="Address"
@@ -433,6 +443,7 @@ const AdminManagement = ({
             filterPlaceholder="Search by address"
             sortable
             className="w-1/3"
+            body={addressBodyTemplate}
           />
           <Column
             field="role"

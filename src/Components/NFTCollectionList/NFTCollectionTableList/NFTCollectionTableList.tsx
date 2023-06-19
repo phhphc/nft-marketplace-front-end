@@ -40,7 +40,6 @@ const NFTCollectionTableList = ({
   refetch,
   hideSellBundle = false,
 }: INFTCollectionTableListProps) => {
-  console.log("nftCollectionList", nftCollectionList);
   const web3Context = useContext(AppContext);
   const [visible, setVisible] = useState(false);
   const [visibleBundle, setVisibleBundle] = useState(false);
@@ -48,7 +47,7 @@ const NFTCollectionTableList = ({
   const [selectedUnit, setSelectedUnit] = useState<string>("ETH");
   const [selectedNFTs, setSelectedNFTs] = useState<INFTCollectionItem[][]>([]);
   const [dialogMakeOffer, setDialogMakeOffer] = useState(false);
-  const [checked, setChecked] = useState(false);
+  // const [checked, setChecked] = useState(false);
   const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
   const [durationDate, setDurationDate] = useState<Date | Date[] | null>(null);
   const router = useRouter();
@@ -293,7 +292,6 @@ const NFTCollectionTableList = ({
   };
 
   const onClickItemSellBundle = (event: any) => {
-    setChecked(event.checked);
     if (event.checked) {
       web3Context.dispatch({
         type: WEB3_ACTION_TYPES.ADD_BUNDLE,
@@ -389,6 +387,7 @@ const NFTCollectionTableList = ({
   };
 
   const actionBodyTemplate = (rowData: INFTCollectionItem[]) => {
+    const [checked, setChecked] = useState(false);
     if (canBuy(rowData)) {
       return (
         <div className="flex gap-3">
@@ -620,10 +619,12 @@ const NFTCollectionTableList = ({
               )}
             </Dialog>
           </div>
-          {/* {!hideSellBundle && (
+          {!hideSellBundle && !canResell(rowData) && (
             <div>
               <Checkbox
-                onChange={onClickItemSellBundle}
+                onChange={(e: any) => {
+                  setChecked(e.checked), onClickItemSellBundle(e);
+                }}
                 checked={checked}
                 value={rowData[0]}
                 className="bundle"
@@ -631,7 +632,16 @@ const NFTCollectionTableList = ({
               ></Checkbox>
               <Tooltip target=".bundle" />
             </div>
-          )} */}
+          )}
+          {canResell(rowData) && (
+            <Tag
+              severity="warning"
+              value="Cancel sell"
+              onClick={() => handleCancelOrder(rowData)}
+              className="cursor-pointer text-base hover:bg-yellow-700"
+              style={{ width: "6rem" }}
+            ></Tag>
+          )}
         </div>
       );
     } else if (canMakeOffer(rowData)) {
@@ -742,21 +752,12 @@ const NFTCollectionTableList = ({
           </Dialog>
         </div>
       );
-    } else if (isSelling(rowData)) {
-      return (
-        <Tag
-          severity="warning"
-          value="Cancel sell"
-          onClick={() => handleCancelOrder(rowData)}
-          className="cursor-pointer text-base hover:bg-yellow-700"
-          style={{ width: "6rem" }}
-        ></Tag>
-      );
     }
     return "";
   };
 
   const handleSellBundle = async () => {
+    setVisibleBundle(false);
     try {
       if (!web3Context.state.web3.authToken) {
         web3Context.state.web3.toast.current &&
@@ -801,6 +802,7 @@ const NFTCollectionTableList = ({
           detail: "Sell bundle NFT successfully!",
           life: 5000,
         });
+      web3Context.state.web3.listItemsSellBundle = [];
       refetch();
       setVisible(false);
     } catch (error) {
