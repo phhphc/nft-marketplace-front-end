@@ -303,6 +303,16 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
 
   const setViewedNotification = async (notif: INotification) => {
     try {
+      if (!web3Context.state.web3.authToken) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await setViewedNotifService({
         eventName: notif.event_name,
         orderHash: notif.order_hash,

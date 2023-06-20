@@ -60,6 +60,16 @@ const CreateCollection = () => {
 
   const onSubmit = async (data: IFormCollectionInput) => {
     try {
+      if (!web3Context.state.web3.authToken) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       setIsSubmit(true);
       await createNFTCollectionService({
         ...data,
