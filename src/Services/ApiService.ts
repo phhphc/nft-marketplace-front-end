@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { erc721Abi } from "@Constants/erc721Abi";
 import { erc20Abi } from "@Constants/erc20Abi";
 import { mkpAbi } from "@Constants/mkpAbi";
@@ -398,17 +398,23 @@ export const makeOffer = async ({
     };
   }
 
-  const buyTx = await erc20ContractWithSigner.buy({
-    value: parseEther(
-      toFixed(Number(price) * (1 + mkpInfo.royalty)).toString()
-    ),
-  });
+  const currentErc = await erc20ContractWithSigner.balanceOf(myAddress);
 
-  await buyTx.wait();
+  const erc20ToBuy = parseEther(
+    toFixed(Number(price) * (1 + mkpInfo.royalty)).toString()
+  );
+
+  if (currentErc.lt(erc20ToBuy)) {
+    const buyTx = await erc20ContractWithSigner.buy({
+      value: erc20ToBuy.sub(currentErc),
+    });
+
+    await buyTx.wait();
+  }
 
   const increaseTx = await erc20ContractWithSigner.increaseAllowance(
     mkpAddress,
-    parseEther(toFixed(Number(price) * (1 + mkpInfo.royalty)).toString())
+    erc20ToBuy
   );
 
   await increaseTx.wait();
@@ -734,15 +740,23 @@ export const fulfillMakeOffer = async ({
     };
   }
 
-  const buyTx = await erc20ContractWithSigner.buy({
-    value: Math.round(Number(price) / (100 + mkpInfo.royalty * 100)).toString(),
-  });
+  const currentErc = await erc20ContractWithSigner.balanceOf(myAddress);
 
-  await buyTx.wait();
+  const erc20ToBuy = BigNumber.from(
+    Math.round(Number(price) / (100 + mkpInfo.royalty * 100)).toString()
+  );
+
+  if (currentErc.lt(erc20ToBuy)) {
+    const buyTx = await erc20ContractWithSigner.buy({
+      value: erc20ToBuy.sub(erc20ToBuy),
+    });
+
+    await buyTx.wait();
+  }
 
   const increaseTx = await erc20ContractWithSigner.increaseAllowance(
     mkpAddress,
-    Math.round(Number(price) / (100 + mkpInfo.royalty * 100)).toString()
+    erc20ToBuy
   );
 
   await increaseTx.wait();

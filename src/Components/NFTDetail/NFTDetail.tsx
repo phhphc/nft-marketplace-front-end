@@ -274,6 +274,10 @@ const NFTDetail = ({
       refetch();
       nftActivityRefetch();
     } catch (error) {
+      console.log(
+        "🚀 ~ file: NFTDetail.tsx:277 ~ handleMakeOffer ~ error:",
+        error
+      );
       web3Context.state.web3.toast.current &&
         web3Context.state.web3.toast.current.show({
           severity: "error",
