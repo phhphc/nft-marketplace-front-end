@@ -635,7 +635,7 @@ const NFTCollectionGridItem = ({
                     })}
                   </div>
                 </div>
-                {selectedDuration.key !== DURATION_NAME.NONE && (
+                {(
                   <Calendar
                     dateFormat="dd/mm/yy"
                     minDate={new Date()}

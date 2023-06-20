@@ -787,7 +787,7 @@ const NFTDetail = ({
                           })}
                         </div>
                       </div>
-                      {selectedDuration.key !== DURATION_NAME.NONE && (
+                      {
                         <Calendar
                           dateFormat="dd/mm/yy"
                           minDate={new Date()}
@@ -815,7 +815,7 @@ const NFTDetail = ({
                           showButtonBar
                           hideOnDateTimeSelect
                         />
-                      )}
+                      }
                     </Dialog>
                   </div>
                 )}
