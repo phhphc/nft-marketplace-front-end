@@ -4,7 +4,11 @@ import { useContext, useEffect, useState } from "react";
 import { MultiSelect } from "primereact/multiselect";
 import { INFTActivity, INFTEvent } from "@Interfaces/index";
 import { showingPrice } from "@Utils/index";
-import { CHAINID_CURRENCY_UNITS, NFT_EVENT_NAME } from "@Constants/index";
+import {
+  CHAINID_CURRENCY_UNITS,
+  CHAIN_ID,
+  NFT_EVENT_NAME,
+} from "@Constants/index";
 import { AppContext } from "@Store/index";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -125,9 +129,29 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
     );
   };
   const timeBodyTemplate = (rowData: INFTActivity) => {
-    return moment(rowData.date).startOf("minute").fromNow();
+    return (
+      <a
+        href={
+          rowData.tx_hash &&
+          (web3Context.state.web3.chainId === CHAIN_ID.SEPOLIA
+            ? `https://sepolia.etherscan.io/tx/${rowData.tx_hash}`
+            : `https://mumbai.polygonscan.com/tx/${rowData.tx_hash}`)
+        }
+        target="_blank"
+        className={rowData.tx_hash && "text-blue-500"}
+      >
+        {moment(rowData.date).startOf("minute").fromNow()}
+        {rowData.tx_hash && (
+          <i
+            className="text-blue-500 pi pi-window-maximize pl-2 cursor-pointer"
+            style={{ fontSize: "1rem" }}
+          ></i>
+        )}
+      </a>
+    );
   };
   const viewingEtherscanBodyTemplate = (rowData: INFTActivity) => {
+    console.log("rowData", rowData);
     return rowData.link ? (
       <a href={rowData.link} target="_blank">
         <i
@@ -192,11 +216,11 @@ const NFTActivity = ({ nftActivity }: INFTActivityProps) => {
           body={timeBodyTemplate}
           sortable
         ></Column>
-        <Column
+        {/* <Column
           field="link"
           header="View on Etherscan"
           body={viewingEtherscanBodyTemplate}
-        ></Column>
+        ></Column> */}
       </DataTable>
     </div>
   );

@@ -167,7 +167,7 @@ const AdminManagement = ({
               setSelectedRole(e.value);
               handleSetRole(rowData, e.value);
             }}
-            placeholder="Set Role"
+            placeholder="Add Role"
             showClear
           />
         ) : (
@@ -434,6 +434,7 @@ const AdminManagement = ({
           stripedRows
           showGridlines
           rowHover={true}
+          resizableColumns
         >
           <Column field="" header="No. " body={noBodyTemplate} />
           <Column
