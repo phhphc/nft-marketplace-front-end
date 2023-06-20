@@ -220,12 +220,12 @@ const NFTInfor = ({
           Items{" "}
           <span className="font-semibold pr-1">{nftCollectionList.length}</span>
         </div>
-        <div className="pl-1">
+        {/* <div className="pl-1">
           Total Volume{" "}
           <span className="font-semibold pr-1">
             {totalVolume} {CHAINID_CURRENCY.get(web3Context.state.web3.chainId)}
           </span>
-        </div>
+        </div> */}
         <div className="pl-1">
           Floor Price
           <span className="font-semibold pr-1 pl-1">
@@ -256,12 +256,12 @@ const NFTInfor = ({
           Owner
           <span className="font-semibold pr-1 pl-1">{ownerCount}</span>
         </div>
-        <div className="pl-1">
+        {/* <div className="pl-1">
           Unique Owner
           <span className="font-semibold pr-1 pl-1">
             {Number.isNaN(uniqueOwner) ? 0 : uniqueOwner}%
           </span>
-        </div>
+        </div> */}
       </div>
       <div className="pt-3">
         <p
