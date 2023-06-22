@@ -21,6 +21,7 @@ import {
   CURRENCY,
   ERC20_ADDRESS,
   MKP_ADDRESS,
+  SUPPORTED_NETWORK,
 } from "@Constants/index";
 import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
 import {
@@ -1450,7 +1451,8 @@ export const getNotificationByOwnerService = async (
   chainId: number,
   authToken: string
 ): Promise<INotification[]> => {
-  if (!chainId) return [];
+  if (!SUPPORTED_NETWORK.includes(chainId) || !owner) return [];
+  console.log("🚀 ~ file: ApiService.ts:1468 ~ chainId:", chainId);
   const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
     .get(`/api/${version}/notification`, {
@@ -1716,7 +1718,7 @@ export const signEIP191 = async ({
 };
 
 export const getUser = async ({ address, chainId }: IGetUserProps) => {
-  if (!chainId) return null;
+  if (!SUPPORTED_NETWORK.includes(chainId) || !address) return null;
   const version = BACKEND_URL_VERSION.get(chainId)!;
 
   const res = await axios.get(`/api/${version}/user/${address}`, {
@@ -1729,7 +1731,7 @@ export const getUser = async ({ address, chainId }: IGetUserProps) => {
 };
 
 export const getAllUsers = async ({ chainId }: IGetAllUsersProps) => {
-  if (!chainId) return [];
+  if (!SUPPORTED_NETWORK.includes(chainId)) return [];
   const version = BACKEND_URL_VERSION.get(chainId)!;
 
   const res = await axios.get(`/api/${version}/user?offset=0&limit=100`, {
@@ -1825,7 +1827,7 @@ export const deleteRole = async ({
 };
 
 export const getMkpInfo = async ({ chainId }: IGetMkpInfoProps) => {
-  if (!chainId) return null;
+  if (!SUPPORTED_NETWORK.includes(chainId)) return null;
   const version = BACKEND_URL_VERSION.get(chainId)!;
   const mkpAddress = MKP_ADDRESS.get(chainId)!;
 
@@ -1847,7 +1849,12 @@ export const editMkpInfo = async ({
   royalty,
   authToken,
 }: IEditMkpInfoProps) => {
+<<<<<<< Updated upstream
   if (!chainId) return null;
+=======
+  console.log("🚀 ~ file: ApiService.ts:1850 ~ authToken:", authToken);
+  if (!SUPPORTED_NETWORK.includes(chainId)) return null;
+>>>>>>> Stashed changes
   const version = BACKEND_URL_VERSION.get(chainId)!;
   const mkpAddress = MKP_ADDRESS.get(chainId)!;
 
