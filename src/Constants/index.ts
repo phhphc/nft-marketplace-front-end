@@ -209,12 +209,12 @@ export enum NOTIFICATION_INFO {
   OFFER_EXPIRED = "offer_expired",
 }
 
-export const SUPPORTED_NETWORK = [11155111];
-
 export const CHAIN_ID = {
   SEPOLIA: 11155111,
   MUMBAI: 80001,
 };
+
+export const SUPPORTED_NETWORK = Object.values(CHAIN_ID);
 
 export const MKP_ADDRESS = new Map<number, string>([
   [CHAIN_ID.SEPOLIA, process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!],
