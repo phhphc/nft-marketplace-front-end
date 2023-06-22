@@ -1849,12 +1849,8 @@ export const editMkpInfo = async ({
   royalty,
   authToken,
 }: IEditMkpInfoProps) => {
-<<<<<<< Updated upstream
-  if (!chainId) return null;
-=======
   console.log("🚀 ~ file: ApiService.ts:1850 ~ authToken:", authToken);
   if (!SUPPORTED_NETWORK.includes(chainId)) return null;
->>>>>>> Stashed changes
   const version = BACKEND_URL_VERSION.get(chainId)!;
   const mkpAddress = MKP_ADDRESS.get(chainId)!;
 
