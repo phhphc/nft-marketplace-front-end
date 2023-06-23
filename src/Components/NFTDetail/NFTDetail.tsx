@@ -527,7 +527,7 @@ const NFTDetail = ({
                                 (
                                   Number(
                                     nftDetail[0].listings[0]?.start_price
-                                  ) * nftDetail.length || 0
+                                  ) || 0
                                 ).toString()
                               );
                             }}
@@ -787,7 +787,7 @@ const NFTDetail = ({
                           })}
                         </div>
                       </div>
-                      {selectedDuration.key !== DURATION_NAME.NONE && (
+                      {
                         <Calendar
                           dateFormat="dd/mm/yy"
                           minDate={new Date()}
@@ -815,7 +815,7 @@ const NFTDetail = ({
                           showButtonBar
                           hideOnDateTimeSelect
                         />
-                      )}
+                      }
                     </Dialog>
                   </div>
                 )}

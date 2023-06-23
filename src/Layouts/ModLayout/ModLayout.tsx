@@ -14,6 +14,18 @@ export interface IModLayoutProps {
 
 const ModLayout = ({ children }: IModLayoutProps) => {
   const web3Context = useContext(AppContext);
+
+  if (!SUPPORTED_NETWORK.includes(web3Context.state.web3.chainId)) {
+    return (
+      <div className="mt-24 min-h-screen">
+        <Message
+          severity="warn"
+          text="You must to connect to Sepolia or Mumbai test network!"
+          className="flex h-40"
+        />
+      </div>
+    );
+  }
   const { notification, refetch: notificationRefetch } = useNotificationByOwner(
     web3Context.state.web3.myAddress,
     web3Context.state.web3.chainId,
@@ -27,19 +39,25 @@ const ModLayout = ({ children }: IModLayoutProps) => {
 
   if (!user) return <></>;
 
+  const isNotAdmin = !!user?.roles?.every(
+    (item: any) => item.name !== ROLE_NAME.ADMIN
+  );
+
   const isMod = !!user?.roles?.some(
-    (item: any) =>
-      item.name === ROLE_NAME.ADMIN || item.name === ROLE_NAME.MODERATOR
+    (item: any) => item.name === ROLE_NAME.MODERATOR
   );
 
   const isBlock = !!user?.is_block;
 
   if (isBlock && web3Context.state.web3.authToken)
-    web3Context.dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
+    web3Context.dispatch({
+      type: WEB3_ACTION_TYPES.LOGOUT,
+      payload: { myAddress: web3Context.state.web3.myAddress },
+    });
 
   return (
     <div>
-      {isMod ? (
+      {isMod && isNotAdmin ? (
         <div>
           {!!web3Context.state.web3.chainId && (
             <>

@@ -258,6 +258,16 @@ const NFTCollectionGridItem = ({
 
   const hideNFT = async (items: INFTCollectionItem[], isHidden: boolean) => {
     try {
+      if (!web3Context.state.web3.authToken) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await items.map((item: INFTCollectionItem) => {
         hideNFTService({
           token: item.token,
@@ -523,10 +533,7 @@ const NFTCollectionGridItem = ({
                       web3Context,
                       item[0].listings[0].order_hash,
                       1,
-                      (
-                        Number(item[0].listings[0]?.start_price) *
-                          item.length || 0
-                      ).toString()
+                      (Number(item[0].listings[0]?.start_price) || 0).toString()
                     );
                   }}
                 >
@@ -628,7 +635,7 @@ const NFTCollectionGridItem = ({
                     })}
                   </div>
                 </div>
-                {selectedDuration.key !== DURATION_NAME.NONE && (
+                {(
                   <Calendar
                     dateFormat="dd/mm/yy"
                     minDate={new Date()}

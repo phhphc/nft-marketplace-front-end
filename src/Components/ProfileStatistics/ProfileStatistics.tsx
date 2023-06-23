@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { AppContext } from "@Store/index";
 import moment from "moment";
+import { CHAIN_ID } from "@Constants/index";
 
 interface IStatisticPerDay {
   count: number;
@@ -149,7 +150,11 @@ const ProfileStatistics = ({
 
               return [
                 label,
-                "Avg. price: " + avgPrice + " ETH",
+                "Avg. price: " +
+                  avgPrice +
+                  (web3Context.state.web3.chainId === CHAIN_ID.SEPOLIA
+                    ? ` ETH`
+                    : ` MATIC`),
                 "Num. times: " + count,
               ];
             },

@@ -21,6 +21,7 @@ import {
   CURRENCY,
   ERC20_ADDRESS,
   MKP_ADDRESS,
+  SUPPORTED_NETWORK,
 } from "@Constants/index";
 import { parseGwei, toBN, transformDataRequestToBuyNFT } from "@Utils/index";
 import {
@@ -136,6 +137,7 @@ interface ICreateCollectionProps {
   blockchain: string;
   owner: string;
   chainId: number;
+  authToken: string;
 }
 
 interface ISaveProfileProps {
@@ -716,15 +718,31 @@ export const fulfillMakeOffer = async ({
 
   const mkpContractWithSigner = mkpContract.connect(myWallet);
 
+  const mkpMoneyAddress = process.env.NEXT_PUBLIC_MKP_MONEY_ADDRESS!;
+
+  let mkpInfo;
+
+  try {
+    const res = await getMkpInfo({ chainId });
+    mkpInfo = res;
+  } catch (err) {
+    mkpInfo = {
+      id: 1,
+      marketplace: mkpAddress,
+      beneficiary: mkpMoneyAddress,
+      royalty: 0.01,
+    };
+  }
+
   const buyTx = await erc20ContractWithSigner.buy({
-    value: (Number(price) / 101).toString(),
+    value: Math.round(Number(price) / (100 + mkpInfo.royalty * 100)).toString(),
   });
 
   await buyTx.wait();
 
   const increaseTx = await erc20ContractWithSigner.increaseAllowance(
     mkpAddress,
-    (Number(price) / 101).toString()
+    Math.round(Number(price) / (100 + mkpInfo.royalty * 100)).toString()
   );
 
   await increaseTx.wait();
@@ -1153,6 +1171,7 @@ export const createNFTCollectionService = async ({
   // url,
   description,
   chainId,
+  authToken,
 }: ICreateCollectionProps) => {
   const version = BACKEND_URL_VERSION.get(chainId)!;
   // const featuredImageCid = await handleUploadImageToPinata(featuredImage);
@@ -1203,8 +1222,8 @@ export const createNFTCollectionService = async ({
       signer
     );
     const contract = await newContract.deploy(
-      "MeoMeoMeo",
-      "MMM",
+      name,
+      name.slice(0, 2),
       "https://abc.com"
     );
 
@@ -1232,6 +1251,7 @@ export const createNFTCollectionService = async ({
       .post(`api/${version}/collection`, params, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
         },
       })
       .then(function (response) {})
@@ -1431,7 +1451,8 @@ export const getNotificationByOwnerService = async (
   chainId: number,
   authToken: string
 ): Promise<INotification[]> => {
-  if (!chainId) return [];
+  if (!SUPPORTED_NETWORK.includes(chainId) || !owner) return [];
+  console.log("🚀 ~ file: ApiService.ts:1468 ~ chainId:", chainId);
   const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
     .get(`/api/${version}/notification`, {
@@ -1697,7 +1718,7 @@ export const signEIP191 = async ({
 };
 
 export const getUser = async ({ address, chainId }: IGetUserProps) => {
-  if (!chainId) return null;
+  if (!SUPPORTED_NETWORK.includes(chainId) || !address) return null;
   const version = BACKEND_URL_VERSION.get(chainId)!;
 
   const res = await axios.get(`/api/${version}/user/${address}`, {
@@ -1710,7 +1731,7 @@ export const getUser = async ({ address, chainId }: IGetUserProps) => {
 };
 
 export const getAllUsers = async ({ chainId }: IGetAllUsersProps) => {
-  if (!chainId) return [];
+  if (!SUPPORTED_NETWORK.includes(chainId)) return [];
   const version = BACKEND_URL_VERSION.get(chainId)!;
 
   const res = await axios.get(`/api/${version}/user?offset=0&limit=100`, {
@@ -1806,7 +1827,7 @@ export const deleteRole = async ({
 };
 
 export const getMkpInfo = async ({ chainId }: IGetMkpInfoProps) => {
-  if (!chainId) return null;
+  if (!SUPPORTED_NETWORK.includes(chainId)) return null;
   const version = BACKEND_URL_VERSION.get(chainId)!;
   const mkpAddress = MKP_ADDRESS.get(chainId)!;
 
@@ -1828,7 +1849,8 @@ export const editMkpInfo = async ({
   royalty,
   authToken,
 }: IEditMkpInfoProps) => {
-  if (!chainId) return null;
+  console.log("🚀 ~ file: ApiService.ts:1850 ~ authToken:", authToken);
+  if (!SUPPORTED_NETWORK.includes(chainId)) return null;
   const version = BACKEND_URL_VERSION.get(chainId)!;
   const mkpAddress = MKP_ADDRESS.get(chainId)!;
 

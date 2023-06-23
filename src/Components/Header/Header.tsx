@@ -59,13 +59,14 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   );
 
   const isMod = !!user?.roles?.some(
-    (item: any) =>
-      item.name === ROLE_NAME.ADMIN || item.name === ROLE_NAME.MODERATOR
+    (item: any) => item.name === ROLE_NAME.MODERATOR
   );
 
   const isAdmin = !!user?.roles?.some(
     (item: any) => item.name === ROLE_NAME.ADMIN
   );
+
+  const isBlock = !!user?.is_block;
 
   // Wallet
   const [walletConnected, setWalletConnected] = useState(false);
@@ -103,6 +104,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   const handleLogOut = () => {
     web3Context.dispatch({
       type: WEB3_ACTION_TYPES.LOGOUT,
+      payload: { myAddress: web3Context.state.web3.myAddress },
     });
   };
 
@@ -301,6 +303,16 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
 
   const setViewedNotification = async (notif: INotification) => {
     try {
+      if (!web3Context.state.web3.authToken) {
+        web3Context.state.web3.toast.current &&
+          web3Context.state.web3.toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Please login your wallet",
+            life: 5000,
+          });
+        return;
+      }
       await setViewedNotifService({
         eventName: notif.event_name,
         orderHash: notif.order_hash,
@@ -328,6 +340,16 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   };
 
   const handleLogin = async () => {
+    if (isBlock) {
+      web3Context.state.web3.toast.current &&
+        web3Context.state.web3.toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Your account is blocked!",
+          life: 5000,
+        });
+      return;
+    }
     const data = await signEIP191({
       provider: web3Context.state.web3.provider,
       myAddress: web3Context.state.web3.myAddress,
@@ -336,8 +358,18 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
     console.log("🚀 ~ file: Header.tsx:320 ~ handleLogin ~ data:", data);
     web3Context.dispatch({
       type: WEB3_ACTION_TYPES.LOGIN,
-      payload: data.auth_token,
+      payload: {
+        authToken: data.auth_token,
+        myAddress: web3Context.state.web3.myAddress,
+      },
     });
+    web3Context.state.web3.toast.current &&
+      web3Context.state.web3.toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Login successfully!",
+        life: 5000,
+      });
   };
 
   const notificationListTemplate = (notif: INotification) => {
@@ -426,7 +458,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
               </Link>
             </span>
           )}
-          {web3Context.state.web3.authToken && isMod && (
+          {web3Context.state.web3.authToken && isMod && !isAdmin && (
             <Link href="/mod">
               <Button
                 label="Moderator Dashboard"
@@ -832,10 +864,13 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                   </div>
                 </Sidebar>
                 {/* Profile */}
-                <Link href={`/user-profile`} className="profile-btn relative">
-                  <button className="rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center">
+                <div className="profile-btn relative">
+                  <Link
+                    href={`/user-profile`}
+                    className="rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center"
+                  >
                     <i className="pi pi-user text-black text-3xl"></i>
-                  </button>
+                  </Link>
 
                   <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
                     <Link
@@ -875,7 +910,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                       <></>
                     )}
                   </div>
-                </Link>
+                </div>
               </>
             )}
             {/* Wallet if not connect to wallet */}

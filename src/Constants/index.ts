@@ -196,7 +196,7 @@ export enum DURATION_NAME {
 
 export const DURATION_OPTIONS: IDurationOption[] = [
   // { name: DURATION_NAME.NONE, key: DURATION_NAME.NONE },
-  { name: DURATION_NAME.START_TIME, key: DURATION_NAME.START_TIME },
+  // { name: DURATION_NAME.START_TIME, key: DURATION_NAME.START_TIME },
   { name: DURATION_NAME.END_TIME, key: DURATION_NAME.END_TIME },
   { name: DURATION_NAME.START_END_TIME, key: DURATION_NAME.START_END_TIME },
 ];
@@ -209,12 +209,12 @@ export enum NOTIFICATION_INFO {
   OFFER_EXPIRED = "offer_expired",
 }
 
-export const SUPPORTED_NETWORK = [11155111];
-
 export const CHAIN_ID = {
   SEPOLIA: 11155111,
   MUMBAI: 80001,
 };
+
+export const SUPPORTED_NETWORK = Object.values(CHAIN_ID);
 
 export const MKP_ADDRESS = new Map<number, string>([
   [CHAIN_ID.SEPOLIA, process.env.NEXT_PUBLIC_SEPOLIA_MKP_ADDRESS!],

@@ -13,6 +13,19 @@ export interface IMainLayoutProps {
 
 const MainLayout = ({ children }: IMainLayoutProps) => {
   const web3Context = useContext(AppContext);
+
+  if (!SUPPORTED_NETWORK.includes(web3Context.state.web3.chainId)) {
+    return (
+      <div className="mt-24 min-h-screen">
+        <Message
+          severity="warn"
+          text="You must to connect to Sepolia or Mumbai test network!"
+          className="flex h-40"
+        />
+      </div>
+    );
+  }
+
   const { user } = useUser(
     web3Context.state.web3.myAddress,
     web3Context.state.web3.chainId
@@ -27,7 +40,11 @@ const MainLayout = ({ children }: IMainLayoutProps) => {
   const isBlock = !!user?.is_block;
 
   if (isBlock && web3Context.state.web3.authToken)
-    web3Context.dispatch({ type: WEB3_ACTION_TYPES.LOGOUT });
+    web3Context.dispatch({
+      type: WEB3_ACTION_TYPES.LOGOUT,
+      payload: { myAddress: web3Context.state.web3.myAddress },
+    });
+
   return (
     <div>
       {!!web3Context.state.web3.chainId && (

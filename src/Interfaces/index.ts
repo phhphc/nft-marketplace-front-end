@@ -225,6 +225,7 @@ export interface INFTActivity {
   nft_image: string;
   is_cancelled: boolean;
   is_fulfilled: boolean;
+  tx_hash: string;
 }
 
 export interface IFormEditProfileInput {
@@ -304,4 +305,11 @@ export interface IUser {
   roles: ROLE_ITEM[];
   role: string;
   roleId: number;
+}
+
+export interface IMkpInfo {
+  id: number;
+  marketplace: string;
+  beneficiary: string;
+  royalty: number;
 }
