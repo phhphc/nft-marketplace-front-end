@@ -1624,7 +1624,7 @@ export const createMessage = ({
   nonce,
 }: ICreateMessageProps) => {
   console.log(address);
-  const domain = window.location.origin;
+  const domain = window.location.host;
   const origin = window.location.origin;
   const statement =
     "Welcome to Clover Marketplace. Please sign this message to login.";
