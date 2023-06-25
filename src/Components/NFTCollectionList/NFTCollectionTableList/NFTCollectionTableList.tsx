@@ -28,6 +28,7 @@ import { Checkbox } from "primereact/checkbox";
 import { Tooltip } from "primereact/tooltip";
 import { Calendar } from "primereact/calendar";
 import { RadioButton } from "primereact/radiobutton";
+import { handleAddToCart, handleRemoveFromCart } from "@Utils/index";
 
 export interface INFTCollectionTableListProps {
   nftCollectionList: INFTCollectionItem[][];
@@ -50,6 +51,7 @@ const NFTCollectionTableList = ({
   // const [checked, setChecked] = useState(false);
   const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[0]);
   const [durationDate, setDurationDate] = useState<Date | Date[] | null>(null);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -388,6 +390,16 @@ const NFTCollectionTableList = ({
 
   const actionBodyTemplate = (rowData: INFTCollectionItem[]) => {
     const [checked, setChecked] = useState(false);
+    // const [isAddedToCart, setIsAddedToCart] = useState(false);
+    // if (
+    //   web3Context.state.web3.cart
+    //     .map((item) => item.orderHash)
+    //     .includes(rowData[0].listings[0]?.order_hash)
+    // ) {
+    //   setIsAddedToCart(true);
+    // } else {
+    //   setIsAddedToCart(false);
+    // }
     if (canBuy(rowData)) {
       return (
         <div className="flex gap-3">
@@ -496,11 +508,56 @@ const NFTCollectionTableList = ({
           </Dialog>
           <Tag
             severity="danger"
-            value="Buy NFT"
+            value="Buy now"
             onClick={() => handleBuyToken(rowData)}
             className="cursor-pointer text-base hover:bg-rose-700"
             style={{ width: "6rem" }}
           ></Tag>
+          {web3Context.state.web3.cart
+            .map((item) => item.orderHash)
+            .includes(rowData[0].listings[0]?.order_hash) ? (
+            <button
+              className="w-8 h-8 bg-red-500 hover:bg-red-700 rounded-md border-white"
+              onClick={() =>
+                handleRemoveFromCart(
+                  web3Context,
+                  rowData[0].listings[0].order_hash
+                )
+              }
+            >
+              <i
+                className="pi pi-shopping-cart text-white pt-1"
+                style={{ fontSize: "1rem" }}
+              ></i>
+            </button>
+          ) : (
+            <button
+              className="w-8 h-8 bg-red-500 hover:bg-red-700 rounded-md border-white"
+              onClick={() => {
+                if (!web3Context.state.web3.authToken) {
+                  web3Context.state.web3.toast.current &&
+                    web3Context.state.web3.toast.current.show({
+                      severity: "error",
+                      summary: "Error",
+                      detail: "Please login your wallet",
+                      life: 5000,
+                    });
+                  return;
+                }
+                handleAddToCart(
+                  web3Context,
+                  rowData[0].listings[0].order_hash,
+                  1,
+                  (Number(rowData[0].listings[0]?.start_price) || 0).toString()
+                );
+              }}
+            >
+              <i
+                className="pi pi-cart-plus text-white pt-1"
+                style={{ fontSize: "1rem" }}
+              ></i>
+            </button>
+          )}
         </div>
       );
     } else if (canSell(rowData)) {
@@ -590,7 +647,7 @@ const NFTCollectionTableList = ({
                   })}
                 </div>
               </div>
-              {(
+              {
                 <Calendar
                   dateFormat="dd/mm/yy"
                   minDate={new Date()}
@@ -616,7 +673,7 @@ const NFTCollectionTableList = ({
                   showButtonBar
                   hideOnDateTimeSelect
                 />
-              )}
+              }
             </Dialog>
           </div>
           {!hideSellBundle && !canResell(rowData) && (
@@ -910,7 +967,7 @@ const NFTCollectionTableList = ({
                       })}
                     </div>
                   </div>
-                  {(
+                  {
                     <Calendar
                       dateFormat="dd/mm/yy"
                       minDate={new Date()}
@@ -936,7 +993,7 @@ const NFTCollectionTableList = ({
                       showButtonBar
                       hideOnDateTimeSelect
                     />
-                  )}
+                  }
                 </Dialog>
               </div>
             )}

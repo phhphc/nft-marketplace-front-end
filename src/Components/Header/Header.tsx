@@ -81,6 +81,13 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
   const [isUnreadNotifs, setIsUnreadNotifs] = useState<boolean>(false);
   const router = useRouter();
 
+  const [isCopied, setIsCopied] = useState("Copy");
+
+  const handleCopyToClipboard = (event: any) => {
+    setIsCopied("Copied!");
+    navigator.clipboard.writeText(event.target.innerHTML);
+  };
+
   const handleConnectWallet = async () => {
     // If metamask is installed
     if (window.ethereum) {
@@ -637,7 +644,12 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                   className="cart rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center"
                   onClick={() => setCartModalVisible(true)}
                 >
-                  <i className="pi pi-cart-plus text-black text-3xl"></i>
+                  <i className="pi pi-cart-plus p-overlay-badge text-black text-3xl">
+                    <Badge
+                      value={cartItemList.length}
+                      severity="danger"
+                    ></Badge>
+                  </i>
                 </button>
                 <Tooltip target=".cart" position="bottom">
                   Open cart
@@ -677,7 +689,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                             </Link>
                             <div className="flex flex-col items-start justify-start text-sm">
                               {cartItem.length > 1 && (
-                                <span className="font-medium">Bundle</span>
+                                <span className="font-medium">(Bundle)</span>
                               )}
                               {cartItem.map((item) => (
                                 <span className="font-medium">{item.name}</span>
@@ -754,11 +766,29 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                 >
                   <div className="flex flex-col">
                     <div className="flex items-center justify-start space-x-3">
-                      <span className="text-base w-32 overflow-hidden text-ellipsis">
+                      <span
+                        className="address text-base w-32 overflow-hidden text-ellipsis"
+                        role="button"
+                        onClick={handleCopyToClipboard}
+                      >
                         {web3Context.state.web3.myAddress}
                       </span>
+                      <Tooltip
+                        target=".address"
+                        position="top"
+                        content={isCopied}
+                      />
                     </div>
                     <div className="border-b-2 w-full my-4"></div>
+                    <div className="flex text-black text-lg font-bold px-2 pb-3">
+                      <i
+                        className="pi pi-link pr-4"
+                        style={{ fontSize: "1.5rem" }}
+                      ></i>
+                      {web3Context.state.web3.chainId === CHAIN_ID.SEPOLIA
+                        ? "Sepolia Test Network"
+                        : "Mumbai Test Network"}
+                    </div>
                     <div className="flex px-2 items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <Image
@@ -771,6 +801,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                         </span>
                       </div>
                     </div>
+
                     <div className="mt-6 py-3 flex flex-col gap-1 border rounded-lg justify-center">
                       <div className="text-center">
                         <Tag
@@ -789,7 +820,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                         {ERC20_NAME.get(web3Context.state.web3.chainId)}
                       </div>
                     </div>
-                    <div className="mt-5">
+                    <div className="mt-7">
                       <button
                         className="bg-violet-500 hover:bg-violet-600 h-16 rounded-md text-xl w-full text-white"
                         onClick={() => setVisible(true)}

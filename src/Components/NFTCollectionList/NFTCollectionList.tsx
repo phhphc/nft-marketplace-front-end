@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   COLLECTION_VIEW_TYPE,
   SORT_OPTIONS,
@@ -10,6 +10,7 @@ import NFTCollectionFilter from "@Components/NFTCollectionList/NFTCollectionFilt
 import NFTCollectionTableList from "@Components/NFTCollectionList/NFTCollectionTableList/NFTCollectionTableList";
 import { IDropDown, INFTCollectionItem } from "@Interfaces/index";
 import { NFT_COLLECTION_MODE } from "@Constants/index";
+import { AppContext } from "@Store/index";
 
 export interface INFTCollectionListProps {
   nftCollectionList: INFTCollectionItem[][];
@@ -24,6 +25,7 @@ const NFTCollectionList = ({
   refetch,
   hideSellBundle = false,
 }: INFTCollectionListProps) => {
+  const web3Context = useContext(AppContext);
   const [currentSort, setCurrentSort] = useState<IDropDown>(SORT_OPTIONS[0]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [nftCollectionListSearch, setNftCollectionListSearch] =
@@ -36,6 +38,7 @@ const NFTCollectionList = ({
   const handleChangeView = (selectedViewType: COLLECTION_VIEW_TYPE) => {
     if (selectedViewType === viewType) return;
     setViewType(selectedViewType);
+    web3Context.state.web3.listItemsSellBundle = [];
   };
 
   useEffect(() => {
