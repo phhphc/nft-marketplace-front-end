@@ -924,7 +924,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                     </Link>
                     <Link
                       href={`/create-nft`}
-                      className="py-3 w-full hover:bg-slate-200 rounded-b-lg border-b"
+                      className="py-3 w-full hover:bg-slate-200 border-b"
                     >
                       <span className="ml-4">New NFT</span>
                     </Link>
