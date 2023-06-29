@@ -10,8 +10,9 @@ import web3Reducer from "@Reducer/web3Reducer";
 import { useEffect } from "react";
 import { Contract, ethers, Wallet } from "ethers";
 import { INFTCollectionItem } from "@Interfaces/index";
-import { SUPPORTED_NETWORK } from "@Constants/index";
+import { CHAIN_ID, SUPPORTED_NETWORK } from "@Constants/index";
 import { Toast } from "primereact/toast";
+import { useRouter } from "next/router";
 
 export enum WEB3_ACTION_TYPES {
   CHANGE = "CHANGE",
@@ -88,6 +89,7 @@ export interface IAppProvider {
 const AppProvider = ({ children }: IAppProvider) => {
   const [state, dispatch] = useReducer(mainReducer, initialState);
   const toast = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("shoppingCart") || "[]");
@@ -112,23 +114,27 @@ const AppProvider = ({ children }: IAppProvider) => {
         payload: {
           toast,
           cart,
-          chainId: Number(window.ethereum.networkVersion),
+          chainId: window.ethereum
+            ? Number(window.ethereum.networkVersion)
+            : CHAIN_ID.MUMBAI,
         },
       });
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
+      if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
 
-      const signer = provider.getSigner();
+        const signer = provider.getSigner();
 
-      dispatch({
-        type: WEB3_ACTION_TYPES.CHANGE,
-        payload: {
-          provider,
-          myAddress: await signer.getAddress(),
-          myWallet: signer,
-          authToken: authTokenObj[await signer.getAddress()],
-        },
-      });
+        dispatch({
+          type: WEB3_ACTION_TYPES.CHANGE,
+          payload: {
+            provider,
+            myAddress: await signer.getAddress(),
+            myWallet: signer,
+            authToken: authTokenObj[await signer.getAddress()],
+          },
+        });
+      }
     };
     fetchData();
   }, []);
@@ -156,7 +162,7 @@ const AppProvider = ({ children }: IAppProvider) => {
           },
         });
         localStorage.setItem("shoppingCart", JSON.stringify([]));
-        window.location.reload();
+        window.location.replace("/");
       });
 
       window.ethereum.on("chainChanged", () => {
@@ -169,7 +175,7 @@ const AppProvider = ({ children }: IAppProvider) => {
           },
         });
         localStorage.setItem("shoppingCart", JSON.stringify([]));
-        window.location.reload();
+        window.location.replace("/");
       });
     }
   });

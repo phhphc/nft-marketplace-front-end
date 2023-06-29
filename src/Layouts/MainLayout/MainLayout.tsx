@@ -14,7 +14,10 @@ export interface IMainLayoutProps {
 const MainLayout = ({ children }: IMainLayoutProps) => {
   const web3Context = useContext(AppContext);
 
-  if (!SUPPORTED_NETWORK.includes(web3Context.state.web3.chainId)) {
+  if (
+    !SUPPORTED_NETWORK.includes(web3Context.state.web3.chainId) &&
+    web3Context.state.web3.provider
+  ) {
     return (
       <div className="mt-24 min-h-screen">
         <Message
@@ -47,7 +50,8 @@ const MainLayout = ({ children }: IMainLayoutProps) => {
 
   return (
     <div>
-      {!!web3Context.state.web3.chainId && (
+      {(!!web3Context.state.web3.chainId ||
+        !web3Context.state.web3.provider) && (
         <>
           <Header
             notification={notification}
