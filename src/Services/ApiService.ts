@@ -288,6 +288,7 @@ export const getNFTCollectionListService = async (
   myWallet: any,
   chainId: number
 ): Promise<any> => {
+  if (!SUPPORTED_NETWORK.includes(chainId)) return [];
   let offset = 0;
 
   let result: any = [];
@@ -1281,6 +1282,9 @@ export const getAllCollectionListService = async (
   category: string,
   chainId: number
 ): Promise<ICollectionItem[]> => {
+  console.log("🚀 ~ file: ApiService.ts:1285 ~ category:", category);
+  console.log("🚀 ~ file: ApiService.ts:1285 ~ chainId:", chainId);
+  if (!SUPPORTED_NETWORK.includes(chainId)) return [];
   const version = BACKEND_URL_VERSION.get(chainId)!;
   console.log("🚀 ~ file: ApiService.ts:1106 ~ version:", version);
   const url =
@@ -1465,7 +1469,8 @@ export const getNotificationByOwnerService = async (
   chainId: number,
   authToken: string
 ): Promise<INotification[]> => {
-  if (!SUPPORTED_NETWORK.includes(chainId) || !owner) return [];
+  console.log("🚀 ~ file: ApiService.ts:1470 ~ authToken:", authToken);
+  if (!SUPPORTED_NETWORK.includes(chainId) || !authToken) return [];
   console.log("🚀 ~ file: ApiService.ts:1468 ~ chainId:", chainId);
   const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
