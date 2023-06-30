@@ -13,6 +13,7 @@ import { INFTCollectionItem } from "@Interfaces/index";
 import { CHAIN_ID, SUPPORTED_NETWORK } from "@Constants/index";
 import { Toast } from "primereact/toast";
 import { useRouter } from "next/router";
+import jwt from "jsonwebtoken";
 
 export enum WEB3_ACTION_TYPES {
   CHANGE = "CHANGE",
@@ -162,7 +163,7 @@ const AppProvider = ({ children }: IAppProvider) => {
           },
         });
         localStorage.setItem("shoppingCart", JSON.stringify([]));
-        window.location.replace("/");
+        window.location.reload();
       });
 
       window.ethereum.on("chainChanged", () => {
@@ -175,7 +176,7 @@ const AppProvider = ({ children }: IAppProvider) => {
           },
         });
         localStorage.setItem("shoppingCart", JSON.stringify([]));
-        window.location.replace("/");
+        window.location.reload();
       });
     }
   });
@@ -183,6 +184,35 @@ const AppProvider = ({ children }: IAppProvider) => {
   useEffect(() => {
     localStorage.setItem("shoppingCart", JSON.stringify(state.web3.cart));
   }, [state.web3.cart]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (state.web3.myAddress) {
+        const authTokenObj = JSON.parse(
+          localStorage.getItem("authTokenObj") || "{}"
+        );
+        const authToken = authTokenObj[state.web3.myAddress];
+        if (authToken) {
+          const { exp } = jwt.decode(authToken) as any;
+          console.log("🚀 ~ file: index.tsx:197 ~ intervalId ~ exp:", exp);
+          if (exp < (new Date().getTime() + 3) / 1000) {
+            state.web3.toast.current &&
+              state.web3.toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: "Your session is expired. Please log in again",
+                life: 5000,
+              });
+            dispatch({
+              type: WEB3_ACTION_TYPES.LOGOUT,
+              payload: { myAddress: state.web3.myAddress },
+            });
+          }
+        }
+      }
+    }, 3000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

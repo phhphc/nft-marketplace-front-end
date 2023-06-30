@@ -602,7 +602,7 @@ const NFTDetail = ({
                             value={
                               CHAINID_OFFER_CURRENCY_TRANSFER.get(
                                 web3Context.state.web3.chainId
-                              )[0].value
+                              )?.[0].value
                             }
                             onChange={(e) => setSelectedUnit(e.value)}
                             options={CHAINID_OFFER_CURRENCY_TRANSFER.get(
