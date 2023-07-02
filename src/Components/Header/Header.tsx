@@ -21,7 +21,7 @@ import {
   signEIP191,
   transferCurrency,
 } from "@Services/ApiService";
-import { erc20Abi } from "@Constants/erc20Abi";
+import { sepoliaErc20Abi } from "@Constants/sepoliaErc20Abi";
 import { Tag } from "primereact/tag";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
@@ -36,6 +36,7 @@ import {
   NOTIFICATION_INFO,
   CHAINID_CURRENCY_UNITS,
   ERC20_NAME,
+  ERC20_ABI,
 } from "@Constants/index";
 import { Badge } from "primereact/badge";
 import { ListBox } from "primereact/listbox";
@@ -124,6 +125,7 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
       ) {
         if (await window.ethereum?._metamask?.isUnlocked())
           setWalletConnected(true);
+        const erc20Abi = ERC20_ABI.get(web3Context.state.web3.chainId);
         const ETHBalance = await web3Context.state.web3.provider.getBalance(
           web3Context.state.web3.myAddress
         );

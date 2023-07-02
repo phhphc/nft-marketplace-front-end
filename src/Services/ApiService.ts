@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BigNumber, ethers } from "ethers";
 import { erc721Abi } from "@Constants/erc721Abi";
-import { erc20Abi } from "@Constants/erc20Abi";
+import { sepoliaErc20Abi } from "@Constants/sepoliaErc20Abi";
 import { mkpAbi } from "@Constants/mkpAbi";
 import { erc721CollectionAbi } from "@Constants/erc721CollectionAbi";
 import FormData from "form-data";
@@ -19,6 +19,7 @@ import {
   BACKEND_URL_VERSION,
   CHAIN_ID,
   CURRENCY,
+  ERC20_ABI,
   ERC20_ADDRESS,
   MKP_ADDRESS,
   SUPPORTED_NETWORK,
@@ -380,6 +381,7 @@ export const makeOffer = async ({
   const version = BACKEND_URL_VERSION.get(chainId)!;
   const mkpAddress = MKP_ADDRESS.get(chainId)!;
   const mkpMoneyAddress = process.env.NEXT_PUBLIC_MKP_MONEY_ADDRESS!;
+  const erc20Abi = ERC20_ABI.get(chainId);
 
   const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
 
@@ -406,7 +408,7 @@ export const makeOffer = async ({
   );
 
   if (currentErc.lt(erc20ToBuy)) {
-    const buyTx = await erc20ContractWithSigner.buy({
+    const buyTx = await erc20ContractWithSigner.deposit({
       value: erc20ToBuy.sub(currentErc),
     });
 
@@ -502,15 +504,20 @@ export const transferCurrency = async ({
   chainId,
 }: ITransferTETHToEthProps) => {
   const erc20Address = ERC20_ADDRESS.get(chainId)!;
+  const erc20Abi = ERC20_ABI.get(chainId);
 
   const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
 
   const erc20ContractWithSigner = erc20Contract.connect(myWallet);
+  console.log(
+    "🚀 ~ file: ApiService.ts:513 ~ erc20ContractWithSigner:",
+    erc20ContractWithSigner
+  );
 
   const tx =
-    unit === CURRENCY.TETHER || unit === CURRENCY.TATIC
-      ? await erc20ContractWithSigner.sell(parseEther(price))
-      : await erc20ContractWithSigner.buy({
+    unit === CURRENCY.WETHER || unit === CURRENCY.WMATIC
+      ? await erc20ContractWithSigner.withdraw(parseEther(price))
+      : await erc20ContractWithSigner.deposit({
           value: parseEther(price),
         });
 
@@ -716,6 +723,7 @@ export const fulfillMakeOffer = async ({
   const mkpAddress = MKP_ADDRESS.get(chainId)!;
   const erc20Address = ERC20_ADDRESS.get(chainId)!;
   const version = BACKEND_URL_VERSION.get(chainId)!;
+  const erc20Abi = ERC20_ABI.get(chainId);
 
   const erc20Contract = new ethers.Contract(erc20Address, erc20Abi, provider);
 
@@ -748,7 +756,7 @@ export const fulfillMakeOffer = async ({
   );
 
   if (currentErc.lt(erc20ToBuy)) {
-    const buyTx = await erc20ContractWithSigner.buy({
+    const buyTx = await erc20ContractWithSigner.deposit({
       value: erc20ToBuy.sub(erc20ToBuy),
     });
 
