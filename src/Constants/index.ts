@@ -1,4 +1,6 @@
 import { IOption, IDropDown, IDurationOption } from "@Interfaces/index";
+import { mumbaiErc20Abi } from "./mumbaiErc20Abi";
+import { sepoliaErc20Abi } from "./sepoliaErc20Abi";
 
 export enum COLLECTION_VIEW_TYPE {
   LARGE_GRID = "LARGE_GRID",
@@ -141,9 +143,9 @@ export const MAPPING_STRING_TO_BIG_NUMBER = [
 export const CURRENCY = {
   ETHER: "ETH",
   GWEI: "Gwei",
-  TETHER: "TETH",
+  WETHER: "WETH",
   MATIC: "MATIC",
-  TATIC: "TATIC",
+  WMATIC: "WMATIC",
 };
 
 export const CURRENCY_UNITS = [
@@ -156,21 +158,21 @@ export const MUMBAI_CURRENCY_UNITS = [
 ];
 
 export const OFFER_CURRENCY_UNITS = [
-  { name: CURRENCY.TETHER, value: CURRENCY.TETHER },
+  { name: CURRENCY.WETHER, value: CURRENCY.WETHER },
 ];
 
 export const MUMBAI_OFFER_CURRENCY_UNITS = [
-  { name: CURRENCY.TATIC, value: CURRENCY.TATIC },
+  { name: CURRENCY.WMATIC, value: CURRENCY.WMATIC },
 ];
 
 export const CURRENCY_TRANSFER = [
-  { name: CURRENCY.ETHER + " To " + CURRENCY.TETHER, value: CURRENCY.ETHER },
-  { name: CURRENCY.TETHER + " To " + CURRENCY.ETHER, value: CURRENCY.TETHER },
+  { name: CURRENCY.ETHER + " To " + CURRENCY.WETHER, value: CURRENCY.ETHER },
+  { name: CURRENCY.WETHER + " To " + CURRENCY.ETHER, value: CURRENCY.WETHER },
 ];
 
 export const MUMBAI_CURRENCY_TRANSFER = [
-  { name: CURRENCY.MATIC + " To " + CURRENCY.TATIC, value: CURRENCY.MATIC },
-  { name: CURRENCY.TATIC + " To " + CURRENCY.MATIC, value: CURRENCY.TATIC },
+  { name: CURRENCY.MATIC + " To " + CURRENCY.WMATIC, value: CURRENCY.MATIC },
+  { name: CURRENCY.WMATIC + " To " + CURRENCY.MATIC, value: CURRENCY.WMATIC },
 ];
 
 export const STRING_HEX_TO_NUMBER: any = {
@@ -252,6 +254,11 @@ export const CHAINID_OFFER_CURRENCY_TRANSFER = new Map<number, any>([
 ]);
 
 export const ERC20_NAME = new Map<number, string>([
-  [CHAIN_ID.SEPOLIA, CURRENCY.TETHER],
-  [CHAIN_ID.MUMBAI, CURRENCY.TATIC],
+  [CHAIN_ID.SEPOLIA, CURRENCY.WETHER],
+  [CHAIN_ID.MUMBAI, CURRENCY.WMATIC],
+]);
+
+export const ERC20_ABI = new Map<number, any>([
+  [CHAIN_ID.SEPOLIA, sepoliaErc20Abi],
+  [CHAIN_ID.MUMBAI, mumbaiErc20Abi],
 ]);
