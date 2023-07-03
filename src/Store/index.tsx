@@ -103,7 +103,10 @@ const AppProvider = ({ children }: IAppProvider) => {
     );
 
     const fetchData = async () => {
-      if (await !window.ethereum?._metamask?.isUnlocked()) {
+      if (
+        (await !window.ethereum?._metamask?.isUnlocked?.()) &&
+        state.web3.authToken
+      ) {
         dispatch({
           type: WEB3_ACTION_TYPES.LOGOUT,
           payload: { myAddress: state.web3.myAddress },

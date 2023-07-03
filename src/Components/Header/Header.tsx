@@ -122,7 +122,10 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
         web3Context.state.web3.myWallet &&
         web3Context.state.web3.myAddress
       ) {
-        if (await window.ethereum?._metamask?.isUnlocked())
+        if (
+          (await window.ethereum?._metamask?.isUnlocked?.()) &&
+          web3Context.state.web3.authToken
+        )
           setWalletConnected(true);
         const ETHBalance = await web3Context.state.web3.provider.getBalance(
           web3Context.state.web3.myAddress
@@ -165,7 +168,10 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
 
   useEffect(() => {
     logOutInterval.current = setInterval(() => {
-      if (!window?.ethereum?._state?.isUnlocked) {
+      if (
+        !window?.ethereum?._state?.isUnlocked &&
+        web3Context.state.web3.authToken
+      ) {
         handleLogOut();
       }
     }, 2000);
