@@ -387,7 +387,7 @@ const NFTDetail = ({
 
   return (
     <div id="nft-detail">
-      <div className="grid grid-cols-5 gap-4">
+      <div className="lg:grid lg:grid-cols-5 lg:gap-4">
         <div id="left-side" className="col-span-2">
           <div className="mt-5">
             {nftDetail.length == 1 ? (

@@ -81,7 +81,7 @@ const CreateNFT = ({ collectionList }: ICreateNFTProps) => {
   };
 
   return (
-    <div className="create-nft w-1/2 ml-auto mr-auto">
+    <div className="create-nft lg:w-1/2 ml-auto mr-auto">
       <h1 className="text-4xl font-semibold pt-6">Create NFT</h1>
       <div className="pt-6 text-sm">* Required fields</div>
       <form onSubmit={handleSubmit(onSubmit)}>
