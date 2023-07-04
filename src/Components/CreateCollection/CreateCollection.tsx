@@ -104,7 +104,7 @@ const CreateCollection = () => {
   };
 
   return (
-    <div className="create-collection w-5/12 ml-auto mr-auto">
+    <div className="create-collection lg:w-5/12 ml-auto mr-auto">
       <h1 className="text-4xl font-semibold pt-6">Create a Collection</h1>
       <div className="pt-6 pb-1 text-sm">* Required fields</div>
       <form onSubmit={handleSubmit(onSubmit)}>

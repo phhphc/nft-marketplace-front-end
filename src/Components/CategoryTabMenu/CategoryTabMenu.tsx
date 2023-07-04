@@ -1,7 +1,7 @@
 import { ICategory, ICollectionItem } from "@Interfaces/index";
 import { TabMenu } from "primereact/tabmenu";
 import { Carousel } from "primereact/carousel";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import { AppContext } from "@Store/index";
 export interface ICollectionTabMenu {}
 
 const CategoryTabMenu = ({}: ICollectionTabMenu) => {
+  const [width, setWidth] = useState<number>(0);
   const categories: ICategory[] = [
     { label: "All", value: "All" },
     { label: "Art", value: "Art" },
@@ -20,9 +21,17 @@ const CategoryTabMenu = ({}: ICollectionTabMenu) => {
     { label: "Memberships", value: "Memberships" },
   ];
 
+  useLayoutEffect(() => {
+    const id = setInterval(() => {
+      if (width !== window.screen.width) setWidth(window.screen.width);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const web3Context = useContext(AppContext);
+  console.log(width);
 
   const { collectionList, refetch } = useCollectionListByCategory(
     selectedCategory,
@@ -89,8 +98,8 @@ const CategoryTabMenu = ({}: ICollectionTabMenu) => {
         <div className="card">
           <Carousel
             value={collectionList}
-            numVisible={3}
-            numScroll={3}
+            numVisible={width < 720 ? 1 : width < 1200 ? 2 : 3}
+            numScroll={width < 720 ? 1 : width < 1200 ? 2 : 3}
             itemTemplate={categoryTemplate}
           />
         </div>
