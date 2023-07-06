@@ -3,8 +3,10 @@ import { Chart } from "primereact/chart";
 import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { AppContext } from "@Store/index";
-import moment from "moment";
 import { CHAIN_ID } from "@Constants/index";
+import { IStatisticsInterval } from "@Components/UserProfileTabs/UserProfileTabs";
+import { CHANGE_STATISTICS_CMD } from "@Containers/UserProfileContainer/constant";
+import { Calendar } from "primereact/calendar";
 
 interface IStatisticPerDay {
   count: number;
@@ -14,28 +16,32 @@ interface IStatisticPerDay {
 interface IProfileStatisticsProps {
   nftSaleByMonth: INFTActivity[];
   refetch: () => void;
-  month: number;
-  year: number;
-  handleChangeMonth: (cmd: string) => void;
+  statisticsInterval: IStatisticsInterval;
+  handleChangeStatisticsInterval: (
+    cmd: CHANGE_STATISTICS_CMD,
+    date: string
+  ) => void;
 }
 
 const ProfileStatistics = ({
   nftSaleByMonth,
-  month,
-  year,
-  handleChangeMonth,
+  statisticsInterval,
+  handleChangeStatisticsInterval,
 }: IProfileStatisticsProps) => {
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
   const web3Context = useContext(AppContext);
-  const monthName = moment(new Date().setMonth(month - 1)).format("MMMM");
 
   // process saleEvent to statistic revenue and expenditure per day
   const revenuePerDay: Array<IStatisticPerDay> = [];
   const expenditurePerDay: Array<IStatisticPerDay> = [];
 
   const dayList = Array.from(
-    new Set(nftSaleByMonth.map((event) => new Date(event.date).getDate()))
+    new Set(
+      nftSaleByMonth.map((event) =>
+        new Date(event.date).toLocaleDateString("en-CA")
+      )
+    )
   );
 
   const revenueList = nftSaleByMonth.filter(
@@ -52,7 +58,7 @@ const ProfileStatistics = ({
     let revenueAvgPrice = 0;
 
     let revenueThisDay = revenueList.filter(
-      (revenue) => new Date(revenue.date).getDate() === day
+      (revenue) => new Date(revenue.date).toLocaleDateString("en-CA") === day
     );
 
     revenueThisDay.forEach((revenue) => {
@@ -75,7 +81,8 @@ const ProfileStatistics = ({
     let expenditureAvgPrice = 0;
 
     let expenditureThisDay = expenditureList.filter(
-      (expenditure) => new Date(expenditure.date).getDate() === day
+      (expenditure) =>
+        new Date(expenditure.date).toLocaleDateString("en-CA") === day
     );
 
     expenditureThisDay.forEach((expenditure) => {
@@ -96,7 +103,7 @@ const ProfileStatistics = ({
 
   useEffect(() => {
     const data = {
-      labels: dayList.map((day) => "Day " + day),
+      labels: dayList.map((day) => day),
       datasets: [
         {
           label: "Revenue",
@@ -124,11 +131,15 @@ const ProfileStatistics = ({
             drawBorder: false,
           },
         },
+        xAxes: [
+          {
+            barThickness: 100,
+          },
+        ],
       },
       plugins: {
         title: {
           display: true,
-          text: `Revenue and Expenditure Statistics in ${monthName}, ${year} `,
           font: {
             size: 16,
           },
@@ -169,13 +180,37 @@ const ProfileStatistics = ({
 
   return (
     <div id="nft-predict-price" className="w-full h-full">
+      <div className="flex justify-center text-xl font-semibold">
+        <div>
+          Revenue and Expenditure Statistics from{" "}
+          <Calendar
+            dateFormat="yy-mm-dd"
+            value={new Date(statisticsInterval.startDate)}
+            onChange={(e: any) =>
+              handleChangeStatisticsInterval(
+                CHANGE_STATISTICS_CMD.START_DATE,
+                e.value.toLocaleDateString("en-CA")
+              )
+            }
+            maxDate={new Date(statisticsInterval.endDate)}
+            className="w-[110px]"
+          />{" "}
+          to{" "}
+          <Calendar
+            dateFormat="yy-mm-dd"
+            value={new Date(statisticsInterval.endDate)}
+            onChange={(e: any) =>
+              handleChangeStatisticsInterval(
+                CHANGE_STATISTICS_CMD.END_DATE,
+                e.value.toLocaleDateString("en-CA")
+              )
+            }
+            minDate={new Date(statisticsInterval.startDate)}
+            className="w-[110px]"
+          />
+        </div>
+      </div>
       <div className="flex justify-around items-center">
-        <button
-          className="cursor-pointer hover:text-blue-600"
-          onClick={() => handleChangeMonth("prev")}
-        >
-          <i className="pi pi-chevron-left" style={{ fontSize: "2rem" }}></i>
-        </button>
         <Chart
           className="w-5/6"
           type="bar"
@@ -183,12 +218,6 @@ const ProfileStatistics = ({
           options={chartOptions}
           style={{ height: "400px" }}
         />
-        <button
-          className="cursor-pointer hover:text-blue-600"
-          onClick={() => handleChangeMonth("next")}
-        >
-          <i className="pi pi-chevron-right" style={{ fontSize: "2rem" }}></i>
-        </button>
       </div>
     </div>
   );

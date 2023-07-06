@@ -3,20 +3,20 @@ import { useQuery } from "react-query";
 
 interface IUseSaleEventByAddrMthYrProps {
   address: string;
-  month: number;
-  year: number;
+  startDate: string;
+  endDate: string;
   chainId: number;
 }
 
 const useSaleEventByAddrMthYr = ({
   address,
-  month,
-  year,
+  startDate,
+  endDate,
   chainId
 }: IUseSaleEventByAddrMthYrProps) => {
   const result = useQuery({
-    queryKey: `saleEventListByAddress-${address}-${year}-${month}`,
-    queryFn: () => getSaleEventByAddrMthYrService({ month, year, address, chainId }),
+    queryKey: `saleEventListByAddress-${address}-${startDate}-${endDate}`,
+    queryFn: () => getSaleEventByAddrMthYrService({ startDate, endDate, address, chainId }),
     staleTime: Infinity,
   });
   const nftSaleByMth = result.data || [];

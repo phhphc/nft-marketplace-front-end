@@ -187,8 +187,8 @@ interface ISetViewdNotifProps {
 }
 
 interface IGetSaleEventByAddrMthYrProps {
-  month: number;
-  year: number;
+  startDate: string;
+  endDate: string;
   address: string;
   chainId: number;
 }
@@ -1523,14 +1523,19 @@ export const setViewedNotifService = async ({
 
 export const getSaleEventByAddrMthYrService = async ({
   address,
-  month,
-  year,
+  startDate,
+  endDate,
   chainId,
 }: IGetSaleEventByAddrMthYrProps): Promise<INFTActivity[]> => {
   const version = BACKEND_URL_VERSION.get(chainId)!;
   return axios
     .get(`/api/${version}/event`, {
-      params: { month, year, address, name: "sale" },
+      params: {
+        start_date: startDate,
+        end_date: endDate,
+        address,
+        name: "sale",
+      },
     })
     .then((response) => {
       const res = response.data.data.events.sort(
