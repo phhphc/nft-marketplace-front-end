@@ -16,9 +16,9 @@
     border-top-left-radius: unset !important;
   }
 
-  // .p-carousel .p-carousel-item {
-  //   flex: 0 0 33.333333333333336% !important;
-  // }
+  .p-carousel .p-carousel-item div {
+    max-width: 420px;
+  }
 
   .p-carousel .p-carousel-indicators .p-carousel-indicator.p-highlight button {
     background-color: rgb(253 224 71);
