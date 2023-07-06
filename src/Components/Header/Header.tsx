@@ -515,243 +515,261 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
             {web3Context.state.web3.authToken && isMod && (
               <Link href="/mod">Mod</Link>
             )} */}
-            {web3Context.state.web3.authToken && (
+            {walletConnected && (
               <>
                 {/* Notification */}
-                <button
-                  className="w-10 h-10 rounded-full hover:bg-gray-300"
-                  onClick={() => {
-                    setNotificationVisible(true), setIsUnreadNotifs(false);
-                  }}
-                >
-                  <i className="pi pi-bell p-overlay-badge text-black text-3xl">
-                    {notification.filter(
-                      (notif: INotification) => notif.is_viewed === false
-                    ).length > 0 && (
-                      <Badge
-                        value={
-                          notification.filter(
-                            (notif: INotification) => notif.is_viewed === false
-                          ).length
-                        }
-                        severity="danger"
-                      ></Badge>
-                    )}
-                  </i>
-                </button>
-                <Sidebar
-                  position="right"
-                  visible={notificationVisible}
-                  onHide={() => {
-                    setNotificationVisible(false);
-                  }}
-                >
-                  <h2 className="text-2xl font-bold mb-3">Notifications</h2>
-                  <div className="flex gap-3">
+                {web3Context.state.web3.authToken && (
+                  <>
                     <button
-                      onClick={() => setIsUnreadNotifs(false)}
-                      className={
-                        "px-5 py-1 rounded-md font-medium " +
-                        (isUnreadNotifs
-                          ? "hover:bg-slate-200"
-                          : "bg-sky-200 text-blue-700 rounded-md")
-                      }
+                      className="w-10 h-10 rounded-full hover:bg-gray-300"
+                      onClick={() => {
+                        setNotificationVisible(true), setIsUnreadNotifs(false);
+                      }}
                     >
-                      All {"(" + notification.length + ")"}
-                    </button>
-                    <button
-                      onClick={() => setIsUnreadNotifs(true)}
-                      className={
-                        "px-3 py-1 rounded-md font-medium " +
-                        (isUnreadNotifs
-                          ? "bg-sky-200 text-blue-700 rounded-md"
-                          : "hover:bg-slate-200")
-                      }
-                    >
-                      Unread{" "}
-                      {"(" +
-                        notification.filter(
+                      <i className="pi pi-bell p-overlay-badge text-black text-3xl">
+                        {notification.filter(
                           (notif: INotification) => notif.is_viewed === false
-                        ).length +
-                        ")"}
+                        ).length > 0 && (
+                          <Badge
+                            value={
+                              notification.filter(
+                                (notif: INotification) =>
+                                  notif.is_viewed === false
+                              ).length
+                            }
+                            severity="danger"
+                          ></Badge>
+                        )}
+                      </i>
                     </button>
-                  </div>
-                  <div className="">
-                    <TabView className="w-full">
-                      <TabPanel header="Listing" className="w-full">
-                        <ListBox
-                          options={
-                            isUnreadNotifs
-                              ? notification.filter(
-                                  (notif: INotification) =>
-                                    notif.is_viewed == false &&
-                                    notif.event_name ===
-                                      NFT_EVENT_NAME.LISTING.toLowerCase()
-                                )
-                              : notification.filter(
-                                  (notif: INotification) =>
-                                    notif.event_name ===
-                                    NFT_EVENT_NAME.LISTING.toLowerCase()
-                                )
+                    <Sidebar
+                      position="right"
+                      visible={notificationVisible}
+                      onHide={() => {
+                        setNotificationVisible(false);
+                      }}
+                    >
+                      <h2 className="text-2xl font-bold mb-3">Notifications</h2>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => setIsUnreadNotifs(false)}
+                          className={
+                            "px-5 py-1 rounded-md font-medium " +
+                            (isUnreadNotifs
+                              ? "hover:bg-slate-200"
+                              : "bg-sky-200 text-blue-700 rounded-md")
                           }
-                          optionLabel="name"
-                          itemTemplate={notificationListTemplate}
-                          className="w-full"
-                        />
-                      </TabPanel>
-                      <TabPanel header="Offer" className="w-full">
-                        <ListBox
-                          options={
-                            isUnreadNotifs
-                              ? notification.filter(
-                                  (notif: INotification) =>
-                                    notif.is_viewed == false &&
-                                    notif.event_name ===
-                                      NFT_EVENT_NAME.OFFER.toLowerCase()
-                                )
-                              : notification.filter(
-                                  (notif: INotification) =>
-                                    notif.event_name ===
-                                    NFT_EVENT_NAME.OFFER.toLowerCase()
-                                )
-                          }
-                          optionLabel="name"
-                          itemTemplate={notificationListTemplate}
-                          className="w-full"
-                        />
-                      </TabPanel>
-                      <TabPanel header="Sale" className="w-full">
-                        <ListBox
-                          options={
-                            isUnreadNotifs
-                              ? notification.filter(
-                                  (notif: INotification) =>
-                                    notif.is_viewed == false &&
-                                    notif.event_name ===
-                                      NFT_EVENT_NAME.SALE.toLowerCase()
-                                )
-                              : notification.filter(
-                                  (notif: INotification) =>
-                                    notif.event_name ===
-                                    NFT_EVENT_NAME.SALE.toLowerCase()
-                                )
-                          }
-                          optionLabel="name"
-                          itemTemplate={notificationListTemplate}
-                          className="w-full"
-                        />
-                      </TabPanel>
-                    </TabView>
-                  </div>
-                </Sidebar>
-                {/* Cart */}
-                <button
-                  className="cart rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center"
-                  onClick={() => setCartModalVisible(true)}
-                >
-                  <i className="pi pi-cart-plus p-overlay-badge text-black text-3xl">
-                    <Badge
-                      value={cartItemList.length}
-                      severity="danger"
-                    ></Badge>
-                  </i>
-                </button>
-                <Tooltip target=".cart" position="bottom">
-                  Open cart
-                </Tooltip>
-                <Sidebar
-                  className="cart-modal"
-                  visible={cartModalVisible}
-                  position="right"
-                  onHide={() => setCartModalVisible(false)}
-                >
-                  <div className="flex flex-col text-black overflow-y-auto">
-                    <div className="text-xl font-bold mx-3 pb-4 border-b-2">
-                      YOUR CART
-                    </div>
-                    <div className="flex justify-between items-center font-bold m-3">
-                      <span>{cartItemList.length} item(s)</span>
-                      <button
-                        className="bg-red-500 p-2 text-white rounded-lg hover:bg-red-400"
-                        onClick={() => handleRemoveAllFromCart()}
-                      >
-                        Remove all
-                      </button>
-                    </div>
-                    <div className="space-y-2">
-                      {cartItemList.map((cartItem) => (
-                        <div
-                          key={cartItem[0].name}
-                          className="cart-item flex justify-between items-center w-full py-2 px-4 rounded-lg hover:bg-gray-100"
                         >
-                          <div className="flex justify-start space-x-2">
-                            <Link href={`/detail/${cartItem[0].identifier}`}>
-                              <img
-                                src={cartItem[0].image}
-                                alt="cart-item"
-                                className="h-16 w-16 rounded-lg"
-                              />
-                            </Link>
-                            <div className="flex flex-col items-start justify-start text-sm">
-                              {cartItem.length > 1 && (
-                                <span className="font-medium">(Bundle)</span>
-                              )}
-                              {cartItem.map((item) => (
-                                <span className="font-medium">{item.name}</span>
-                              ))}
+                          All {"(" + notification.length + ")"}
+                        </button>
+                        <button
+                          onClick={() => setIsUnreadNotifs(true)}
+                          className={
+                            "px-3 py-1 rounded-md font-medium " +
+                            (isUnreadNotifs
+                              ? "bg-sky-200 text-blue-700 rounded-md"
+                              : "hover:bg-slate-200")
+                          }
+                        >
+                          Unread{" "}
+                          {"(" +
+                            notification.filter(
+                              (notif: INotification) =>
+                                notif.is_viewed === false
+                            ).length +
+                            ")"}
+                        </button>
+                      </div>
+                      <div className="">
+                        <TabView className="w-full">
+                          <TabPanel header="Listing" className="w-full">
+                            <ListBox
+                              options={
+                                isUnreadNotifs
+                                  ? notification.filter(
+                                      (notif: INotification) =>
+                                        notif.is_viewed == false &&
+                                        notif.event_name ===
+                                          NFT_EVENT_NAME.LISTING.toLowerCase()
+                                    )
+                                  : notification.filter(
+                                      (notif: INotification) =>
+                                        notif.event_name ===
+                                        NFT_EVENT_NAME.LISTING.toLowerCase()
+                                    )
+                              }
+                              optionLabel="name"
+                              itemTemplate={notificationListTemplate}
+                              className="w-full"
+                            />
+                          </TabPanel>
+                          <TabPanel header="Offer" className="w-full">
+                            <ListBox
+                              options={
+                                isUnreadNotifs
+                                  ? notification.filter(
+                                      (notif: INotification) =>
+                                        notif.is_viewed == false &&
+                                        notif.event_name ===
+                                          NFT_EVENT_NAME.OFFER.toLowerCase()
+                                    )
+                                  : notification.filter(
+                                      (notif: INotification) =>
+                                        notif.event_name ===
+                                        NFT_EVENT_NAME.OFFER.toLowerCase()
+                                    )
+                              }
+                              optionLabel="name"
+                              itemTemplate={notificationListTemplate}
+                              className="w-full"
+                            />
+                          </TabPanel>
+                          <TabPanel header="Sale" className="w-full">
+                            <ListBox
+                              options={
+                                isUnreadNotifs
+                                  ? notification.filter(
+                                      (notif: INotification) =>
+                                        notif.is_viewed == false &&
+                                        notif.event_name ===
+                                          NFT_EVENT_NAME.SALE.toLowerCase()
+                                    )
+                                  : notification.filter(
+                                      (notif: INotification) =>
+                                        notif.event_name ===
+                                        NFT_EVENT_NAME.SALE.toLowerCase()
+                                    )
+                              }
+                              optionLabel="name"
+                              itemTemplate={notificationListTemplate}
+                              className="w-full"
+                            />
+                          </TabPanel>
+                        </TabView>
+                      </div>
+                    </Sidebar>
+                  </>
+                )}
+                {/* Cart */}
+                {web3Context.state.web3.authToken && (
+                  <>
+                    <button
+                      className="cart rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center"
+                      onClick={() => setCartModalVisible(true)}
+                    >
+                      <i className="pi pi-cart-plus p-overlay-badge text-black text-3xl">
+                        <Badge
+                          value={cartItemList.length}
+                          severity="danger"
+                        ></Badge>
+                      </i>
+                    </button>
+                    <Tooltip target=".cart" position="bottom">
+                      Open cart
+                    </Tooltip>
+                    <Sidebar
+                      className="cart-modal"
+                      visible={cartModalVisible}
+                      position="right"
+                      onHide={() => setCartModalVisible(false)}
+                    >
+                      <div className="flex flex-col text-black overflow-y-auto">
+                        <div className="text-xl font-bold mx-3 pb-4 border-b-2">
+                          YOUR CART
+                        </div>
+                        <div className="flex justify-between items-center font-bold m-3">
+                          <span>{cartItemList.length} item(s)</span>
+                          <button
+                            className="bg-red-500 p-2 text-white rounded-lg hover:bg-red-400"
+                            onClick={() => handleRemoveAllFromCart()}
+                          >
+                            Remove all
+                          </button>
+                        </div>
+                        <div className="space-y-2">
+                          {cartItemList.map((cartItem) => (
+                            <div
+                              key={cartItem[0].name}
+                              className="cart-item flex justify-between items-center w-full py-2 px-4 rounded-lg hover:bg-gray-100"
+                            >
+                              <div className="flex justify-start space-x-2">
+                                <Link
+                                  href={`/detail/${cartItem[0].identifier}`}
+                                >
+                                  <img
+                                    src={cartItem[0].image}
+                                    alt="cart-item"
+                                    className="h-16 w-16 rounded-lg"
+                                  />
+                                </Link>
+                                <div className="flex flex-col items-start justify-start text-sm">
+                                  {cartItem.length > 1 && (
+                                    <span className="font-medium">
+                                      (Bundle)
+                                    </span>
+                                  )}
+                                  {cartItem.map((item) => (
+                                    <span className="font-medium">
+                                      {item.name}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              <span className="price text-sm">
+                                {showingPrice(
+                                  web3Context.state.web3.chainId,
+                                  cartItem[0].listings[0]?.start_price || "0",
+                                  CHAINID_CURRENCY_UNITS.get(
+                                    web3Context.state.web3.chainId
+                                  )[0].value,
+                                  true
+                                )}
+                              </span>
+                              <button
+                                className="delete-cart-btn hidden"
+                                onClick={() =>
+                                  handleRemoveFromCart(
+                                    web3Context,
+                                    cartItem[0].listings[0].order_hash
+                                  )
+                                }
+                              >
+                                <i className="pi pi-trash" />
+                              </button>
                             </div>
-                          </div>
-                          <span className="price text-sm">
+                          ))}
+                        </div>
+                        <div className="flex justify-between border-t-2 mx-3 my-3 pt-3">
+                          <span className="text-xl font-semibold">
+                            Total price
+                          </span>
+                          <span className="font-semibold">
                             {showingPrice(
                               web3Context.state.web3.chainId,
-                              cartItem[0].listings[0]?.start_price || "0",
+                              totalPrice.toString(),
                               CHAINID_CURRENCY_UNITS.get(
                                 web3Context.state.web3.chainId
                               )[0].value,
                               true
                             )}
                           </span>
-                          <button
-                            className="delete-cart-btn hidden"
-                            onClick={() =>
-                              handleRemoveFromCart(
-                                web3Context,
-                                cartItem[0].listings[0].order_hash
-                              )
-                            }
-                          >
-                            <i className="pi pi-trash" />
-                          </button>
                         </div>
-                      ))}
-                    </div>
-                    <div className="flex justify-between border-t-2 mx-3 my-3 pt-3">
-                      <span className="text-xl font-semibold">Total price</span>
-                      <span className="font-semibold">
-                        {showingPrice(
-                          web3Context.state.web3.chainId,
-                          totalPrice.toString(),
-                          CHAINID_CURRENCY_UNITS.get(
-                            web3Context.state.web3.chainId
-                          )[0].value,
-                          true
-                        )}
-                      </span>
-                    </div>
-                    <button
-                      className="bg-sky-500 p-4 rounded-lg text-xl font-semibold text-white hover:bg-sky-400"
-                      onClick={() =>
-                        handleBuyShoppingCart(
-                          web3Context.state.web3.myWallet,
-                          web3Context.state.web3.provider,
-                          web3Context.state.web3.cart
-                        )
-                      }
-                    >
-                      Purchase
-                    </button>
-                  </div>
-                </Sidebar>
+                        <button
+                          className="bg-sky-500 p-4 rounded-lg text-xl font-semibold text-white hover:bg-sky-400"
+                          onClick={() =>
+                            handleBuyShoppingCart(
+                              web3Context.state.web3.myWallet,
+                              web3Context.state.web3.provider,
+                              web3Context.state.web3.cart
+                            )
+                          }
+                        >
+                          Purchase
+                        </button>
+                      </div>
+                    </Sidebar>
+                  </>
+                )}
 
                 {/* Wallet */}
                 <button
@@ -900,53 +918,57 @@ const Header = ({ notification, notificationRefetch }: IHeaderProps) => {
                   </div>
                 </Sidebar>
                 {/* Profile */}
-                <div className="profile-btn relative">
-                  <Link
-                    href={`/user-profile`}
-                    className="rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center"
-                  >
-                    <i className="pi pi-user text-black text-3xl"></i>
-                  </Link>
-
-                  <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
-                    <Link
-                      href={`/user-profile`}
-                      className="py-3 w-full hover:bg-slate-200 rounded-t-lg border-b"
-                    >
-                      <span className="ml-4">My Profile</span>
-                    </Link>
-                    <Link
-                      href={`/my-collections`}
-                      className="py-3 w-full hover:bg-slate-200 border-b"
-                    >
-                      <span className="ml-4">My Collections</span>
-                    </Link>
-                    <Link
-                      href={`/create-collection`}
-                      className="py-3 w-full hover:bg-slate-200 border-b"
-                    >
-                      <span className="ml-4">New Collection</span>
-                    </Link>
-                    <Link
-                      href={`/create-nft`}
-                      className="py-3 w-full hover:bg-slate-200 border-b"
-                    >
-                      <span className="ml-4">New NFT</span>
-                    </Link>
-                    {web3Context.state.web3.authToken ? (
-                      <button
-                        onClick={() => {
-                          handleLogOut();
-                        }}
-                        className="py-3 w-full hover:bg-slate-200 rounded-b-lg border-b"
+                {web3Context.state.web3.authToken && (
+                  <>
+                    <div className="profile-btn relative">
+                      <Link
+                        href={`/user-profile`}
+                        className="rounded-full w-12 h-12 hover:bg-gray-300 flex items-center justify-center"
                       >
-                        <span className="pi pi-sign-out"></span> Log out
-                      </button>
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                </div>
+                        <i className="pi pi-user text-black text-3xl"></i>
+                      </Link>
+
+                      <div className="profile-menu absolute hidden flex-col bg-white font-medium w-36 right-0 rounded-lg shadow">
+                        <Link
+                          href={`/user-profile`}
+                          className="py-3 w-full hover:bg-slate-200 rounded-t-lg border-b"
+                        >
+                          <span className="ml-4">My Profile</span>
+                        </Link>
+                        <Link
+                          href={`/my-collections`}
+                          className="py-3 w-full hover:bg-slate-200 border-b"
+                        >
+                          <span className="ml-4">My Collections</span>
+                        </Link>
+                        <Link
+                          href={`/create-collection`}
+                          className="py-3 w-full hover:bg-slate-200 border-b"
+                        >
+                          <span className="ml-4">New Collection</span>
+                        </Link>
+                        <Link
+                          href={`/create-nft`}
+                          className="py-3 w-full hover:bg-slate-200 border-b"
+                        >
+                          <span className="ml-4">New NFT</span>
+                        </Link>
+                        {web3Context.state.web3.authToken ? (
+                          <button
+                            onClick={() => {
+                              handleLogOut();
+                            }}
+                            className="py-3 w-full hover:bg-slate-200 rounded-b-lg border-b"
+                          >
+                            <span className="pi pi-sign-out"></span> Log out
+                          </button>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
               </>
             )}
             {/* Wallet if not connect to wallet */}
