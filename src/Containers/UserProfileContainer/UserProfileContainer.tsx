@@ -10,43 +10,34 @@ import useNFTActivityByOwner from "@Hooks/useNFTActivityByOwner";
 import { Message } from "primereact/message";
 import useOfferMadeList from "@Hooks/useOfferMadeList";
 import useSaleEventByAddrMthYr from "@Hooks/useEventProfileStatistics";
+import moment from "moment";
+import { CHANGE_STATISTICS_CMD } from "./constant";
 
 const UserProfileContainer = () => {
   const web3Context = useContext(AppContext);
-  const [monthYear, setMonthYear] = useState(() => {
-    let today = new Date();
+  const [statisticsInterval, setStatisticsInterval] = useState(() => {
+    const startDate = new Date(
+      moment().subtract(30, "days").toLocaleString()
+    ).toLocaleDateString("en-CA");
+    const endDate = new Date().toLocaleDateString("en-CA");
     return {
-      month: today.getMonth() + 1,
-      year: today.getFullYear(),
+      startDate,
+      endDate,
     };
   });
-  const handleChangeMonthYear = (cmd: string) => {
-    if (cmd === "next") {
-      setMonthYear((prev) => {
-        if (prev.month === 12) {
-          return {
-            month: 1,
-            year: prev.year + 1,
-          };
-        }
-        return {
-          ...prev,
-          month: prev.month + 1,
-        };
-      });
-    } else if (cmd === "prev") {
-      setMonthYear((prev) => {
-        if (prev.month === 1) {
-          return {
-            month: 12,
-            year: prev.year - 1,
-          };
-        }
-        return {
-          ...prev,
-          month: prev.month - 1,
-        };
-      });
+
+  const handleChangeStatisticsInterval = (
+    cmd: CHANGE_STATISTICS_CMD,
+    date: string
+  ) => {
+    if (cmd === CHANGE_STATISTICS_CMD.START_DATE) {
+      if (new Date(date) <= new Date(statisticsInterval.endDate)) {
+        setStatisticsInterval((prev) => ({ ...prev, startDate: date }));
+      }
+    } else {
+      if (new Date(statisticsInterval.startDate) <= new Date(date)) {
+        setStatisticsInterval((prev) => ({ ...prev, endDate: date }));
+      }
     }
   };
 
@@ -80,8 +71,8 @@ const UserProfileContainer = () => {
 
   const { nftSaleByMth, refetch: nftSaleRefetch } = useSaleEventByAddrMthYr({
     address: web3Context.state.web3.myAddress as string,
-    month: monthYear.month,
-    year: monthYear.year,
+    startDate: statisticsInterval.startDate,
+    endDate: statisticsInterval.endDate,
     chainId: web3Context.state.web3.chainId,
   });
 
@@ -93,8 +84,7 @@ const UserProfileContainer = () => {
             <UserImage profile={profile}></UserImage>
             <UserInfor
               profile={profile}
-              profileRefetch={profileRefetch}
-            ></UserInfor>
+              profileRefetch={profileRefetch}></UserInfor>
             <UserProfileTabs
               nftCollectionList={nftCollectionList}
               refetch={refetch}
@@ -107,9 +97,10 @@ const UserProfileContainer = () => {
               nftActivityRefetch={nftActivityRefetch}
               nftSaleByMonth={nftSaleByMth}
               nftSaleRefetch={nftSaleRefetch}
-              monthYear={monthYear}
-              handleChangeMonthYear={handleChangeMonthYear}
-            ></UserProfileTabs>
+              statisticsInterval={statisticsInterval}
+              handleChangeStatisticsInterval={
+                handleChangeStatisticsInterval
+              }></UserProfileTabs>
           </div>
         </>
       ) : (

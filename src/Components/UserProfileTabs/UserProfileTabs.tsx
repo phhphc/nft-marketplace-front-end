@@ -12,12 +12,12 @@ import OfferMadeList from "@Components/OfferMadeList/OfferMadeList";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import ProfileStatistics from "@Components/ProfileStatistics/ProfileStatistics";
+import { CHANGE_STATISTICS_CMD } from "@Containers/UserProfileContainer/constant";
 
-interface IMonthYear {
-  month: number;
-  year: number;
+export interface IStatisticsInterval {
+  startDate: string;
+  endDate: string;
 }
-
 export interface IUserProfileTabsProps {
   nftCollectionList: INFTCollectionItem[][];
   refetch: () => void;
@@ -30,8 +30,11 @@ export interface IUserProfileTabsProps {
   nftActivityRefetch: () => void;
   nftSaleByMonth: INFTActivity[];
   nftSaleRefetch: () => void;
-  monthYear: IMonthYear;
-  handleChangeMonthYear: (cmd: string) => void;
+  statisticsInterval: IStatisticsInterval;
+  handleChangeStatisticsInterval: (
+    cmd: CHANGE_STATISTICS_CMD,
+    date: string
+  ) => void;
 }
 
 const UserProfileTabs = ({
@@ -46,8 +49,8 @@ const UserProfileTabs = ({
   nftActivityRefetch,
   nftSaleByMonth,
   nftSaleRefetch,
-  monthYear,
-  handleChangeMonthYear
+  statisticsInterval,
+  handleChangeStatisticsInterval,
 }: IUserProfileTabsProps) => {
   const router = useRouter();
 
@@ -76,25 +79,23 @@ const UserProfileTabs = ({
           <ProfileStatistics
             nftSaleByMonth={nftSaleByMonth}
             refetch={nftSaleRefetch}
-            month={monthYear.month}
-            year={monthYear.year}
-            handleChangeMonth={handleChangeMonthYear}/>
+            statisticsInterval={statisticsInterval}
+            handleChangeStatisticsInterval={handleChangeStatisticsInterval}
+          />
         </TabPanel>
         <TabPanel header="Offers received">
           <OfferReceivedList
             offerReceivedList={offerReceivedList}
             offerReceivedListRefetch={offerReceivedListRefetch}
             nftActivityRefetch={nftActivityRefetch}
-            nftRefetch={refetch}
-          ></OfferReceivedList>
+            nftRefetch={refetch}></OfferReceivedList>
         </TabPanel>
         <TabPanel header="Offers made">
           <OfferMadeList
             offerMadeList={offerMadeList}
             offerMadeListRefetch={offerMadeListRefetch}
             nftActivityRefetch={nftActivityRefetch}
-            nftRefetch={refetch}
-          ></OfferMadeList>
+            nftRefetch={refetch}></OfferMadeList>
         </TabPanel>
       </TabView>
     </div>
