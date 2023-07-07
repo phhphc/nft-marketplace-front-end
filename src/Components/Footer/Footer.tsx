@@ -11,9 +11,8 @@ const Footer = () => {
       <div className="flex flex-col">
         <Image src={logo} alt="logo" className="w-36 h-16 self-center mb-4" />
         <div className="text-justify">
-          The world's first and largest digital marketplace for crypto
-          collectibles and non-fungible tokens (NFTs). Buy, sell and discover
-          exclusive digital items.
+          Non-Fungible Token (NFT) marketplace where you can buy, sell, or
+          create NFTs
         </div>
       </div>
       <div className="flex justify-center self-center">
